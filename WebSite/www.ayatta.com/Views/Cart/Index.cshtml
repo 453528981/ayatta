@@ -1,0 +1,230 @@
+﻿@model CartModel.Index
+<div class="container">
+    <div class="block-header">
+        <h2>Table</h2>
+
+        <ul class="actions">
+            <li>
+                <a href="">
+                    <i class="zmdi zmdi-trending-up"></i>
+                </a>
+            </li>
+            <li>
+                <a href="">
+                    <i class="zmdi zmdi-check-all"></i>
+                </a>
+            </li>
+            <li class="dropdown">
+                <a href="" data-toggle="dropdown">
+                    <i class="zmdi zmdi-more-vert"></i>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li>
+                        <a href="">Refresh</a>
+                    </li>
+                    <li>
+                        <a href="">Manage Widgets</a>
+                    </li>
+                    <li>
+                        <a href="">Widgets Settings</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h2>Striped rows <small>Add zebra-striping to any table row within the tbody</small></h2>
+        </div>
+
+        <div id="cart-container"></div>
+    </div>
+
+
+</div>
+<script id="cart-tmpl" type="text/template">
+    {{if baskets.length>0 }}
+    <form method="post">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="cell-checkbox">
+                            <label class="checkbox checkbox-inline">
+                                <input type="checkbox" onclick="app.cart.select(this,0,0);" />
+                                <i class="input-helper"></i>
+                                <span>全选</span>
+                            </label>
+                        </th>
+                        <th class="cell-item">商品信息</th>
+                        <th></th>
+                        <th class="text-center">单价（元）</th>
+                        <th class="text-center">数 量</th>
+                        <th class="text-center">金额（元）</th>
+                        <th class="text-center">操 作</th>
+                    </tr>
+                </thead>
+                {{for baskets}}
+                <tbody class="{{:(#getIndex()%2==0?"":"alternate")}}">
+                    <tr class="shop-header">
+                        <td colspan="5">
+                            <label class="checkbox checkbox-inline">
+                                <input type="checkbox" {{:(selected?"checked":"")}} onclick="app.cart.select(this,1,{{:sellerId}});" />
+                                <i class="input-helper"></i>
+
+                            </label>
+                            <strong class="c-pink">祥织男装专营店</strong>
+                            <span>
+                                <span class="m-l-10 c-purple">全场满68元包邮</span>
+                                <span class="m-l-10 c-red">已享优惠:包邮</span>
+                            </span>
+                        </td>
+
+                        <td colspan="2" class="text-right">店铺VIP4-包邮,返2倍积分</td>
+                    </tr>
+                    {{for skus}}
+                    <tr class="">
+                        <td>
+                            {{if status!=0}}
+                            <span class="badge bgm-gray item-invalid-badge">失效</span>
+                            {{else}}
+                            <label class="checkbox checkbox-inline">
+                                <input name="skus" type="checkbox" value="{{:id}}" {{:(selected?"checked":"")}} onclick="app.cart.select(this,2,{{:id}});" />
+                                <i class="input-helper"></i>
+                            </label>
+                            {{/if}}
+
+                        </td>
+                        <td>
+                            <div class="media">
+                                <div class="pull-left">
+                                    <a href="#">
+                                        <img class="media-object" src="{{:picture}}" style="width:80px;height:80px;" alt="{{:name}}">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <h4 class="media-heading">{{:name}}</h4>
+                                </div>
+                                <div>asf</div>
+                            </div>
+
+                        </td>
+                        <td class="c-gray">
+                            {{for propTexts}}
+                            <span>{{:#data}}</span><br />
+                            {{/for}}
+
+                        </td>
+                        <td class="text-center">
+                            <del class="c-gray">{{:retailPrice.toFixed(2)}}</del>
+                            <br />
+                            <strong class="">{{:price.toFixed(2)}}</strong>
+                        </td>
+                        <td class="text-center">
+
+                            <div class="input-group item-amount-wrapper">
+                                <span class="input-group-addon" onclick="app.cart.decrease(this,{{:itemId}},{{:id}});"><i class="zmdi zmdi-minus"></i></span>
+                                <div class="fg-line">
+                                    <input type="text" class="form-control text-center" value="{{:quantity}}">
+                                </div>
+                                <span class="input-group-addon last" onclick="app.cart.increase(this,{{:itemId}},{{:id}});"><i class="zmdi zmdi-plus"></i></span>
+                            </div>
+                            {{if status == 0 && message!=''}}
+                            <br />
+                            <span class="c-deeporange">{{:message}}</span>
+                            {{/if}}
+
+                        </td>
+                        <td class="text-center">
+                            <strong class="c-deeporange">{{:(price*quantity).toFixed(2)}}</strong>
+                            <br />
+                            <span class="c-gray">(0.24kg)</span>
+                        </td>
+                        <td class="text-center">
+                            <span>收 藏</span>
+                            <br />
+                            <span><a href="javascript:void(0);" onclick="app.cart.remove(this,{{:itemId}},{{:id}},true);">删 除</a> </span>
+                        </td>
+                    </tr>
+                    {{/for}}
+
+                    <tr class="shop-footer">
+                        <td colspan="4"></td>
+                        <td colspan="3" class="text-right">
+                            <span class="c-deeporange">已享受“满68.00元享包邮”，</span> 该店铺商品合计：¥{{:subTotal.toFixed(2)}}
+                        </td>
+                    </tr>
+                </tbody>
+                {{/for}}
+            </table>
+        </div>
+        <div class="cart-float-bar-holder">
+            <div class="cart-float-bar-holder">
+                <span>已选商品<span>{{:current.count}}</span>  件</span>
+                <span>合计（不含运费）：<span>{{:current.total.toFixed(2)}}</span> </span>
+                <span><button onclick="app.cart.submit(this);">结算</button> </span>
+            </div>
+        </div>
+    </form>
+    {{/if}}
+</script>
+@section cssOmega{
+    <style>
+        .shop-info {
+        }
+
+        .alternate {
+            background-color: #FDFDFD;
+        }
+
+        .table > tbody + tbody {
+            border-top: 0px;
+        }
+
+        .cell-checkbox {
+            width: 100px;
+        }
+
+        .cell-item {
+            width: 320px;
+        }
+
+        .item-normal {
+        }
+
+        .item-selected {
+            background-color: #FFFEEE;
+        }
+
+        .item-invalid {
+            background-color: #FAFAFA;
+        }
+
+        .item-invalid-badge {
+            line-height: 1.6;
+        }
+
+        .item-amount-wrapper {
+            width: 120px;
+            margin: 0 auto;
+        }
+    </style>
+}
+@section js{
+
+
+}
+@section jsOmega{
+    <script src="//cdn.bootcss.com/jsrender/1.0.0-rc.70/jsrender.min.js"></script>
+    <script src="~/js/app.cart.js" asp-version="true"></script>
+    <script>
+
+        $(function () {
+
+            app.cart.load();
+            $(".page-loader").remove();
+        });
+    </script>
+}
