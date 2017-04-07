@@ -46,7 +46,7 @@
                                                             <li class="item-sku-prop">
                                                                 @if (Model.Item.PropImgs.ContainsKey(v.Key))
                                                                 {
-                                                                    var img = Model.Item.PropImgs[v.Key];
+                                                                    var img = Model.Item.PropImgs[v.Key]+ "?width=36&height=36";
                                                                     <a class="item-sku-prop-img zoom" href="javascript:void(0);" style="background: #FFFFFF url('@(img)') no-repeat scroll center center ;">
                                                                         <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
                                                                     </a>
@@ -111,7 +111,13 @@
                             </div>
                             <div class="gallery-zoom">
                                 <div id="gallery-zoom-thumb" class='gallery-zoom-thumb'>
-
+                                    @for (var i=0;i<Model.Item.Imgs.Count;i++)
+                                    {
+                                        var img = Model.Item.Imgs[i];
+                                        <a class="@(i == 0 ? "zoom-active" : string.Empty)" href='javascript:void(0);' data-image="@(img)" data-zoom-image="@(img)">
+                                            <img src="@(img)" />
+                                        </a>
+                                    }
                                 </div>
 
                             </div>

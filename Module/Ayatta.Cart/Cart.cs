@@ -1057,10 +1057,10 @@ namespace Ayatta.Cart
                                 if (magic.First)
                                 {
                                     var v = magic.Second;
-                                    var discount = new Discount(Promotion.Category.A, specialPrice.Id, specialPrice.Name);
-                                    switch (specialPrice.Category)
+                                    var discount = new Discount(Promotion.Type.A, specialPrice.Id, specialPrice.Name);
+                                    switch (specialPrice.Type)
                                     {
-                                        case Promotion.SpecialPriceCategory.A:
+                                        case Promotion.SpecialPriceType.A:
                                             var amount = sku.Price - (sku.Price * v);
                                             var description = $"限时特价促销 原价{sku.Price},打{v}折,优惠{amount}";
 
@@ -1072,7 +1072,7 @@ namespace Ayatta.Cart
                                             sku.Discount = amount;
 
                                             break;
-                                        case Promotion.SpecialPriceCategory.B:
+                                        case Promotion.SpecialPriceType.B:
                                             amount = sku.Price - v;
                                             description = $"限时特价促销 原价{sku.Price},减{v},优惠{amount}";
 
@@ -1084,7 +1084,7 @@ namespace Ayatta.Cart
                                             sku.Discount = amount;
 
                                             break;
-                                        case Promotion.SpecialPriceCategory.C:
+                                        case Promotion.SpecialPriceType.C:
                                             if (sku.Price > v)
                                             {
                                                 amount = sku.Price - v;
@@ -1113,10 +1113,10 @@ namespace Ayatta.Cart
                                 if (magic.First)
                                 {
                                     var v = magic.Second;
-                                    var discount = new Discount(Promotion.Category.A, specialPrice.Id, specialPrice.Name);
-                                    switch (specialPrice.Category)
+                                    var discount = new Discount(Promotion.Type.A, specialPrice.Id, specialPrice.Name);
+                                    switch (specialPrice.Type)
                                     {
-                                        case Promotion.SpecialPriceCategory.A:
+                                        case Promotion.SpecialPriceType.A:
                                             var amount = item.Price - (item.Price * v);
                                             var description = $"限时特价促销 原价{item.Price},打{v}折,优惠{amount}";
 
@@ -1128,7 +1128,7 @@ namespace Ayatta.Cart
                                             item.Discount = amount;
 
                                             break;
-                                        case Promotion.SpecialPriceCategory.B:
+                                        case Promotion.SpecialPriceType.B:
                                             amount = item.Price - v;
                                             description = $"限时特价促销 原价{item.Price},减{v},优惠{amount}";
 
@@ -1140,7 +1140,7 @@ namespace Ayatta.Cart
                                             item.Discount = amount;
 
                                             break;
-                                        case Promotion.SpecialPriceCategory.C:
+                                        case Promotion.SpecialPriceType.C:
                                             if (item.Price > v)
                                             {
                                                 amount = item.Price - v;
@@ -1173,7 +1173,7 @@ namespace Ayatta.Cart
 
                 #region 处理店铺优惠
                 key = $"promotion.normal.{date}.{basket.SellerId}";  //店铺优惠key               
-                var normals = cartCache.Put(key, () => defaultStorage.PromotionNormalList(basket.SellerId), expire);
+                var normals = cartCache.Put(key, () => defaultStorage.PromotionActivityList(basket.SellerId), expire);
                 if (normals != null && normals.Any())
                 {
                     var tmp = normals.OrderBy(x => x.Global);//同时存在单品活动和店铺活动时 优先处理单品活动
@@ -1255,17 +1255,17 @@ namespace Ayatta.Cart
                                     }
                                 }
 
-                                var discount = new Discount(Promotion.Category.B, promotion.Id, promotion.Name);
-                                if (promotion.Discount)
+                                var discount = new Discount(Promotion.Type.B, promotion.Id, promotion.Name);
+                                if (promotion.Type==1)
                                 {
-                                    discount.Amount = amount * rule.Value;
-                                    var description = $"店铺促销 满{rule.Upon}件,打{rule.Value}折,优惠{discount.Amount}";
+                                    discount.Amount = amount * rule.Discount;
+                                    var description = $"店铺促销 满{rule.Threshold}件,打{rule.Discount}折,优惠{discount.Amount}";
                                     discount.Description = description;
                                 }
                                 else
                                 {
-                                    discount.Amount = amount - rule.Value;
-                                    var description = $"店铺促销 满{rule.Upon}元,减{rule.Value}元,优惠{discount.Amount}";
+                                    discount.Amount = amount - rule.Discount;
+                                    var description = $"店铺促销 满{rule.Threshold}元,减{rule.Discount}元,优惠{discount.Amount}";
                                     discount.Description = description;
                                 }
                                 basket.Discounts.Add(discount);
@@ -1322,7 +1322,7 @@ namespace Ayatta.Cart
 
                 #region 处理购物车促销
                 key = $"promotion.cart.{date}.{basket.SellerId}";  //购物车优惠key               
-                var cartPromotions = cartCache.Put(key, () => defaultStorage.PromotionCartList(basket.SellerId), expire);
+                var cartPromotions = cartCache.Put(key, () => defaultStorage.PromotionCartActivityList(basket.SellerId), expire);
                 if (cartPromotions != null && cartPromotions.Any())
                 {
                     foreach (var cartPrmotion in cartPromotions)
@@ -1355,10 +1355,10 @@ namespace Ayatta.Cart
                             //满足所有规则
                             if (done)
                             {
-                                var discount = new Discount(Promotion.Category.D, cartPrmotion.Id, cartPrmotion.Name);
+                                var discount = new Discount(Promotion.Type.D, cartPrmotion.Id, cartPrmotion.Name);
                                 if (cartPrmotion.DiscountOn == Promotion.DiscountOn.OrderTotal)//促销折扣/减免金额作用于 订单总金额
                                 {
-                                    if (cartPrmotion.Discount)
+                                    if (cartPrmotion.Type==1)
                                     {
                                         discount.Amount = basket.Total * cartPrmotion.DiscountValue;
                                         var description = $"购物车促销 订单总金额 打{cartPrmotion.DiscountValue}折,优惠{discount.Amount}";
@@ -1373,7 +1373,7 @@ namespace Ayatta.Cart
                                 }
                                 else if (cartPrmotion.DiscountOn == Promotion.DiscountOn.OrderSubTotal)//促销折扣/减免金额作用于 订单商品总金额
                                 {
-                                    if (cartPrmotion.Discount)
+                                    if (cartPrmotion.Type == 1)
                                     {
                                         discount.Amount = basket.SubTotal * cartPrmotion.DiscountValue;
                                         var description = $"购物车促销 商品总金额 打{cartPrmotion.DiscountValue}折,优惠{discount.Amount}";
@@ -1388,7 +1388,7 @@ namespace Ayatta.Cart
                                 }
                                 else if (cartPrmotion.DiscountOn == Promotion.DiscountOn.Freight)//促销折扣/减免金额作用于 运费
                                 {
-                                    if (cartPrmotion.Discount)
+                                    if (cartPrmotion.Type == 1)
                                     {
                                         discount.Amount = basket.Freight * cartPrmotion.DiscountValue;
                                         var description = $"购物车促销 运费 打{cartPrmotion.DiscountValue}折,优惠{discount.Amount}";
@@ -1412,7 +1412,7 @@ namespace Ayatta.Cart
                                 }
                                 else if (cartPrmotion.DiscountOn == Promotion.DiscountOn.Tax)//促销折扣/减免金额作用于 税费
                                 {
-                                    if (cartPrmotion.Discount)
+                                    if (cartPrmotion.Type == 1)
                                     {
                                         discount.Amount = basket.Tax * cartPrmotion.DiscountValue;
                                         var description = $"购物车促销 税费 打{cartPrmotion.DiscountValue}折,优惠{discount.Amount}";
@@ -1439,7 +1439,7 @@ namespace Ayatta.Cart
                                     foreach (var sku in basket.Skus.Where(x => x.Selected))
                                     {
                                         isMatch = cartPrmotion.Match(sku.Id, sku.ItemId, sku.CatgId, sku.BrandId);
-                                        if (isMatch && cartPrmotion.Discount)
+                                        if (isMatch && cartPrmotion.Type == 1)
                                         {
                                             var v = cartPrmotion.DiscountValue;
                                             var amount = sku.Price - (sku.Price * v);
@@ -1452,7 +1452,7 @@ namespace Ayatta.Cart
                                             sku.Price = sku.Price * v;
                                             sku.Discount += amount;
                                         }
-                                        if (isMatch && !cartPrmotion.Discount)
+                                        if (isMatch && cartPrmotion.Type == 0)
                                         {
                                             var v = cartPrmotion.DiscountValue;
                                             var amount = sku.Price - v;

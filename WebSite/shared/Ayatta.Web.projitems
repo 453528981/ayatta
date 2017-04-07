@@ -21,6 +21,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Identity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Model.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebSite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Weed.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WeedFs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Helpers\" />

@@ -366,7 +366,7 @@ namespace Ayatta.Cart
             /// <summary>
             /// 赠送的优惠券
             /// </summary>
-            public IList<Promotion.Normal.Coupon> Coupons { get; set; }
+            public IList<Promotion.Activity.Coupon> Coupons { get; set; }
 
             /// <summary>
             /// 优惠信息
@@ -394,7 +394,7 @@ namespace Ayatta.Cart
                 Packages = new List<Package>();
 
                 //Gifts = new List<Promotion.Normal.Gift>();
-                Coupons = new List<Promotion.Normal.Coupon>();
+                Coupons = new List<Promotion.Activity.Coupon>();
                 Discounts = new List<Discount>();
             }
 
@@ -725,7 +725,7 @@ namespace Ayatta.Cart
         /// <summary>
         /// 促销类型
         /// </summary>
-        public Promotion.Category PromotionCategory { get; set; }
+        public Promotion.Type PromotionCategory { get; set; }
 
         /// <summary>
         /// 优惠金额
@@ -743,7 +743,7 @@ namespace Ayatta.Cart
         /// </summary>
         public string Description { get; set; }
 
-        public Discount(Promotion.Category category, int id, string name)
+        public Discount(Promotion.Type category, int id, string name)
         {
             PromotionId = id;
             PromotionName = name;

@@ -9,7 +9,7 @@ namespace Ayatta.Domain
         /// <summary>
         /// 促销类型
         /// </summary>
-        public enum Category : byte
+        public enum Type : byte
         {
             /// <summary>
             /// 无
@@ -40,7 +40,7 @@ namespace Ayatta.Domain
         /// <summary>
         /// 促销活动用户参与限制
         /// </summary>
-        public enum LimitBy : byte
+        public enum LimitType : byte
         {
             /// <summary>
             /// 无限制
@@ -62,7 +62,7 @@ namespace Ayatta.Domain
         /// <summary>
         /// 特价类型 A打折  B减价  C促销价
         /// </summary>
-        public enum SpecialPriceCategory : byte
+        public enum SpecialPriceType : byte
         {
             /// <summary>
             /// 打折

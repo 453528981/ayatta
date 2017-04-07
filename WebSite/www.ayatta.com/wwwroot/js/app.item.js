@@ -172,7 +172,7 @@ $.package("app.item", function () {
                 }
                 array.push('<li class="item-sku-prop ' + cls + '">');
                 if (scope.propImgs[x]) {
-                    var style = $.format("background: #FFFFFF url({0}) no-repeat scroll center center", scope.propImgs[x]);
+                    var style = $.format("background: #FFFFFF url({0}) no-repeat scroll center center", scope.propImgs[x]+"?width=36&height=36");
                     array.push($.format('<a class="item-sku-prop-img zoom" href="javascript:void(0);" onclick="{0}" style="{1}"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></a>', click, style));
                 } else {
                     array.push($.format('<a href="javascript:void(0);" onclick="{0}"><span>{1}</span></a>', click, v[x]));
@@ -277,5 +277,21 @@ $.package("app.item", function () {
             }
         }
         return false;
+    }
+
+    function bindEvent() {
+        var ez = $("#zoom").elevateZoom({ gallery: ['gallery-zoom-thumb'], cursor: 'move', zoomWindowWidth: 440, zoomWindowHeight: 440, zoomWindowOffetx: 20 });
+
+        $('.item-sku-prop-img').click(function () {
+            if (!$(this).parent().hasClass('item-sku-prop-disabled')) {
+                var img = $(this).data("image");
+                var temp = ez.data('elevateZoom');
+
+                temp.elem.src = img;
+
+                temp.options.zoomEnabled = false;
+                $('.zoom-active').removeClass('zoom-active');
+            }
+        });
     }
 });

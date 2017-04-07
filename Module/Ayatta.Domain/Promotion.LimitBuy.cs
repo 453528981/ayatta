@@ -14,83 +14,88 @@ namespace Ayatta.Domain
         ///<summary>
         /// 限购
         /// http://bbs.taobao.com/catalog/thread/16543510-264271770.htm
-        /// created on 2016-05-22 00:48:12
         ///</summary>
         [ProtoContract]
         public class LimitBuy : IEntity<int>
         {
-
             ///<summary>
             /// Id
             ///</summary>
             [ProtoMember(1)]
-            public int Id {get;set;}
+            public int Id { get; set; }
 
             ///<summary>
             /// 商品Id
             ///</summary>
             [ProtoMember(2)]
-            public int ItemId {get;set;}
+            public int ItemId { get; set; }
 
             ///<summary>
             /// 限购开始时间
             ///</summary>
             [ProtoMember(3)]
-            public DateTime StartedOn {get;set;}
+            public DateTime StartedOn { get; set; }
 
             ///<summary>
             /// 限购结束时间
             ///</summary>
             [ProtoMember(4)]
-            public DateTime StoppedOn {get;set;}
+            public DateTime StoppedOn { get; set; }
 
             ///<summary>
             /// 活动适用平台 0为None 1为适用平于pc 2为适用平于wap 4为适用平于app
             ///</summary>
             [ProtoMember(5)]
-            public Plateform Plateform {get;set;}
+            public Plateform Plateform { get; set; }
 
             ///<summary>
             /// 限定媒体Id 空为无限定 如需限定部分媒体 使用","分隔
             ///</summary>
             [ProtoMember(6)]
-            public string MediaScope {get;set;}
+            public string MediaScope { get; set; }
 
             ///<summary>
             /// 每个帐户限购数量
             ///</summary>
             [ProtoMember(7)]
-            public int Value {get;set;}
+            public int Value { get; set; }
 
             ///<summary>
             /// 卖家Id
             ///</summary>
             [ProtoMember(8)]
-            public int SellerId {get;set;}
+            public int SellerId { get; set; }
+
+            ///<summary>
+            /// 卖家名称
+            ///</summary>
+            [ProtoMember(9)]
+            public string SellerName { get; set; }
 
             ///<summary>
             /// 状态 1为可用 0为不可用
             ///</summary>
-            [ProtoMember(9)]
-            public bool Status {get;set;}
+            [ProtoMember(10)]
+            public bool Status { get; set; }
 
             ///<summary>
             /// 创建时间
             ///</summary>
-            [ProtoMember(10)]
-            public DateTime CreatedOn {get;set;}
+            [ProtoMember(11)]
+            public DateTime CreatedOn { get; set; }
 
             ///<summary>
             /// 最后一次编辑者
             ///</summary>
-            [ProtoMember(11)]
-            public string ModifiedBy {get;set;}
+            [ProtoMember(12)]
+            public string ModifiedBy { get; set; }
 
             ///<summary>
             /// 最后一次编辑时间
             ///</summary>
-            [ProtoMember(12)]
-            public DateTime ModifiedOn {get;set;}
+            [ProtoMember(13)]
+            public DateTime ModifiedOn { get; set; }
+
 
 
             /// <summary>

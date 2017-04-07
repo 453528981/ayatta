@@ -12,11 +12,10 @@ namespace Ayatta.Domain
     public partial class Promotion
     {
         ///<summary>
-        /// 购物车促销
-        /// created on 2016-05-22 00:36:45
+        /// 购物车促销活动
         ///</summary>
         [ProtoContract]
-        public class Cart : IEntity<int>
+        public class CartActivity : IEntity<int>
         {
             ///<summary>
             /// Id
@@ -25,34 +24,34 @@ namespace Ayatta.Domain
             public int Id { get; set; }
 
             ///<summary>
-            /// 活动名称
+            /// 类型 0为满元减 1为满件折
             ///</summary>
             [ProtoMember(2)]
+            public byte Type { get; set; }
+
+            ///<summary>
+            /// 活动名称
+            ///</summary>
+            [ProtoMember(3)]
             public string Name { get; set; }
 
             ///<summary>
             /// 活动标题
             ///</summary>
-            [ProtoMember(3)]
+            [ProtoMember(4)]
             public string Title { get; set; }
 
             ///<summary>
             /// 开始时间
             ///</summary>
-            [ProtoMember(4)]
+            [ProtoMember(5)]
             public DateTime StartedOn { get; set; }
 
             ///<summary>
             /// 结束时间
             ///</summary>
-            [ProtoMember(5)]
-            public DateTime StoppedOn { get; set; }
-
-            ///<summary>
-            /// 1为打折 0为减元
-            ///</summary>
             [ProtoMember(6)]
-            public bool Discount { get; set; }
+            public DateTime StoppedOn { get; set; }
 
             ///<summary>
             /// 促销折扣/减免金额作用于 订单总金额 商品总金额 运费 税费 商品价格
@@ -81,53 +80,47 @@ namespace Ayatta.Domain
             ///<summary>
             /// 限定用户Id 空为无限定 如需限定部分用户 使用","分隔
             ///</summary>
-            [JsonIgnore]
             [ProtoMember(11)]
             public string UserScope { get; set; }
 
             ///<summary>
             /// 限定商品ItemId 空为无限定 如需限定部分商品 使用","分隔
             ///</summary>
-            [JsonIgnore]
             [ProtoMember(12)]
             public string ItemScope { get; set; }
 
             ///<summary>
             /// 限定商品CageId 空为无限定 如需限定部分类目 使用","分隔
             ///</summary>
-            [JsonIgnore]
             [ProtoMember(13)]
             public string CatgScope { get; set; }
 
             ///<summary>
             /// 限定商品BrandId 空为无限定 如需限定部分品牌 使用","分隔
             ///</summary>
-            [JsonIgnore]
             [ProtoMember(14)]
             public string BrandScope { get; set; }
 
             ///<summary>
             /// 限定媒体Id 空为无限定 如需限定部分媒体 使用","分隔
             ///</summary>
-            [JsonIgnore]
             [ProtoMember(15)]
             public string MediaScope { get; set; }
 
             ///<summary>
             /// 限定区域Id 空为无限定 如需限定部分区域 使用","分隔
             ///</summary>
-            [JsonIgnore]
             [ProtoMember(16)]
             public string RegionScope { get; set; }
 
             ///<summary>
-            /// 用户参与活动限制 0为无限制 1为LimitValue次 2为每用户LimitValue次
+            /// 用户参与活动限制类型 0无限制 1限制该活动总的参与次数 2限制该活动每个用户可参与次数
             ///</summary>
             [ProtoMember(17)]
-            public LimitBy LimitBy { get; set; }
+            public LimitType LimitType { get; set; }
 
             ///<summary>
-            /// 用户参与活动限制值 Limit为true时有效
+            /// 用户参与活动限制值 LimitType不为0时有效
             ///</summary>
             [ProtoMember(18)]
             public int LimitValue { get; set; }
@@ -139,28 +132,35 @@ namespace Ayatta.Domain
             public int SellerId { get; set; }
 
             ///<summary>
-            /// 状态 1为可用 0为不可用
+            /// 卖家名称
             ///</summary>
             [ProtoMember(20)]
+            public string SellerName { get; set; }
+
+            ///<summary>
+            /// 状态 1为可用 0为不可用
+            ///</summary>
+            [ProtoMember(21)]
             public bool Status { get; set; }
 
             ///<summary>
             /// 创建时间
             ///</summary>
-            [ProtoMember(21)]
+            [ProtoMember(22)]
             public DateTime CreatedOn { get; set; }
 
             ///<summary>
             /// 最后一次编辑者
             ///</summary>
-            [ProtoMember(22)]
+            [ProtoMember(23)]
             public string ModifiedBy { get; set; }
 
             ///<summary>
             /// 最后一次编辑时间
             ///</summary>
-            [ProtoMember(23)]
+            [ProtoMember(24)]
             public DateTime ModifiedOn { get; set; }
+
 
 
             /// <summary>
@@ -333,8 +333,7 @@ namespace Ayatta.Domain
             }
 
             ///<summary>
-            /// CartRule
-            /// created on 2016-05-22 18:00:01
+            /// 购物车促销活动规则
             ///</summary>
             [ProtoContract]
             public class Rule : IEntity<int>
@@ -411,7 +410,6 @@ namespace Ayatta.Domain
                 ///</summary>
                 [ProtoMember(12)]
                 public DateTime ModifiedOn { get; set; }
-
 
                 /// <summary>
                 /// 通过Cale与Value生成的说明

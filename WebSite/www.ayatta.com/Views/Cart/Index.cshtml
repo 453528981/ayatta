@@ -60,9 +60,9 @@
                         </th>
                         <th class="cell-item">商品信息</th>
                         <th></th>
-                        <th class="text-center">单价（元）</th>
+                        <th class="text-center">单 价</th>
                         <th class="text-center">数 量</th>
-                        <th class="text-center">金额（元）</th>
+                        <th class="text-center">金 额</th>
                         <th class="text-center">操 作</th>
                     </tr>
                 </thead>
@@ -118,9 +118,9 @@
 
                         </td>
                         <td class="text-center">
-                            <del class="c-gray">{{:retailPrice.toFixed(2)}}</del>
+                            <del class="c-gray">￥{{:retailPrice.toFixed(2)}}</del>
                             <br />
-                            <strong class="">{{:price.toFixed(2)}}</strong>
+                            <strong class="">￥{{:price.toFixed(2)}}</strong>
                         </td>
                         <td class="text-center">
 
@@ -138,7 +138,7 @@
 
                         </td>
                         <td class="text-center">
-                            <strong class="c-deeporange">{{:(price*quantity).toFixed(2)}}</strong>
+                            <strong class="c-deeporange">￥{{:(price*quantity).toFixed(2)}}</strong>
                             <br />
                             <span class="c-gray">(0.24kg)</span>
                         </td>

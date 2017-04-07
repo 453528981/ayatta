@@ -13,11 +13,10 @@ namespace Ayatta.Domain
     {
 
         ///<summary>
-        /// 店铺优惠 http://bbs.taobao.com/catalog/thread/16543510-264269834.htm
-        /// created on 2016-05-22 00:50:36
+        /// 店铺活动 http://bbs.taobao.com/catalog/thread/16543510-264269834.htm
         ///</summary>
         [ProtoContract]
-        public class Normal : IEntity<int>
+        public class Activity : IEntity<int>
         {
             #region
             ///<summary>
@@ -27,106 +26,106 @@ namespace Ayatta.Domain
             public int Id { get; set; }
 
             ///<summary>
-            /// 活动名称
+            /// 类型 0为满元减 1为满件折
             ///</summary>
             [ProtoMember(2)]
+            public byte Type { get; set; }
+
+            ///<summary>
+            /// 活动名称
+            ///</summary>
+            [ProtoMember(3)]
             public string Name { get; set; }
 
             ///<summary>
             /// 活动标题
             ///</summary>
-            [ProtoMember(3)]
+            [ProtoMember(4)]
             public string Title { get; set; }
 
             ///<summary>
-            /// 开始时间
+            /// 适用于(全场店铺)所有商品
             ///</summary>
-            [ProtoMember(4)]
+            [ProtoMember(5)]
+            public bool Global { get; set; }
+
+            ///<summary>
+            /// 提前预热天数 0无预热
+            ///</summary>
+            [ProtoMember(6)]
+            public int WarmUp { get; set; }
+
+            ///<summary>
+            /// 上不封顶(当规则为满元减且只有一级时 该值可为true)
+            ///</summary>
+            [ProtoMember(7)]
+            public bool Infinite { get; set; }
+
+            ///<summary>
+            /// 标准版 活动图片
+            ///</summary>
+            [ProtoMember(8)]
+            public string Picture { get; set; }
+
+            ///<summary>
+            /// 限购开始时间
+            ///</summary>
+            [ProtoMember(9)]
             public DateTime StartedOn { get; set; }
 
             ///<summary>
-            /// 结束时间
+            /// 限购结束时间
             ///</summary>
-            [ProtoMember(5)]
+            [ProtoMember(10)]
             public DateTime StoppedOn { get; set; }
 
             ///<summary>
             /// 活动适用平台 0为None 1为适用平于pc 2为适用平于wap 4为适用平于app
             ///</summary>
-            [ProtoMember(6)]
+            [ProtoMember(11)]
             public Plateform Plateform { get; set; }
 
             ///<summary>
             /// 限定媒体Id 空为无限定 如需限定部分媒体 使用","分隔
             ///</summary>
-            [ProtoMember(7)]
-            public string MediaScope { get; set; }
-
-            ///<summary>
-            /// 适用于(全场店铺)所有商品
-            ///</summary>
-            [ProtoMember(8)]
-            public bool Global { get; set; }
-
-            ///<summary>
-            /// true为满件折 false为满元减
-            ///</summary>
-            [ProtoMember(9)]
-            public bool Discount { get; set; }
-
-            ///<summary>
-            /// 用户参与活动限制
-            ///</summary>
-            [ProtoMember(10)]
-            public LimitBy LimitBy { get; set; }
-
-            ///<summary>
-            /// 用户参与活动限制值 Limit为true时有效
-            ///</summary>
-            [ProtoMember(11)]
-            public int LimitValue { get; set; }
-
-            ///<summary>
-            /// 提前预热天数
-            ///</summary>
             [ProtoMember(12)]
-            public int WarmUp { get; set; }
-
-            ///<summary>
-            /// 标准版 活动图片
-            ///</summary>
-            [ProtoMember(13)]
-            public string Picture { get; set; }
-
-            ///<summary>
-            /// 豪华版 专辑地址
-            ///</summary>
-            [ProtoMember(14)]
-            public string ExternalUrl { get; set; }
-
-            ///<summary>
-            /// 上不封顶(当规则为满元减且只有一级时 该值可为true)
-            ///</summary>
-            [ProtoMember(15)]
-            public bool Infinite { get; set; }
+            public string MediaScope { get; set; }
 
             ///<summary>
             /// Global==false时为包含的商品多个以,分隔 Global==true时为排除的商品多个以,分隔
             ///</summary>
-            [ProtoMember(16)]
+            [ProtoMember(13)]
             public string ItemScope { get; set; }
+
+            ///<summary>
+            /// 用户参与活动限制类型 0无限制 1限制该活动总的参与次数 2限制该活动每个用户可参与次数
+            ///</summary>
+            [ProtoMember(14)]
+            public LimitType LimitType { get; set; }
+
+            ///<summary>
+            /// 用户参与活动限制值 LimitType不为0时有效
+            ///</summary>
+            [ProtoMember(15)]
+            public int LimitValue { get; set; }
 
             ///<summary>
             /// 是否免运费
             ///</summary>
-            [ProtoMember(17)]
+            [ProtoMember(16)]
             public bool FreightFree { get; set; }
 
             ///<summary>
-            /// 免运费排除在外的地区多个以,分隔
+            ///  免运费排除在外的地区多个以,分隔
+            ///</summary>
+            [ProtoMember(17)]
+            public string FreightFreeExclude { get; set; }
+
+            ///<summary>
+            /// 豪华版 专辑地址
             ///</summary>
             [ProtoMember(18)]
-            public string FreightFreeExclude { get; set; } = "";
+            public string ExternalUrl { get; set; }
 
             ///<summary>
             /// 卖家Id
@@ -135,38 +134,46 @@ namespace Ayatta.Domain
             public int SellerId { get; set; }
 
             ///<summary>
-            /// 状态 1为可用 0为不可用
+            /// 卖家名称
             ///</summary>
             [ProtoMember(20)]
+            public string SellerName { get; set; }
+
+            ///<summary>
+            /// 状态 1为可用 0为不可用
+            ///</summary>
+            [ProtoMember(21)]
             public bool Status { get; set; }
 
             ///<summary>
             /// 创建时间
             ///</summary>
-            [ProtoMember(21)]
+            [ProtoMember(22)]
             public DateTime CreatedOn { get; set; }
 
             ///<summary>
             /// 最后一次编辑者
             ///</summary>
-            [ProtoMember(22)]
+            [ProtoMember(23)]
             public string ModifiedBy { get; set; }
 
             ///<summary>
             /// 最后一次编辑时间
             ///</summary>
-            [ProtoMember(23)]
+            [ProtoMember(24)]
             public DateTime ModifiedOn { get; set; }
+
+
 
             /// <summary>
             /// 规则
             /// </summary>
-            [ProtoMember(24)]
+            [ProtoMember(25)]
             public IList<Rule> Rules { get; set; }
 
             #endregion
 
-            public Normal()
+            public Activity()
             {
                 Rules = new List<Rule>();
             }
@@ -182,7 +189,7 @@ namespace Ayatta.Domain
                 {
                     if (!string.IsNullOrEmpty(MediaScope))
                     {
-                        return MediaScope.Split(',').Select(x => int.Parse(x)).ToArray();                       
+                        return MediaScope.Split(',').Select(x => int.Parse(x)).ToArray();
                     }
                     return new List<int>(0);
                 }
@@ -251,8 +258,8 @@ namespace Ayatta.Domain
             /// <returns></returns>
             public Rule MatchRule(decimal amount, int quantity)
             {
-                var list = Rules.OrderByDescending(x => x.Upon);
-                return Discount ? list.FirstOrDefault(o => quantity >= o.Value) : list.FirstOrDefault(o => amount >= o.Value);
+                var list = Rules.OrderByDescending(x => x.Threshold);
+                return Type == 1 ? list.FirstOrDefault(o => quantity >= o.Discount) : list.FirstOrDefault(o => amount >= o.Discount);
             }
 
             /// <summary>
@@ -270,8 +277,7 @@ namespace Ayatta.Domain
             #endregion
 
             ///<summary>
-            /// NormalRule
-            /// created on 2016-05-22 00:56:10
+            /// 店铺活动规则
             ///</summary>
             [ProtoContract]
             public class Rule : IEntity<int>
@@ -289,16 +295,16 @@ namespace Ayatta.Domain
                 public int ParentId { get; set; }
 
                 ///<summary>
-                /// 临界值
+                /// 满足满减/折最低门槛
                 ///</summary>
                 [ProtoMember(3)]
-                public decimal Upon { get; set; }
+                public decimal Threshold { get; set; }
 
                 ///<summary>
                 /// 满减/满折值
                 ///</summary>
                 [ProtoMember(4)]
-                public decimal Value { get; set; }
+                public decimal Discount { get; set; }
 
                 ///<summary>
                 /// 送赠品
@@ -311,7 +317,7 @@ namespace Ayatta.Domain
                 ///</summary>
                 [JsonIgnore]
                 [ProtoMember(6)]
-                public string GiftJson { get; set; }
+                public string GiftData { get; set; }
 
                 ///<summary>
                 /// 送店铺优惠券
@@ -324,7 +330,7 @@ namespace Ayatta.Domain
                 ///</summary>
                 [JsonIgnore]
                 [ProtoMember(8)]
-                public string CouponJson { get; set; }
+                public string CouponData { get; set; }
 
                 ///<summary>
                 /// 卖家Id
@@ -333,7 +339,7 @@ namespace Ayatta.Domain
                 public int SellerId { get; set; }
 
                 ///<summary>
-                /// 状态 1为可用 0为不可用
+                /// 状态 true为可用 false为不可用
                 ///</summary>
                 [ProtoMember(10)]
                 public bool Status { get; set; }
@@ -356,6 +362,18 @@ namespace Ayatta.Domain
                 [ProtoMember(13)]
                 public DateTime ModifiedOn { get; set; }
 
+                /// <summary>
+                /// 赠品
+                /// </summary>
+                public virtual IList<Gift> Gifts
+                {
+                    get
+                    {
+                        if (!SendGift || string.IsNullOrEmpty(GiftData)) return null;
+
+                        return JsonConvert.DeserializeObject<List<Gift>>(GiftData);
+                    }
+                }
 
                 /// <summary>
                 /// 优惠券
@@ -364,23 +382,10 @@ namespace Ayatta.Domain
                 {
                     get
                     {
-                        if (!SendCoupon || string.IsNullOrEmpty(CouponJson)) return null;
+                        if (!SendCoupon || string.IsNullOrEmpty(CouponData)) return null;
 
-                        return JsonConvert.DeserializeObject<List<Coupon>>(CouponJson);
+                        return JsonConvert.DeserializeObject<List<Coupon>>(CouponData);
 
-                    }
-                }
-
-                /// <summary>
-                /// 赠品
-                /// </summary>
-                public virtual IList<Gift> Gifts
-                {
-                    get
-                    {
-                        if (!SendGift || string.IsNullOrEmpty(GiftJson)) return null;
-
-                        return JsonConvert.DeserializeObject<List<Gift>>(GiftJson);
                     }
                 }
             }

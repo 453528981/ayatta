@@ -39,6 +39,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "www.ayatta.com", "www.ayatt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ayatta.Web", "WebSite\www.ayatta.com\Ayatta.Web.csproj", "{7E855590-AED2-4847-927D-142789F12A3C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "seller.ayatta.com", "seller.ayatta.com", "{FAED0EC1-C29A-41A3-AF2A-D0630CC16F03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ayatta.Web", "WebSite\seller.ayatta.com\Ayatta.Web.csproj", "{FC7EB795-31DB-4B8A-95D1-2A2DDEE49228}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		WebSite\Shared\Ayatta.Web.projitems*{99f79acd-0c3d-4ab1-b553-297bddf735a9}*SharedItemsImports = 13
@@ -92,6 +96,10 @@ Global
 		{7E855590-AED2-4847-927D-142789F12A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E855590-AED2-4847-927D-142789F12A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E855590-AED2-4847-927D-142789F12A3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC7EB795-31DB-4B8A-95D1-2A2DDEE49228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC7EB795-31DB-4B8A-95D1-2A2DDEE49228}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC7EB795-31DB-4B8A-95D1-2A2DDEE49228}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC7EB795-31DB-4B8A-95D1-2A2DDEE49228}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,5 +121,7 @@ Global
 		{99F79ACD-0C3D-4AB1-B553-297BDDF735A9} = {D906D20B-7CB3-4064-BC74-5266EB9AACE9}
 		{7249441C-8C65-4F50-944B-CFBCDD7509DB} = {90A6034A-C0F9-4AAC-A164-ADE1A1F2DBCD}
 		{7E855590-AED2-4847-927D-142789F12A3C} = {7249441C-8C65-4F50-944B-CFBCDD7509DB}
+		{FAED0EC1-C29A-41A3-AF2A-D0630CC16F03} = {90A6034A-C0F9-4AAC-A164-ADE1A1F2DBCD}
+		{FC7EB795-31DB-4B8A-95D1-2A2DDEE49228} = {FAED0EC1-C29A-41A3-AF2A-D0630CC16F03}
 	EndGlobalSection
 EndGlobal

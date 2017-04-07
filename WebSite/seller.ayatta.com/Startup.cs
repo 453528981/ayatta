@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.Text.Unicode;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 
 namespace Ayatta.Web
 {
@@ -22,6 +23,7 @@ namespace Ayatta.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
             services.AddAntiforgery(options =>
             {
