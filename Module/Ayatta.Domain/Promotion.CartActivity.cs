@@ -69,7 +69,7 @@ namespace Ayatta.Domain
             /// 活动适用平台 0为None 1为适用平于pc 2为适用平于wap 4为适用平于app
             ///</summary>
             [ProtoMember(9)]
-            public Plateform Plateform { get; set; }
+            public Platform Platform { get; set; }
 
             ///<summary>
             /// 限定最低用户级别 0为无限定
@@ -267,12 +267,12 @@ namespace Ayatta.Domain
             /// <summary>
             /// 判断活动在指定平台是否有效            
             /// </summary>
-            /// <param name="Plateform">适用平台</param>
+            /// <param name="platform">适用平台</param>
             /// <returns></returns>
-            public bool IsValid(Plateform plateform)
+            public bool IsValid(Platform platform)
             {
                 var now = DateTime.Now;
-                var available = ((Plateform & plateform) == plateform);//检查当前促销是否适用于给定平台           
+                var available = ((Platform & platform) == platform);//检查当前促销是否适用于给定平台           
                 return Status && StartedOn < now && now < StoppedOn && available && Rules.Any(x => x.Status);
             }
 

@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.RegularExpressions;
+using Ayatta.Domain;
+using System.Linq;
+using Ayatta.Extension;
 
 namespace Ayatta.Web.Controllers
 {
@@ -56,6 +59,36 @@ namespace Ayatta.Web.Controllers
                 return Json(data);
             }
             return NotFound();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="size"></param>
+        /// <param name="keyword"></param>
+        /// <param name="catgId"></param>
+        /// <param name="brandId"></param>
+        /// <param name="include"></param>
+        /// <param name="exclude"></param>
+        /// <returns></returns>
+        [HttpGet("items")]
+
+        public IActionResult Items(int page = 1, int size = 20, string keyword = null, int? catgId = null, int? brandId = null, Prod.Status[] status = null, string include = null, string exclude = null)
+        {
+            int[] inc = null;
+            if (!string.IsNullOrEmpty(include))
+            {
+                inc = include.Split(',').Where(x => Regex.IsMatch(x, "^\\d+$")).Select(x => x.AsInt()).ToArray();
+            }
+            int[] exc = null;
+            if (!string.IsNullOrEmpty(exclude))
+            {
+                exc = exclude.Split(',').Where(x => Regex.IsMatch(x, "^\\d+$")).Select(x => x.AsInt()).ToArray();
+            }
+            var data = DefaultStorage.ItemTinyList(page, size, keyword, catgId, brandId, User.Id, status, inc, exc);
+            var o = new { data = data, totalPage = data.TotalPages, totalRecord = data.TotalRecords };
+            return Json(o);
         }
 
         [HttpGet("weed")]

@@ -3,7 +3,6 @@ using Ayatta.Domain;
 
 namespace Ayatta.Storage
 {
-
     public partial class DefaultStorage
     {
         #region Ö§¸¶
@@ -44,6 +43,14 @@ namespace Ayatta.Storage
                 .Column("ModifiedOn", o.ModifiedOn)
                 .ToCommand();
                 return WalletConn.Execute(cmd) > 0;
+                /*
+                var status = WalletConn.Execute(cmd) > 0;
+                if (status)
+                {
+                    OnCreated("payment-created", o);
+                }
+                return status;
+                */
             });
         }
 

@@ -1,5 +1,5 @@
-using System;
 using Dapper;
+using System;
 using System.Linq;
 using Ayatta.Domain;
 
@@ -54,7 +54,7 @@ namespace Ayatta.Storage
                                 .Column("PaymentType", o.PaymentType)
                                 .Column("PaymentData", o.PaymentData)
                                 .Column("ShipmentType", o.ShipmentType)
-                                .Column("ShipmentData", o.ShipmentData)                                
+                                .Column("ShipmentData", o.ShipmentData)
                                 .Column("ExpiredOn", o.ExpiredOn)
                                 .Column("ConsignedOn", o.ConsignedOn)
                                 .Column("FinishedOn", o.FinishedOn)
@@ -141,8 +141,8 @@ namespace Ayatta.Storage
                                         .Column("FinishedOn", item.FinishedOn)
                                         .Column("LogisticsNo", item.LogisticsNo)
                                         .Column("LogisticsName", item.LogisticsName)
-                                        .Column("RetrunId", item.RetrunId)
-                                        .Column("RetrunStatus", item.RetrunStatus)
+                                        .Column("ReturnId", item.ReturnId)
+                                        .Column("ReturnStatus", item.ReturnStatus)
                                         .Column("RefundId", item.RefundId)
                                         .Column("RefundStatus", item.RefundStatus)
                                         .Column("BuyerId", item.BuyerId)
@@ -254,6 +254,103 @@ namespace Ayatta.Storage
             });
         }
 
+        public Magic<byte, string, string> OrderMemoGet(string id, int userId, bool isSeller)
+        {
+            return Try(nameof(OrderMemoGet), () =>
+            {
+                var fields = "BuyerFlag as First,[BuyerMemo as Second,BuyerMessage as Third";
+                if (isSeller)
+                {
+                    fields = "SellerFlag as First,SellerMemo as Second,'' as Third";
+                }
+                var cmd = SqlBuilder.Select(fields)
+                .From("orderinfo")
+                .Where("Id=@Id", new { id })
+                .Where(isSeller, "SellerId=@userId", new { userId })
+                .Where(!isSeller, "BuyerId=@userId", new { userId })
+                .ToCommand(0);
+
+                return TradeConn.QueryFirstOrDefault<Magic<byte, string, string>>(cmd);
+            });
+        }
+
+        public bool OrderMemoUpdate(string id, int userId, bool isSeller, byte flag, string memo)
+        {
+            return Try(nameof(OrderMemoGet), () =>
+            {
+                var cmd = SqlBuilder.Update("orderinfo")
+                .Column(isSeller, "SellerFlag", flag)
+                .Column(isSeller, "SellerMemo", memo)
+                .Column(!isSeller, "BuyerFlag", flag)
+                .Column(!isSeller, "BuyerMemo", memo)
+                .Where(isSeller ? "SellerId=@userId" : "BuyerId=@UserId", new { userId })
+                .Where("Id=@Id", new { id })
+                .ToCommand();
+
+                return TradeConn.Execute(cmd) > 0;
+            });
+        }
+
+        public OrderStatus OrderStatusGet(string id, int userId, bool isSeller)
+        {
+            return Try(nameof(OrderStatusGet), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("Status")
+                .From("orderinfo")
+                .Where("Id=@Id", new { id })
+                .Where(isSeller ? "SellerId=@userId" : "BuyerId=@UserId", new { userId })
+                .ToCommand(0);
+
+                return TradeConn.ExecuteScalar<OrderStatus>(cmd);
+            });
+        }
+
+        public bool OrderStatusUpdate(string id, OrderStatus status, int userId, bool isSeller, string cancelReason = null)
+        {
+            return Try(nameof(OrderMemoGet), () =>
+            {
+                var cmd = SqlBuilder.Update("orderinfo")
+                .Column("Status", status)
+                .Column(status == OrderStatus.Finished, "FinishedOn=now()")
+                .Column(status == OrderStatus.Canceled, "CancelId", isSeller ? 2 : 1)
+                .Column(status == OrderStatus.Canceled && !string.IsNullOrEmpty(cancelReason), "CancelReason", cancelReason)
+                .Where("Id=@Id", new { id })
+                .Where(isSeller ? "SellerId=@userId" : "BuyerId=@UserId", new { userId })
+                .ToCommand();
+
+                return TradeConn.Execute(cmd) > 0;
+            });
+        }
+
+        public bool OrderDelay(string id, int sellerId, int day)
+        {
+            return Try(nameof(OrderDelay), () =>
+            {
+                var cmd = SqlBuilder.Update("orderinfo")
+                .Column("ExpiredOn=date_add(now(),interval " + day + " day)")
+                .Where("Id=@Id and SellerId=@sellerId", new { id, sellerId })
+                .ToCommand();
+
+                return TradeConn.Execute(cmd) > 0;
+            });
+        }
+
+        public IPagedList<Order> OrderPagedList()
+        {
+            var cmd = SqlBuilder.Select("*")
+                .From("orderinfo")
+                .ToCommand(1, 50);
+            var list = TradeConn.PagedList<Order>(1, 50, cmd);
+            var ids = list.Select(x => x.Id).Aggregate((a, b) => "'" + a + "','" + b + "'");
+            var sql = "select * from orderitem where orderid in(" + ids + ")";
+            var items = TradeConn.Query<OrderItem>(sql);
+            foreach (var o in list)
+            {
+                o.Items = items.Where(x => x.OrderId == o.Id).ToList();
+            }
+            return list;
+        }
         #endregion
 
         #region 订单Note

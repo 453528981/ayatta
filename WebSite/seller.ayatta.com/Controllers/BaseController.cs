@@ -16,7 +16,8 @@ namespace Ayatta.Web.Controllers
             get { return base.User.AsIdentity(); }
         }
         protected BaseController(DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<BaseController> logger) : base(defaultStorage, defaultCache, logger)
-        {
+        {           
+
         }
 
         private IList<Catg.Tiny> CatgTinyList()

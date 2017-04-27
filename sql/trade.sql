@@ -1,6 +1,6 @@
 /*
 drop database if exists Trade;
-
+select date_add(now(),interval 1 week) as d
 create database Trade;
 */
 use trade;
@@ -126,8 +126,8 @@ FinishedOn datetime comment '子订单的交易结束时间 说明：子订单�
 LogisticsNo varchar(50) not null default '' comment '子订单所在包裹的运单号',
 LogisticsName nvarchar(50) not null default '' comment '子订单发货的物流公司名称',
 
-RetrunId char(24) not null default '' comment '退/换货Id',
-RetrunStatus tinyint not null default 0 comment '退/换货状态',
+ReturnId char(24) not null default '' comment '退/换货Id',
+ReturnStatus tinyint not null default 0 comment '退/换货状态',
 RefundId char(24) not null default '' comment '退款Id',
 RefundStatus tinyint not null default 0 comment '退款状态',
 BuyerId int not null default 0 comment '买家Id',

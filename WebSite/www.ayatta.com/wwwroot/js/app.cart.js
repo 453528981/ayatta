@@ -2,8 +2,7 @@
 
     var config = {
         debug: true,
-        baseUri: "/cart/",
-        cartTmpl: $.templates("#cart-tmpl"),
+        baseUri: "/cart/"
     };
 
     //购物车数据
@@ -87,7 +86,7 @@
         request('select', path, { select: select, param: param, selected: selected });
     }
 
-   
+
 
     this.submit = function (obj) {
 
@@ -224,6 +223,7 @@
     }
 
     function render() {
-        $("#cart-container").html(config.cartTmpl.render(cartData, helpers));
+
+        $("#cart-container").html(template('cart-tmpl', cartData));
     }
 });

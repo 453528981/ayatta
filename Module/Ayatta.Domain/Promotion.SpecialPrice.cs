@@ -59,7 +59,7 @@ namespace Ayatta.Domain
             /// 活动适用平台 0为None 1为适用平于pc 2为适用平于wap 4为适用平于app
             ///</summary>
             [ProtoMember(7)]
-            public Plateform Plateform { get; set; }
+            public Platform Platform { get; set; }
 
             ///<summary>
             /// 限定媒体Id 空为无限定 如需限定部分媒体 使用","分隔
@@ -140,19 +140,19 @@ namespace Ayatta.Domain
             /// <summary>
             /// 判断活动在指定平台是否有效            
             /// </summary>
-            /// <param name="Plateform">适用平台</param>
+            /// <param name="platform">适用平台</param>
             /// <returns></returns>
-            public bool IsValid(Plateform plateform)
+            public bool IsValid(Platform platform)
             {
                 var now = DateTime.Now;
-                var available = ((Plateform & plateform) == plateform);//检查当前促销是否适用于给定平台
+                var available = ((Platform & platform) == platform);//检查当前促销是否适用于给定平台
                 return Status && StartedOn < now && now < StoppedOn && available && Items.Any(x => x.Status);
             }
 
             /// <summary>
             /// 判断特价是否包含指定的商品
             /// </summary>
-            /// <param name="Plateform">适用平台</param>
+            /// <param name="Platform">适用平台</param>
             /// <param name="itemId">商品ItemId</param>
             /// <param name="skuId">商品SkuId</param>
             /// <returns></returns>

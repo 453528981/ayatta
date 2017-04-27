@@ -633,11 +633,11 @@ namespace Ayatta.Domain
         /// <summary>
         /// 获取商品价格 有多个sku时 返回价格区间
         /// </summary>
-        /// <param name="plateform">平台</param>
+        /// <param name="platform">平台</param>
         /// <returns></returns>
-        public string GetPriceText(Plateform plateform)
+        public string GetPriceText(Platform platform)
         {
-            if (plateform == Plateform.Pc || plateform == Plateform.Wap)
+            if (platform == Platform.Pc || platform == Platform.Wap)
             {
                 if (Skus != null && Skus.Any())
                 {
@@ -647,7 +647,7 @@ namespace Ayatta.Domain
                 }
                 return Price.ToString("F2");
             }
-            else if (plateform == Plateform.App)
+            else if (platform == Platform.App)
             {
                 if (Skus != null && Skus.Any())
                 {
@@ -660,5 +660,105 @@ namespace Ayatta.Domain
             return string.Empty;
         }
         #endregion
+
+        public class Tiny:IEntity
+        {
+            /// <summary>
+            /// Id
+            /// </summary>
+            public int Id { get; set; }
+
+            ///<summary>
+            /// 最小类目id
+            ///</summary>
+            public int CatgId { get; set; }
+
+            ///<summary>
+            /// 品牌Id
+            ///</summary>
+            public int BrandId { get; set; }
+
+            ///<summary>
+            /// 品牌名
+            ///</summary>
+            public string BrandName { get; set; }
+
+            ///<summary>
+            /// 商家设置的外部id
+            ///</summary>
+            public string Code { get; set; }
+
+            ///<summary>
+            /// 商品名称,不能超过60字节
+            ///</summary>
+            public string Name { get; set; }
+
+
+            #region Stock
+            ///<summary>
+            /// 商品库存数量
+            ///</summary>
+            public int Stock { get; set; }
+            #endregion
+
+            ///<summary>
+            /// 商品价格
+            ///</summary>
+            [ProtoMember(11)]
+            public decimal Price { get; set; }
+
+            #region AppPrice
+            private decimal appPrice;
+
+            ///<summary>
+            /// app商品价格
+            ///</summary>
+            [ProtoMember(12)]
+            public decimal AppPrice
+            {
+                get
+                {
+                    return appPrice;
+                }
+                set
+                {
+                    if (value <= 0)
+                    {
+                        appPrice = Price;
+                    }
+                    else
+                    {
+                        appPrice = value;
+                    }
+                }
+            }
+            #endregion
+
+            ///<summary>
+            /// 商品建议零售价格
+            ///</summary>            
+            public decimal RetailPrice { get; set; }
+
+            ///<summary>
+            /// 条形码
+            ///</summary>
+            public string Barcode { get; set; }
+
+            ///<summary>
+            /// 关键字
+            ///</summary>
+            public string Keyword { get; set; }
+
+            ///<summary>
+            /// 商品概要
+            ///</summary>
+            public string Summary { get; set; }
+
+            ///<summary>
+            /// 商品主图片地址
+            ///</summary>
+            public string Picture { get; set; }
+
+        }
     }
 }

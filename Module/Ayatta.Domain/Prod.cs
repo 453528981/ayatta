@@ -164,11 +164,11 @@ namespace Ayatta.Domain
             /// <summary>
             /// 获取最低价
             /// </summary>
-            /// <param name="plateform">平台</param>
+            /// <param name="platform">平台</param>
             /// <returns></returns>
-            public decimal GetDisplayPrice(Plateform plateform)
+            public decimal GetDisplayPrice(Platform platform)
             {
-                if (plateform == Plateform.App)
+                if (platform == Platform.App)
                 {
                     if (SpecialPrice > 0 && SpecialPrice < AppPrice)
                     {
@@ -225,11 +225,11 @@ namespace Ayatta.Domain
                 /// <summary>
                 /// 获取最低价
                 /// </summary>
-                /// <param name="plateform">平台</param>
+                /// <param name="platform">平台</param>
                 /// <returns></returns>
-                public decimal GetDisplayPrice(Plateform plateform)
+                public decimal GetDisplayPrice(Platform platform)
                 {
-                    if (plateform == Plateform.App)
+                    if (platform == Platform.App)
                     {
                         if (SpecialPrice > 0 && SpecialPrice < AppPrice)
                         {
@@ -257,7 +257,7 @@ namespace Ayatta.Domain
                 /// 商品库存
                 ///</summary>
                 [ProtoMember(2)]
-                public Plateform Plateform { get; set; }
+                public Platform Platform { get; set; }
 
                 ///<summary>
                 /// 商品Id

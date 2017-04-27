@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using Ayatta.Domain;
 using Ayatta.Storage;
+using Ayatta.OnlinePay;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
@@ -40,6 +42,16 @@ namespace Ayatta.Web.Controllers
         {
             var key = "base-region";
             return DefaultCache.Put(key, () => DefaultStorage.RegionList(), DateTime.Now.AddDays(7));
+        }
+
+        protected IOnlinePay GetOnlinePay(int platformId)
+        {
+            var platforms = DefaultStorage.PaymentPlatformList();
+            var platform = platforms.FirstOrDefault(x => x.Id == platformId);
+
+            if (platform == null) return null;
+
+            return OnlinePayFactory.Create(platform);
         }
     }
 }

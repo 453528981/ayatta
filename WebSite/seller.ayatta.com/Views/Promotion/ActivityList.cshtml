@@ -1,4 +1,4 @@
-﻿@model PromotionModel.ActityList
+﻿@model PromotionModel.ActivityList
     <div class="container">
         <form action="?" method="GET">
             <div class="card">
@@ -106,11 +106,11 @@
                                 <tr>
                                     <td>@(o.Id)</td>
                                     <td>@(o.Name)</td>
-                                    <td>@(o.Name)</td>
+                                    <td>@(o.Title)</td>
                                     <td>@Html.Raw(o.StartedOn.ToString("yyyy-MM-dd </br>HH:mm:ss"))</td>
                                     <td>@(o.StatusText)</td>
                                     <td>
-                                        <a href="~/admin/article/detail/@(o.Id)" class="btn bgm-cyan btn-xs waves-effect"><i class="md md-mode-edit"></i></a>
+                                        <a href="~/promotion/activity-detail/@(o.Id)" class="btn bgm-cyan btn-xs waves-effect"><i class="md md-mode-edit"></i></a>
                                         <button type="button" class="btn bgm-teal btn-xs waves-effect m-l-10" onclick="del(@(o.Id));"><i class="md  md-delete"></i></button>
                                     </td>
                                 </tr>

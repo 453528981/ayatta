@@ -71,6 +71,12 @@ namespace Ayatta.Storage
         /// </summary>
         public Action<string, Exception> Exceptioned { get; set; }
 
+        //public Action<string, IEntity> Created { get; set; }
+
+        //public Action<string, IEntity> Updated { get; set; }
+
+        //public Action<string, IEntity> Deleted { get; set; }
+
         protected void Try(string name, Action action)
         {
             try
@@ -122,7 +128,22 @@ namespace Ayatta.Storage
         {
             logger.LogInformation(title + " " + message);
         }
+        /*
+        protected void OnCreated<T>(string topic, T domain) where T : IEntity
+        {
+            Created?.Invoke(topic, domain);
+        }
 
+        protected void OnUpdated<T>(string topic, T domain) where T : IEntity
+        {
+            Updated?.Invoke(topic, domain);
+        }
+
+        protected void OnDeleted<T>(string topic, T domain) where T : IEntity
+        {
+            Deleted?.Invoke(topic, domain);
+        }
+        */
         /// <summary>
         /// 异常
         /// </summary>

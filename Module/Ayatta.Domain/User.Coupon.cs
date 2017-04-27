@@ -36,7 +36,7 @@ namespace Ayatta.Domain
             /// <summary>
             /// 适用平台
             /// </summary>
-            public Plateform Plateform { get; set; }
+            public Platform Platform { get; set; }
 
             /// <summary>
             /// 促销优惠券Id Promotion.Coupon.Id

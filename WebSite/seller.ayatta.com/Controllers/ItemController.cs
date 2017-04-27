@@ -530,8 +530,5 @@ namespace Ayatta.Web.Controllers
             var js = string.Format("<script type='text/javascript'>window.parent.ayatta.item.imageUploadCallback({0});</script>", data);
             return Content(js, "text/html");
         }
-
-
     }
-
 }

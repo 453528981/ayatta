@@ -81,7 +81,7 @@ namespace Ayatta.Web.Controllers
 
                     var now = DateTime.Now;
 
-                    user.Guid = ObjectId.New();
+                    user.Guid = Guid.NewGuid().ToString();// ObjectId.New();
                     user.Name = param.OpenId;
                     user.Email = string.Empty;
                     user.Mobile = string.Empty;
@@ -230,7 +230,7 @@ namespace Ayatta.Web.Controllers
             var profile = new UserProfile();
             //var extra = new UserExtra();
 
-            user.Guid = ObjectId.New();
+            user.Guid = Guid.NewGuid().ToString();
             user.Name = req.Uid;
             user.Email = string.Empty;
             user.Mobile = req.Mobile;

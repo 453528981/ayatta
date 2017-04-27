@@ -32,7 +32,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
-    <PackageReference Include="MySql.Data" Version="6.10.1-beta" />
     <PackageReference Include="protobuf-net" Version="2.1.0" />
     <PackageReference Include="Dapper" Version="1.50.2" />
   </ItemGroup>

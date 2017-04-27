@@ -14,9 +14,9 @@ namespace Ayatta.OnlinePay
                 case 3:
                     return new WeixinPay(platform);
                 case 4:
-                    return new TenPay(platform);
+                    return new AliAppPay(platform);
                 case 5:
-                    //return new AliAppPay(platform);
+                    return new TenPay(platform);
                 default: throw new NotSupportedException();
             }
         }

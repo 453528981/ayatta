@@ -20,9 +20,9 @@ namespace Ayatta.Cart
             this.logger = logger;
         }
 
-        public Cart GetCart(string guid, Plateform plateform, int mediaId = 0)
+        public Cart GetCart(string guid, Platform platform, int mediaId = 0)
         {
-            return new Cart(guid, plateform, mediaId, defaultStorage, defaultCache, cartCache, logger);
+            return new Cart(guid, platform, mediaId, defaultStorage, defaultCache, cartCache, logger);
         }
 
     }

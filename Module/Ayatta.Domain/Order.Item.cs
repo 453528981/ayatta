@@ -200,13 +200,13 @@ namespace Ayatta.Domain
         /// 退/换货Id
         ///</summary>
         [ProtoMember(32)]
-        public string RetrunId { get; set; }
+        public string ReturnId { get; set; }
 
         ///<summary>
         /// 退/换货状态
         ///</summary>
         [ProtoMember(33)]
-        public byte RetrunStatus { get; set; }
+        public byte ReturnStatus { get; set; }
 
         ///<summary>
         /// 退款Id

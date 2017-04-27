@@ -18,11 +18,11 @@ namespace Ayatta.Web.Controllers
         public CartController(CartManager cartManager, DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<CartController> logger) : base(defaultStorage, defaultCache, logger)
         {
             var guid = "adfafadf";
-            var plateform = Plateform.Pc;
-            cart = cartManager.GetCart(guid, plateform);
+            var platform = Platform.Pc;
+            cart = cartManager.GetCart(guid, platform);
         }
 
-        [HttpGet()]
+        [HttpGet]
         public IActionResult Index()
         {
             var model = new CartModel.Index();
@@ -52,7 +52,7 @@ namespace Ayatta.Web.Controllers
         /// <returns></returns>
         [Route("operate")]
         //[HttpGet,HttpPost]
-        public IActionResult Operate(Operate operate, int itemId, int skuId = 0, int quantity = 1, string callback = "")
+        public IActionResult Operate(Operate operate, int itemId, int skuId = 0, int quantity = 1, string callback = null)
         {
             var data = cart.ProductOpt(operate, itemId, skuId, quantity);
             if (!string.IsNullOrEmpty(callback))

@@ -17,12 +17,18 @@
   </ItemGroup>
   <ItemGroup>
     
+    <PackageReference Include="MediatR" Version="3.0.1" />
+    
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="2.0.0" />
+    
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.1.1" />   
+    
+    
    
   </ItemGroup>
   
@@ -30,6 +36,7 @@
     <ProjectReference Include="..\..\Module\Ayatta.Api\Ayatta.Api.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.Cart\Ayatta.Cart.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.Domain\Ayatta.Domain.csproj" />
+    <ProjectReference Include="..\..\Module\Ayatta.Event\Ayatta.Event.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.OAuth\Ayatta.OAuth.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.OnlinePay\Ayatta.OnlinePay.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.Sms\Ayatta.Sms.csproj" />

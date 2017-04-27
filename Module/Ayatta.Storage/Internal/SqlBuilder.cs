@@ -249,6 +249,23 @@ namespace Dapper
                 return this;
             }
 
+            public UpdateBuilder Column(bool condition, string sql)
+            {
+                if (condition)
+                {
+                    statics.Add(sql);
+                }
+                return this;
+            }
+            public UpdateBuilder Column(bool condition,string name, object value)
+            {
+                if (condition)
+                {
+                    columns.Add(name, value);
+                }
+                return this;
+            }
+
             public UpdateBuilder Where(string sql, dynamic param = null)
             {
                 wheres.Add(sql, param);

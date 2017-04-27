@@ -34,37 +34,42 @@ namespace Ayatta.Domain
     public enum OrderStatus : byte
     {
         /// <summary>
-        /// 交易成功
+        /// 默认
         /// </summary>
-        Finished = 0,
+        None = 0,
+
+        /// <summary>
+        /// 待处理（验证等）
+        /// </summary>
+        Pending=1,
 
         /// <summary>
         /// 等待买家付款
         /// </summary>
-        WaitBuyerPay = 1,
+        WaitBuyerPay = 2,
 
         /// <summary>
         /// 买家已付款等待卖家发货
         /// </summary>
-        WaitSellerSend = 2,
+        WaitSellerSend = 3,
 
         /// <summary>
         /// 卖家部分发货
         /// </summary>
-        SellerSendPart = 3,
+        SellerSendPart = 4,
 
         /// <summary>
         /// 卖家已发货等待买家确认收货
         /// </summary>
-        WaitBuyerConfirm = 4,
+        WaitBuyerConfirm = 5,
 
         /// <summary>
         /// 买家已签收并付完款 货到付款专用
         /// </summary>
-        BuyerSigned = 5,
+        BuyerSigned = 6,
 
         /// <summary>
-        /// 付款前 卖家或买家主动关闭交易
+        /// 付款前卖家或买家主动关闭交易
         /// </summary>
         Canceled = 7,
 
@@ -74,9 +79,14 @@ namespace Ayatta.Domain
         Closed = 8,
 
         /// <summary>
+        /// 交易成功
+        /// </summary>
+        Finished = 200,
+
+        /// <summary>
         /// 删除
         /// </summary>
-        Deleted = 9
+        Deleted = 255,
     }
 
     /// <summary>

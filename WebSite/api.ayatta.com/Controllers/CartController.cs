@@ -17,7 +17,7 @@ namespace Ayatta.Web.Controllers
     {
         private readonly CartManager cartManager;
 
-        private readonly Plateform plateform = Plateform.App;
+        private readonly Platform plateform = Platform.App;
         public CartController(CartManager cartManager, DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<CartController> logger) : base(defaultStorage, defaultCache, logger)
         {
             this.cartManager = cartManager;
@@ -201,7 +201,7 @@ namespace Ayatta.Web.Controllers
             {
                 rep.Error("提交订单失败");
                 return rep;
-            }          
+            }
 
             return rep;
         }
@@ -219,21 +219,6 @@ namespace Ayatta.Web.Controllers
                 return onlinePay.Pay(payment);
             }
             return "";
-        }
-
-
-        protected IOnlinePay GetOnlinePay(int platformId)
-        {
-            var platforms = DefaultStorage.PaymentPlatformList();
-            var platform = platforms.FirstOrDefault(x => x.Id == platformId);
-
-            if (platform == null) return null;
-            var key = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAK8sNAUi6eFbAD1oqM3IIV9OKcbZchkr2jTZx5SZMW5i5Bp6HYCI3+HpRF2bKGk3XkXNnKr+uzcEFkG/xgtPP2vXf4QZxodBU9ceg5pRuY0qgZ6DUP/vE4kai9clJjWn0WOn6bNDOomnGTkWt2rGHGdzMFN9vuyEMzkB2M0Cwai1AgMBAAECgYAp3Nh5ucRG9OZzxoVA2GkRS660NNcNqOs24izOGGY1yTBWG4TdaNiINqT98cyQiIjhCag9PS8kkLd48wmzPjcbewke2GNYPTm7sDDXWrD7UiJ3LJXf1JFEasZq7BAXSxm8Tr9/e49lRbTj17PsbV8zadS/xrYevc9YiH2MJSxI6QJBAOaZ29VfSJzz2vaz7e9oQnAgUJHRyjH8A2Low6BD0cu7+xk2tXlIZ51sedIkiui+tHqgPerrB3XCn/ytfnYVXvsCQQDCd3WSdx8/8yz/GlA8pwoD3z1q3CR4hZNQ4HlgBoYROMGyXifPyHi3GICwOkflzmdGfpnp8yfo6NxdkC36V8gPAkAnb9iwvQLmFK410r+2WdZC5sPgrEgwFDFgEP6jwfV3KkbfIQQYIdHWkl6jGazH8RVcg1sTee5krUw/IkymVTFRAkA+AdtSbXtgZ8jEOv60qEqQO4GY7kMOzwDPPBRXoxzipudUWaN2JKUhNMXr61l7lFnn53xqVac3I/EIQG34sj7PAkEAmWb51gOvzRsf0tDBf8lerYxEuiGbLnEAv8HfR85z61FwGSoxC1CCuscqU9DJ6lSjQn+qpU6/oFxKIDuV24+b8w==";
-            // var key = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAK8sNAUi6eFbAD1oqM3IIV9OKcbZchkr2jTZx5SZMW5i5Bp6HYCI3+HpRF2bKGk3XkXNnKr+uzcEFkG/xgtPP2vXf4QZxodBU9ceg5pRuY0qgZ6DUP/vE4kai9clJjWn0WOn6bNDOomnGTkWt2rGHGdzMFN9vuyEMzkB2M0Cwai1AgMBAAECgYAp3Nh5ucRG9OZzxoVA2GkRS660NNcNqOs24izOGGY1yTBWG4TdaNiINqT98cyQiIjhCag9PS8kkLd48wmzPjcbewke2GNYPTm7sDDXWrD7UiJ3LJXf1JFEasZq7BAXSxm8Tr9/e49lRbTj17PsbV8zadS/xrYevc9YiH2MJSxI6QJBAOaZ29VfSJzz2vaz7e9oQnAgUJHRyjH8A2Low6BD0cu7+xk2tXlIZ51sedIkiui+tHqgPerrB3XCn/ytfnYVXvsCQQDCd3WSdx8/8yz/GlA8pwoD3z1q3CR4hZNQ4HlgBoYROMGyXifPyHi3GICwOkflzmdGfpnp8yfo6NxdkC36V8gPAkAnb9iwvQLmFK410r+2WdZC5sPgrEgwFDFgEP6jwfV3KkbfIQQYIdHWkl6jGazH8RVcg1sTee5krUw/IkymVTFRAkA+AdtSbXtgZ8jEOv60qEqQO4GY7kMOzwDPPBRXoxzipudUWaN2JKUhNMXr61l7lFnn53xqVac3I/EIQG34sj7PAkEAmWb51gOvzRsf0tDBf8lerYxEuiGbLnEAv8HfR85z61FwGSoxC1CCuscqU9DJ6lSjQn+qpU6/oFxKIDuV24+b8w==";
-            //var pubkey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCQ1AmVDaf5ZlcAk3p1fnHR8f5NfdzchAKeweZR kR/YxKAS6sT99h0Petjw1ASjmI6dpxdax4b/2GFwVldLqpkPXanWHTItx8JQXsXyqnt7eaaoBVR ZwwXpt80M9Ar/ffZF2ONfF/HAqS5pg/5NXRNckWabsGUpWdz/TZ2sufDdQIDAQAB";
-
-            platform.PrivateKey = key;
-            return OnlinePayFactory.Create(platform);
         }
 
     }

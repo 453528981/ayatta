@@ -66,12 +66,12 @@
                         <th class="text-center">操 作</th>
                     </tr>
                 </thead>
-                {{for baskets}}
-                <tbody class="{{:(#getIndex()%2==0?"":"alternate")}}">
+                {{each baskets basket index}}
+                <tbody class="{{(index%2==0?"":"alternate")}}">
                     <tr class="shop-header">
                         <td colspan="5">
                             <label class="checkbox checkbox-inline">
-                                <input type="checkbox" {{:(selected?"checked":"")}} onclick="app.cart.select(this,1,{{:sellerId}});" />
+                                <input type="checkbox" {{(basket.selected?"checked":"")}} onclick="app.cart.select(this,1,{{basket.sellerId}});" />
                                 <i class="input-helper"></i>
 
                             </label>
@@ -84,14 +84,15 @@
 
                         <td colspan="2" class="text-right">店铺VIP4-包邮,返2倍积分</td>
                     </tr>
-                    {{for skus}}
+                    {{set skus=basket.skus}}
+                    {{each skus sku}}
                     <tr class="">
                         <td>
-                            {{if status!=0}}
+                            {{if sku.status!=0}}
                             <span class="badge bgm-gray item-invalid-badge">失效</span>
                             {{else}}
                             <label class="checkbox checkbox-inline">
-                                <input name="skus" type="checkbox" value="{{:id}}" {{:(selected?"checked":"")}} onclick="app.cart.select(this,2,{{:id}});" />
+                                <input name="skus" type="checkbox" value="{{sku.id}}" {{(sku.selected?"checked":"")}} onclick="app.cart.select(this,2,{{sku.id}});" />
                                 <i class="input-helper"></i>
                             </label>
                             {{/if}}
@@ -101,70 +102,74 @@
                             <div class="media">
                                 <div class="pull-left">
                                     <a href="#">
-                                        <img class="media-object" src="{{:picture}}" style="width:80px;height:80px;" alt="{{:name}}">
+                                        <img class="media-object" src="{{sku.picture}}" style="width:80px;height:80px;" alt="{{sku.name}}">
                                     </a>
                                 </div>
                                 <div class="media-body">
-                                    <h4 class="media-heading">{{:name}}</h4>
+                                    <h4 class="media-heading">{{sku.name}}</h4>
                                 </div>
                                 <div>asf</div>
                             </div>
 
                         </td>
                         <td class="c-gray">
-                            {{for propTexts}}
-                            <span>{{:#data}}</span><br />
-                            {{/for}}
+                            {{set props=sku.propTexts}}
+                            {{each props prop}}
+                            <span>{{prop}}</span><br />
+                            {{/each}}
 
                         </td>
                         <td class="text-center">
-                            <del class="c-gray">￥{{:retailPrice.toFixed(2)}}</del>
+                            <del class="c-gray">￥{{sku.retailPrice.toFixed(2)}}</del>
                             <br />
-                            <strong class="">￥{{:price.toFixed(2)}}</strong>
+                            <strong class="">￥{{sku.price.toFixed(2)}}</strong>
                         </td>
                         <td class="text-center">
 
                             <div class="input-group item-amount-wrapper">
-                                <span class="input-group-addon" onclick="app.cart.decrease(this,{{:itemId}},{{:id}});"><i class="zmdi zmdi-minus"></i></span>
+                                <span class="input-group-addon" onclick="app.cart.decrease(this,{{sku.itemId}},{{sku.id}});"><i class="zmdi zmdi-minus"></i></span>
                                 <div class="fg-line">
-                                    <input type="text" class="form-control text-center" value="{{:quantity}}">
+                                    <input type="text" class="form-control text-center" value="{{sku.quantity}}">
                                 </div>
-                                <span class="input-group-addon last" onclick="app.cart.increase(this,{{:itemId}},{{:id}});"><i class="zmdi zmdi-plus"></i></span>
+                                <span class="input-group-addon last" onclick="app.cart.increase(this,{{sku.itemId}},{{sku.id}});"><i class="zmdi zmdi-plus"></i></span>
                             </div>
-                            {{if status == 0 && message!=''}}
+                            {{if sku.status == 0 && sku.message!=''}}
                             <br />
-                            <span class="c-deeporange">{{:message}}</span>
+                            <span class="c-deeporange">{{sku.message}}</span>
                             {{/if}}
 
                         </td>
                         <td class="text-center">
-                            <strong class="c-deeporange">￥{{:(price*quantity).toFixed(2)}}</strong>
+                            <strong class="c-deeporange">￥{{(sku.price*sku.quantity).toFixed(2)}}</strong>
                             <br />
                             <span class="c-gray">(0.24kg)</span>
                         </td>
                         <td class="text-center">
                             <span>收 藏</span>
                             <br />
-                            <span><a href="javascript:void(0);" onclick="app.cart.remove(this,{{:itemId}},{{:id}},true);">删 除</a> </span>
+                            <span><a href="javascript:void(0);" onclick="app.cart.remove(this,{{sku.itemId}},{{sku.id}},true);">删 除</a> </span>
                         </td>
                     </tr>
-                    {{/for}}
+                    {{/each}}
 
                     <tr class="shop-footer">
                         <td colspan="4"></td>
                         <td colspan="3" class="text-right">
-                            <span class="c-deeporange">已享受“满68.00元享包邮”，</span> 该店铺商品合计：¥{{:subTotal.toFixed(2)}}
+                            <p><span class="c-deeporange">已享受“满68.00元享包邮”，</span> 该店铺商品合计：¥{{basket.subTotal.toFixed(2)}}</p>
+                            <p>优惠：¥{{basket.discount.toFixed(2)}}</p>
+
                         </td>
                     </tr>
                 </tbody>
-                {{/for}}
+                {{/each}}
             </table>
         </div>
         <div class="cart-float-bar-holder">
             <div class="cart-float-bar-holder">
-                <span>已选商品<span>{{:current.count}}</span>  件</span>
-                <span>合计（不含运费）：<span>{{:current.total.toFixed(2)}}</span> </span>
-                <span><button onclick="app.cart.submit(this);">结算</button> </span>
+                <p>已选商品<span>{{current.count}}</span>  件</p>
+                <p>合计（不含运费）：<span>{{current.total.toFixed(2)}}</span> </p>
+                <p>优惠：<span>{{current.discount.toFixed(2)}}</span> </p>
+                <p><button onclick="app.cart.submit(this);">结算</button> </p>
             </div>
         </div>
     </form>
@@ -217,7 +222,7 @@
 
 }
 @section jsOmega{
-    <script src="//cdn.bootcss.com/jsrender/1.0.0-rc.70/jsrender.min.js"></script>
+    <script src="@(WebSite.Static)/js/template.js"></script>
     <script src="~/js/app.cart.js" asp-version="true"></script>
     <script>
 

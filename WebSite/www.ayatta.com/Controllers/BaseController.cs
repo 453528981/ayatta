@@ -84,7 +84,7 @@ namespace Ayatta.Web.Controllers
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError(1, "OAuth {provider} Authorized UserOAuthUpdate 失败 UserId({uid}} {msg}", o.Provider, userId, e.Message);
+                        Logger.LogError(1, "OAuth {0} Authorized UserOAuthUpdate 失败 UserId({1}} {2}", o.Provider, userId, e.Message);
                     }
                 });
 
@@ -148,7 +148,7 @@ namespace Ayatta.Web.Controllers
                         }
                         catch (Exception e)
                         {
-                            Logger.LogError(1, "OAuth {provider} Authorized UserOAuthCreate 失败 UserId({uid}} {msg}", o.Provider, userId, e.Message);
+                            Logger.LogError(1, "OAuth {0} Authorized UserOAuthCreate 失败 UserId({1}} {2}", o.Provider, userId, e.Message);
                         }
                     });
                 }

@@ -26,7 +26,7 @@
                                         <dd>
                                             <em class="tm-yen">¥</em>
 
-                                            <span id="item-price">@(Model.Item.GetPriceText(Plateform.Pc))</span>
+                                            <span id="item-price">@(Model.Item.GetPriceText(Platform.Pc))</span>
 
                                         </dd>
                                     </dl>
@@ -183,7 +183,7 @@
                 id=Model.Item.Id,
                 skuId=Model.SkuId,
                 stock = Model.Item.Stock,
-                priceText =Model.Item.GetPriceText(Plateform.Pc),
+                priceText =Model.Item.GetPriceText(Platform.Pc),
                 retailPriceText = Model.Item.GetRetailPriceText(),
                 selectedProps=Model.SelectdProps,
                 propImgs=Model.Item.PropImgs,

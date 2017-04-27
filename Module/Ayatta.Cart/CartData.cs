@@ -38,7 +38,7 @@ namespace Ayatta.Cart
         /// 平台
         /// </summary>
         [JsonIgnore]
-        public Plateform Plateform { get; }
+        public Platform Platform { get; }
 
         /// <summary>
         /// 是否
@@ -103,6 +103,7 @@ namespace Ayatta.Cart
                 var selected = new Selectd();
                 selected.Count = i;
                 selected.Total = total;
+                selected.Discount = Baskets.Sum(x => x.Discount);
                 return selected;
             }
         }
@@ -116,9 +117,9 @@ namespace Ayatta.Cart
         }
 
         #region private
-        internal CartData(CacheData data, Plateform plateform)
+        internal CartData(CacheData data, Platform platform)
         {
-            Plateform = plateform;
+            Platform = platform;
 
             UserId = data.UserId;
             UserName = data.UserName;
@@ -221,6 +222,11 @@ namespace Ayatta.Cart
             /// 已选商品金额总计 不含运费
             /// </summary>
             public decimal Total { get; set; }
+
+            /// <summary>
+            /// 优惠
+            /// </summary>
+            public decimal Discount { get; set; }
         }
 
         #region Basket
@@ -681,7 +687,7 @@ namespace Ayatta.Cart
         /// <summary>
         /// 适用范围 pc wap app 通用
         /// </summary>
-        public Plateform Plateform { get; set; }
+        public Platform Platform { get; set; }
 
         /// <summary>
         /// 生效时间
@@ -725,7 +731,7 @@ namespace Ayatta.Cart
         /// <summary>
         /// 促销类型
         /// </summary>
-        public Promotion.Type PromotionCategory { get; set; }
+        public Promotion.Type PromotionType { get; set; }
 
         /// <summary>
         /// 优惠金额
@@ -743,11 +749,11 @@ namespace Ayatta.Cart
         /// </summary>
         public string Description { get; set; }
 
-        public Discount(Promotion.Type category, int id, string name)
+        public Discount(Promotion.Type type, int id, string name)
         {
             PromotionId = id;
             PromotionName = name;
-            PromotionCategory = category;
+            PromotionType = type;
         }
     }
 

@@ -16,7 +16,7 @@ namespace Ayatta.Cart
     {
         private readonly string guid;
         private readonly int mediaId;
-        private readonly Plateform plateform;
+        private readonly Platform platform;
 
         private readonly DefaultStorage defaultStorage;
         private readonly IDistributedCache defaultCache;
@@ -37,16 +37,16 @@ namespace Ayatta.Cart
         /// 购物车
         /// </summary>
         /// <param name="guid">购物车GUID</param>
-        /// <param name="plateform">Pc/Wap/App</param>
+        /// <param name="platform">Pc/Wap/App</param>
         /// <param name="mediaId">媒体Id</param>
         /// <param name="defaultStorage">默认数据存贮</param>
         /// <param name="defaultCache">默认缓存</param>
         /// <param name="cartCache">购物车缓存</param>
         /// <param name="logger">日志记录器</param>       
-        public Cart(string guid, Plateform plateform, int mediaId, DefaultStorage defaultStorage, IDistributedCache defaultCache, IDistributedCache cartCache, ILogger logger)
+        public Cart(string guid, Platform platform, int mediaId, DefaultStorage defaultStorage, IDistributedCache defaultCache, IDistributedCache cartCache, ILogger logger)
         {
             this.guid = guid;
-            this.plateform = plateform;
+            this.platform = platform;
             this.mediaId = mediaId;
             this.defaultStorage = defaultStorage;
             this.defaultCache = defaultCache;
@@ -584,7 +584,7 @@ namespace Ayatta.Cart
                     order.PaymentType = PaymentType.Alipay;
                     order.PaymentData = "";
                     order.ShipmentType = ShipmentType.Express;
-                    order.ShipmentData = "";                    
+                    order.ShipmentData = "";
                     order.ExpiredOn = expiredOn;
                     order.ConsignedOn = null;
                     order.FinishedOn = null;
@@ -597,7 +597,7 @@ namespace Ayatta.Cart
                     {
                         order.InvoiceType = data.Invoice.Type;
                         order.InvoiceTitle = data.Invoice.Title;
-                        order.InvoiceContent = data.Invoice.Content;                        
+                        order.InvoiceContent = data.Invoice.Content;
                     }
 
                     order.LogisticsNo = "";
@@ -677,8 +677,8 @@ namespace Ayatta.Cart
                         item.FinishedOn = null;
                         item.LogisticsNo = "";
                         item.LogisticsName = "";
-                        item.RetrunId = "";
-                        item.RetrunStatus = 0;
+                        item.ReturnId = "";
+                        item.ReturnStatus = 0;
                         item.RefundId = "";
                         item.RefundStatus = 0;
                         item.BuyerId = data.UserId;
@@ -731,8 +731,8 @@ namespace Ayatta.Cart
                         item.FinishedOn = null;
                         item.LogisticsNo = "";
                         item.LogisticsName = "";
-                        item.RetrunId = "";
-                        item.RetrunStatus = 0;
+                        item.ReturnId = "";
+                        item.ReturnStatus = 0;
                         item.RefundId = "";
                         item.RefundStatus = 0;
                         item.BuyerId = data.UserId;
@@ -870,7 +870,7 @@ namespace Ayatta.Cart
             try
             {
 
-                var data = new CartData(cacheData, plateform);
+                var data = new CartData(cacheData, platform);
 
                 ProcessStatus(data);//处理商品状态 库存及限购                
 
@@ -1049,7 +1049,7 @@ namespace Ayatta.Cart
                 {
                     foreach (var specialPrice in specialPrices)
                     {
-                        if (specialPrice.IsValid(plateform))
+                        if (specialPrice.IsValid(platform))
                         {
                             foreach (var sku in basket.Skus)
                             {
@@ -1173,14 +1173,14 @@ namespace Ayatta.Cart
 
                 #region 处理店铺优惠
                 key = $"promotion.normal.{date}.{basket.SellerId}";  //店铺优惠key               
-                var normals = cartCache.Put(key, () => defaultStorage.PromotionActivityList(basket.SellerId), expire);
-                if (normals != null && normals.Any())
+                var promotions = cartCache.Put(key, () => defaultStorage.PromotionActivityList(basket.SellerId), expire);
+                if (promotions != null && promotions.Any())
                 {
-                    var tmp = normals.OrderBy(x => x.Global);//同时存在单品活动和店铺活动时 优先处理单品活动
+                    var tmp = promotions.OrderBy(x => x.Global);//同时存在单品活动和店铺活动时 优先处理单品活动
                     var ids = tmp.SelectMany(x => x.Items).ToList();//所有单品活动中的商品
-                    foreach (var promotion in normals)
+                    foreach (var promotion in promotions)
                     {
-                        if (promotion.IsValid(plateform))
+                        if (promotion.IsValid(platform))
                         {
                             var amount = 0m;
                             var quantity = 0;
@@ -1256,7 +1256,7 @@ namespace Ayatta.Cart
                                 }
 
                                 var discount = new Discount(Promotion.Type.B, promotion.Id, promotion.Name);
-                                if (promotion.Type==1)
+                                if (promotion.Type == 1)
                                 {
                                     discount.Amount = amount * rule.Discount;
                                     var description = $"店铺促销 满{rule.Threshold}件,打{rule.Discount}折,优惠{discount.Amount}";
@@ -1264,7 +1264,7 @@ namespace Ayatta.Cart
                                 }
                                 else
                                 {
-                                    discount.Amount = amount - rule.Discount;
+                                    discount.Amount = rule.Discount;
                                     var description = $"店铺促销 满{rule.Threshold}元,减{rule.Discount}元,优惠{discount.Amount}";
                                     discount.Description = description;
                                 }
@@ -1294,7 +1294,7 @@ namespace Ayatta.Cart
                                         o.Global = true;
                                         o.Value = coupon.Value;
                                         o.Count = coupon.Count;
-                                        o.Plateform = coupon.Plateform;
+                                        o.Platform = coupon.Platform;
                                         o.StartedOn = coupon.StartedOn;
                                         o.StoppedOn = coupon.StoppedOn;
                                         o.Limit = coupon.Limit;
@@ -1327,7 +1327,7 @@ namespace Ayatta.Cart
                 {
                     foreach (var cartPrmotion in cartPromotions)
                     {
-                        var isValid = cartPrmotion.IsValid(plateform);
+                        var isValid = cartPrmotion.IsValid(platform);
                         var isMatch = cartPrmotion.Match(data.UserGrade, data.UserId, mediaId, data.UserAddress.RegionId);
                         if (isValid && isMatch)
                         {
@@ -1358,7 +1358,7 @@ namespace Ayatta.Cart
                                 var discount = new Discount(Promotion.Type.D, cartPrmotion.Id, cartPrmotion.Name);
                                 if (cartPrmotion.DiscountOn == Promotion.DiscountOn.OrderTotal)//促销折扣/减免金额作用于 订单总金额
                                 {
-                                    if (cartPrmotion.Type==1)
+                                    if (cartPrmotion.Type == 1)
                                     {
                                         discount.Amount = basket.Total * cartPrmotion.DiscountValue;
                                         var description = $"购物车促销 订单总金额 打{cartPrmotion.DiscountValue}折,优惠{discount.Amount}";

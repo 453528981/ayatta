@@ -2,9 +2,9 @@
 using System.IO;
 using System.Text;
 using Ayatta.Domain;
+using System.Text.Encodings.Web;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text.Encodings.Web;
 
 namespace Ayatta.OnlinePay
 {
@@ -19,7 +19,7 @@ namespace Ayatta.OnlinePay
 
         private static string PaymentType => "1"; //支付类型 默认值为 1 商品购买
 
-        private static string SellerId => "tt7shop24@126.com";//卖家支付宝账号（邮箱或手机号码格式）或其对应的支付宝唯一用户号（以2088开头的纯16位数字）
+        //private static string SellerId => "tt7shop24@126.com";//卖家支付宝账号（邮箱或手机号码格式）或其对应的支付宝唯一用户号（以2088开头的纯16位数字）
 
         /// <summary>
         /// 支付宝支付
@@ -38,19 +38,22 @@ namespace Ayatta.OnlinePay
         /// <returns></returns>
         public override string Pay(Payment payment, params string[] exts)
         {
+            //测试 正式删除 开始
             payment.Id = "X" + getRandomValidate(8);//"5950483";
             payment.Subject = "test";
             payment.Amount = 0.01m;
             Platform.MerchantId = "2088501709692126";
             Platform.NotifyUrl = "http://shopping.tiantian.com/ToPay/MobilePayMent/APPPay/ZhiFuBaoCallBack.aspx";
-            var param = new Dictionary<string, string>();
 
             var payId = payment.Id;//系统订单号
             var amount = payment.Amount.ToString("F2");
 
             var body = "test-body";
+            //测试 正式删除 结束
 
-            // 支付宝支付接口必需参数 参数顺序必需固定且与react native里一致
+            var param = new Dictionary<string, string>();
+
+            // 支付宝支付接口必需参数 参数顺序必需固定且与react native里android一致 因为签名原因
             param.Add("service", "mobile.securitypay.pay");//接口名称，固定值
             param.Add("partner", Platform.MerchantId);
             param.Add("_input_charset", Charset);
@@ -59,7 +62,7 @@ namespace Ayatta.OnlinePay
             param.Add("out_trade_no", payId);
             param.Add("subject", payment.Subject);//商品的标题/交易标题/订单标题/订单关键字等。该参数最长为128个汉字。
             param.Add("payment_type", PaymentType);
-            param.Add("seller_id", SellerId);
+            param.Add("seller_id", Platform.MerchantId);
             param.Add("total_fee", amount);
             param.Add("body", body);//对一笔交易的具体描述信息。如果是多种商品，请将商品描述字符串累加传给body
 
@@ -70,7 +73,7 @@ namespace Ayatta.OnlinePay
             var output = new PaymentParam();
 
             output.Add("partner", Platform.MerchantId);
-            output.Add("seller", SellerId);
+            output.Add("seller", Platform.MerchantId);
             output.Add("outTradeNO", payId);
             output.Add("subject", payment.Subject);
             output.Add("body", body);
@@ -135,6 +138,7 @@ namespace Ayatta.OnlinePay
             }
             return rtuStr;
         }
+
         /// <summary>
         /// 处理支付平台通知
         /// 支付宝是用POST方式发送通知信息
@@ -721,11 +725,13 @@ namespace Ayatta.OnlinePay
             {
                 Encoding code = Encoding.GetEncoding(charset);
                 byte[] input = code.GetBytes(content);
-                RSACryptoServiceProvider rsa = DecodePemPrivateKey(privateKey);
-                SHA1 sh = new SHA1CryptoServiceProvider();
+                using (var rsa = DecodePemPrivateKey(privateKey))
+                using (var sha = SHA1.Create())
+                {
+                    byte[] signData = rsa.SignData(input, sha);
+                    return Convert.ToBase64String(signData);
+                }
 
-                byte[] signData = rsa.SignData(input, sh);
-                return Convert.ToBase64String(signData);
             }
             /// <summary>
             /// 验证签名
@@ -737,18 +743,16 @@ namespace Ayatta.OnlinePay
             /// <returns></returns>
             public static bool Verify(string content, string signedString, string publicKey, string charset)
             {
-                bool result = false;
-
                 Encoding code = Encoding.GetEncoding(charset);
-                byte[] Data = code.GetBytes(content);
                 byte[] data = Convert.FromBase64String(signedString);
-                RSAParameters paraPub = ConvertFromPublicKey(publicKey);
-                RSACryptoServiceProvider rsaPub = new RSACryptoServiceProvider();
-                rsaPub.ImportParameters(paraPub);
 
-                SHA1 sh = new SHA1CryptoServiceProvider();
-                result = rsaPub.VerifyData(Data, sh, data);
-                return result;
+                using (var rsa = new RSACryptoServiceProvider())
+                using (var sha = SHA1.Create())
+                {
+                    rsa.ImportParameters(ConvertFromPublicKey(publicKey));
+                    return rsa.VerifyData(code.GetBytes(content), sha, data);
+                }
+
             }
 
             /// <summary>
@@ -780,9 +784,11 @@ namespace Ayatta.OnlinePay
 
             private static byte[] Decrypt(byte[] data, string privateKey, string input_charset)
             {
-                RSACryptoServiceProvider rsa = DecodePemPrivateKey(privateKey);
-                SHA1 sh = new SHA1CryptoServiceProvider();
-                return rsa.Decrypt(data, false);
+                using (var rsa = DecodePemPrivateKey(privateKey))
+                using (var sha = SHA1.Create())
+                {
+                    return rsa.Decrypt(data, false);
+                }
             }
 
             /// <summary>
@@ -863,7 +869,7 @@ namespace Ayatta.OnlinePay
                     return null;
                 }
 
-                finally { binr.Close(); }
+                finally { binr.Dispose(); }
 
             }
 
@@ -952,7 +958,7 @@ namespace Ayatta.OnlinePay
                 {
                     return null;
                 }
-                finally { binr.Close(); }
+                finally { binr.Dispose(); }
             }
 
             private static int GetIntegerSize(BinaryReader binr)

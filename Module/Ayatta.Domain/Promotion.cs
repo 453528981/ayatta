@@ -99,7 +99,7 @@ namespace Ayatta.Domain
             /// 订单商品总金额
             /// </summary>
             OrderSubTotal = 2,
-            
+
             /// <summary>
             /// 运费
             /// </summary>
@@ -113,7 +113,7 @@ namespace Ayatta.Domain
             /// <summary>
             /// 商品价格
             /// </summary>
-            Price,
+            Price = 5,
 
         }
 

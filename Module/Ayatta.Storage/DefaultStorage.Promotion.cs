@@ -2,6 +2,7 @@ using Dapper;
 using System.Linq;
 using Ayatta.Domain;
 using System.Collections.Generic;
+using System;
 
 namespace Ayatta.Storage
 {
@@ -16,6 +17,10 @@ namespace Ayatta.Storage
         /// <returns></returns>
         public int PromotionActivityCreate(Promotion.Activity o)
         {
+            if (o.Global)
+            {
+                o.ItemScope = string.Empty;
+            }
             if (o.LimitType == Promotion.LimitType.None)
             {
                 o.LimitValue = 0;
@@ -29,17 +34,18 @@ namespace Ayatta.Storage
                 .Column("Global", o.Global)
                 .Column("WarmUp", o.WarmUp)
                 .Column("Infinite", o.Infinite)
-                .Column("Picture", o.Picture)
+                .Column("Picture", o.Picture ?? string.Empty)
                 .Column("StartedOn", o.StartedOn)
                 .Column("StoppedOn", o.StoppedOn)
-                .Column("Plateform", o.Plateform)
-                .Column("MediaScope", o.MediaScope)
-                .Column("ItemScope", o.ItemScope)
+                .Column("Platform", o.Platform)
+                .Column("MediaScope", o.MediaScope ?? string.Empty)
+                .Column("ItemScope", o.ItemScope ?? string.Empty)
                 .Column("LimitType", o.LimitType)
                 .Column("LimitValue", o.LimitValue)
                 .Column("FreightFree", o.FreightFree)
-                .Column("FreightFreeExclude", o.FreightFreeExclude)
-                .Column("ExternalUrl", o.ExternalUrl)
+                .Column("FreightFreeExclude", o.FreightFreeExclude ?? string.Empty)
+                .Column("ExternalUrl", o.ExternalUrl ?? string.Empty)
+                .Column("RuleData", o.RuleData)
                 .Column("SellerId", o.SellerId)
                 .Column("SellerName", o.SellerName)
                 .Column("Status", o.Status)
@@ -65,7 +71,7 @@ namespace Ayatta.Storage
             }
             return Try(nameof(PromotionActivityUpdate), () =>
             {
-                var cmd = SqlBuilder.Update("Activity")                  
+                var cmd = SqlBuilder.Update("Activity")
                 .Column("Name", o.Name)
                 .Column("Title", o.Title)
                 .Column("Global", o.Global)
@@ -74,7 +80,7 @@ namespace Ayatta.Storage
                 .Column("Picture", o.Picture)
                 .Column("StartedOn", o.StartedOn)
                 .Column("StoppedOn", o.StoppedOn)
-                .Column("Plateform", o.Plateform)
+                .Column("Platform", o.Platform)
                 .Column("MediaScope", o.MediaScope)
                 .Column("ItemScope", o.ItemScope)
                 .Column("LimitType", o.LimitType)
@@ -82,10 +88,11 @@ namespace Ayatta.Storage
                 .Column("FreightFree", o.FreightFree)
                 .Column("FreightFreeExclude", o.FreightFreeExclude)
                 .Column("ExternalUrl", o.ExternalUrl)
-                .Column("SellerId", o.SellerId)
-                .Column("SellerName", o.SellerName)
+                .Column("RuleData", o.RuleData)
+                //.Column("SellerId", o.SellerId)
+                //.Column("SellerName", o.SellerName)
                 .Column("Status", o.Status)
-                .Column("CreatedOn", o.CreatedOn)
+                //.Column("CreatedOn", o.CreatedOn)
                 .Column("ModifiedBy", o.ModifiedBy)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .Where("Id=@id", new { o.Id })
@@ -94,6 +101,7 @@ namespace Ayatta.Storage
             });
         }
 
+        
         /// <summary>
         /// 设置店铺优惠活动为不可用
         /// </summary>
@@ -140,32 +148,15 @@ namespace Ayatta.Storage
         /// <param name="id">店铺优惠活动Id</param>
         /// <param name="includeRules">是否同时获取店铺优惠规则</param>
         /// <returns></returns>
-        public Promotion.Activity PromotionActivityGet(int id, bool includeRules = false)
+        public Promotion.Activity PromotionActivityGet(int id)
         {
             return Try(nameof(PromotionActivityGet), () =>
             {
-                if (includeRules)
-                {
-                    var sql = @"select * from Activity where id=@id;select * from ActivityRule where ParentId=@id;";
-                    var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-                    using (var reader = StoreConn.QueryMultiple(cmd))
-                    {
-                        var o = reader.Read<Promotion.Activity>().FirstOrDefault();
-                        if (o != null)
-                        {
-                            o.Rules = reader.Read<Promotion.Activity.Rule>().ToList();
-                        }
-                        return o;
-                    }
-                }
-                else
-                {
-                    var cmd = SqlBuilder.Select("*")
-                       .From("Activity")
-                       .Where("Id=@id", new { id })
-                       .ToCommand();
-                    return PromotionConn.QueryFirst<Promotion.Activity>(cmd);
-                }
+                var cmd = SqlBuilder.Select("*")
+                   .From("Activity")
+                   .Where("Id=@id", new { id })
+                   .ToCommand();
+                return PromotionConn.QueryFirst<Promotion.Activity>(cmd);
             });
         }
 
@@ -185,8 +176,8 @@ namespace Ayatta.Storage
                 var cmd = SqlBuilder.Select("*")
                     .From("Activity")
                     .Where(sellerId.HasValue, "SellerId=@sellerId", new { sellerId })
-                    .Where(status.HasValue && status.Value, "(Status=1 and StopOn>now())")
-                    .Where(status.HasValue && !status.Value, "(Status=0 or StopOn<now())")
+                    .Where(status.HasValue && status.Value, "(Status=1 and StoppedOn>now())")
+                    .Where(status.HasValue && !status.Value, "(Status=0 or StoppedOn<now())")
                     .ToCommand(index, size);
                 return PromotionConn.PagedList<Promotion.Activity>(index, size, cmd);
             });
@@ -387,10 +378,9 @@ namespace Ayatta.Storage
         /// <returns></returns>
         public IList<Promotion.Activity> PromotionActivityList(int sellerId)
         {
-            const string sql = @"select * from Activity where Status=1 and StartedOn<now() and StoppedOn>now() and SellerId=@sellerId;
-            select a.* from ActivityRule a inner join Normal b on a.ParentId=b.Id where a.Status=1 and b.Status=1 and b.StartedOn<now() and b.StoppedOn>now() and a.SellerId=@sellerId";
+            const string sql = @"select * from Activity where Status=1 and StartedOn<now() and StoppedOn>now() and SellerId=@sellerId;";
             var cmd = SqlBuilder.Raw(sql, new { sellerId }).ToCommand();
-            return PromotionConn.Query<Promotion.Activity, Promotion.Activity.Rule, int>(cmd, o => o.Id, o => o.ParentId, (a, b) => { a.Rules = b.Where(x => x.ParentId == a.Id).OrderBy(x => x.Threshold).ToList(); }).ToList();
+            return PromotionConn.Query<Promotion.Activity>(cmd).ToList();
         }
 
         /// <summary>
@@ -401,7 +391,7 @@ namespace Ayatta.Storage
         public IList<Promotion.CartActivity> PromotionCartActivityList(int sellerId)
         {
             const string sql = @"select * from CartActivity where Status=1 and StartedOn<now() and StoppedOn>now() and SellerId=@sellerId;
-            select a.* from CartActivityRule a inner join Cart b on a.ParentId=b.Id where a.Status=1 and b.Status=1 and b.StartedOn<now() and b.StoppedOn>now() and a.SellerId=@sellerId";
+            select a.* from CartActivityRule a inner join CartActivity b on a.ParentId=b.Id where a.Status=1 and b.Status=1 and b.StartedOn<now() and b.StoppedOn>now() and a.SellerId=@sellerId";
             var cmd = SqlBuilder.Raw(sql, new { sellerId }).ToCommand();
             return PromotionConn.Query<Promotion.CartActivity, Promotion.CartActivity.Rule, int>(cmd, o => o.Id, o => o.ParentId, (a, b) => { a.Rules = b.Where(x => x.ParentId == a.Id).ToList(); }).ToList();
         }

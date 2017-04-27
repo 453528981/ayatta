@@ -6,7 +6,7 @@ namespace Ayatta.Web
 {
     public static class PromotionModel
     {
-        public class ActityList : Model
+        public class ActivityList : Model
         {
             public string Id { get; set; }
 
@@ -20,7 +20,7 @@ namespace Ayatta.Web
             public IPagedList<Promotion.Activity> Promotions { get; set; }
         }
 
-        public class ActityDetail : Model
+        public class ActivityDetail : Model
         {
             public bool Global { get; set; }
             public Promotion.Activity Promotion { get; set; }

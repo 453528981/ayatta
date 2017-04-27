@@ -5,6 +5,7 @@ using System.Linq;
 //using Ayatta.Param;
 using Ayatta.Domain;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Ayatta.Storage
 {
@@ -375,6 +376,88 @@ namespace Ayatta.Storage
                 }
             });
         }
+
+        public IPagedList<Item.Tiny> ItemTinyList(int page = 1, int size = 20, string keyword = null, int? catgId = null, int? brandId = null, int? sellerId = null, Prod.Status[] status = null, int[] include = null, int[] exclude = null)
+        {
+            if (size < 0)
+            {
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            var sb = SqlBuilder
+            .Select("id,catgid,brandid,brandname,code,name,stock,price,retailprice,barcode,keyword,summary,picture")
+            .From("item");
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                if (Regex.IsMatch(keyword, "^\\d+$"))
+                {
+                    sb.Where("Id=@id", new { id = keyword });
+                }
+                else
+                {
+                    sb.Where("Name LIKE @Name", new { name = keyword + "%" });
+                }
+            }
+            if (catgId.HasValue && catgId.Value > 0)
+            {
+                sb.Where("CatgId=@CatgId", new { catgId });
+            }
+            if (brandId.HasValue && brandId.Value > 0)
+            {
+                sb.Where("BrandId=@brandId", new { brandId });
+            }
+            if (sellerId.HasValue)
+            {
+                sb.Where("SellerId=@sellerId", new { sellerId });
+            }
+            if (status != null)
+            {
+                if (status.Length == 1 && status[0] > 0)
+                {
+                    sb.Where("Status=@status", new { id = include[0] });
+                }
+                if (status.Length > 1)
+                {
+                    var str = string.Join(",", status);
+                    sb.Where("Status in (" + str + ")");
+                }
+            }
+            if (include != null)
+            {
+                if (include.Length == 1 && include[0] > 0)
+                {
+                    sb.Where("Id=@id", new { id = include[0] });
+                }
+                if (include.Length > 1)
+                {
+                    var str = string.Join(",", include);
+                    sb.Where("Id in (" + str + ")");
+                }
+            }
+            if (exclude != null)
+            {
+                if (exclude.Length == 1 && exclude[0] > 0)
+                {
+                    sb.Where("Id<>@id", new { id = exclude[0] });
+                }
+                if (exclude.Length > 1)
+                {
+                    var str = string.Join(",", include);
+                    sb.Where("Id not in (" + str + ")");
+                }
+            }
+
+            //sb.OrderBy("Id DESC");
+
+            var cmd = sb.ToCommand(page, size);
+
+            return StoreConn.PagedList<Item.Tiny>(page, size, cmd);
+        }
+
         /*
         public IPagedList<Item> ItemSearch(ProdItemSearchParam param)
         {
@@ -675,7 +758,7 @@ namespace Ayatta.Storage
         #endregion
 
         /*
-        public Prod.Current ProdCurrentGet(int id, Plateform plateform)
+        public Prod.Current ProdCurrentGet(int id, Platform Platform)
         {
             var o = new Prod.Current();
             var sql = @"select Id,Stock,Price,AppPrice,RetailPrice,SellerId from item where id=@id;
@@ -691,7 +774,7 @@ namespace Ayatta.Storage
             }
 
             sql = @"
-            select b.Id,b.Plateform,a.ItemId,a.Global,a.Value,a.SkuJson
+            select b.Id,b.Platform,a.ItemId,a.Global,a.Value,a.SkuJson
             from SpecialPriceItem a inner join SpecialPrice b
             on a.ParentId=b.Id
             where a.Status=1 and b.Status=1 

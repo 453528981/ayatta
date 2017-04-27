@@ -182,7 +182,7 @@ namespace Ayatta.Domain
     /// 平台
     /// </summary>
     [Flags]
-    public enum Plateform : byte
+    public enum Platform : byte
     {
         /// <summary>
         /// None

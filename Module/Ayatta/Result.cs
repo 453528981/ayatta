@@ -45,6 +45,26 @@
         }
 
         /// <summary>
+        /// 设置错误信息
+        /// </summary>
+        /// <param name="message"></param>
+        public void Error(string message)
+        {
+            Status = false;
+            Message = message;
+        }
+
+        /// <summary>
+        /// 设置成功信息
+        /// </summary>
+        /// <param name="message"></param>
+        public void Success(string message=null)
+        {
+            Status = true;
+            Message = message;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="result"></param>
@@ -87,6 +107,16 @@
             : base(status, message)
         {
             Data = data;
+        }
+
+        /// <summary>
+        /// 设置成功信息
+        /// </summary>
+        /// <param name="message"></param>
+        public void Success(T data, string message)
+        {
+            Data = data;
+            Success(message);
         }
     }
 
