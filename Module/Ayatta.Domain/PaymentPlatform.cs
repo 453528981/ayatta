@@ -6,7 +6,6 @@ namespace Ayatta.Domain
 {
     ///<summary>
     /// PaymentPlatform
-    /// created on 2016-07-14 17:18:54
     ///</summary>
     [ProtoContract]
     public class PaymentPlatform : IEntity<int>

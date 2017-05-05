@@ -14,7 +14,7 @@ namespace Ayatta.OnlinePay
 
         private static string PaymentType => "1";
 
-        private static string SellerEmail => "tt7shop24@126.com";
+        private static string SellerEmail => "tt7shop24@126.com";//卖家支付宝账号
 
         /// <summary>
         /// 支付宝支付
@@ -33,6 +33,7 @@ namespace Ayatta.OnlinePay
         /// <returns></returns>
         public override string Pay(Payment payment, params string[] exts)
         {
+            
             var param = new PaymentParam();
 
             var payId = payment.Id;//系统订单号

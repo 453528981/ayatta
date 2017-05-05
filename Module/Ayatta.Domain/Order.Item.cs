@@ -1,5 +1,6 @@
 ﻿using System;
 using ProtoBuf;
+using Newtonsoft.Json;
 
 namespace Ayatta.Domain
 {
@@ -139,6 +140,7 @@ namespace Ayatta.Domain
         ///<summary>
         /// 商品销售属性
         ///</summary>
+        [JsonIgnore]
         [ProtoMember(22)]
         public string PropText { get; set; }
 
@@ -280,8 +282,20 @@ namespace Ayatta.Domain
         [ProtoMember(45)]
         public DateTime ModifiedOn { get; set; }
 
-
-
+        /// <summary>
+        /// 属性
+        /// </summary>
+        public virtual string[] PropTexts
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(PropText))
+                {
+                    return PropText.Split(';');
+                }
+                return new string[0];
+            }
+        }
         public bool IsSku => (SkuId > 0 && ItemId > 0);
 
     }

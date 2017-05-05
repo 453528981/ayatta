@@ -5,7 +5,6 @@ namespace Ayatta.Domain
 {
     ///<summary>
     /// PaymentBank
-    /// created on 2016-07-14 17:17:35
     ///</summary>
     [ProtoContract]
     public class PaymentBank : IEntity<int>

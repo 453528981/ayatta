@@ -3,6 +3,7 @@ using System.Linq;
 using Ayatta.Domain;
 using Ayatta.Storage;
 using Ayatta.OnlinePay;
+using Ayatta.Web.Models;
 using Ayatta.Web.Extensions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +19,22 @@ namespace Ayatta.Web.Controllers
         {
         }
         /*
-        [HttpGet("{id}")]
+        [HttpGet("for/{id}")]
         public IActionResult Pay(string id)
         {
             var payment = DefaultStorage.PaymentGet(id);
             return Json(payment);
         }
-        */
-        [HttpGet("for/{id}")]
-        public IActionResult Pay(string id, int platformId = 2)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">支付单Id</param>
+        /// <param name="platformId">支付平台Id</param>
+        /// <param name="bankId">支付银行Id</param>
+        /// <returns></returns>
+        [HttpPost("for/{id}")]
+        public IActionResult Pay(string id, int platformId = 2, int bankId = 0)
         {
             var payment = DefaultStorage.PaymentGet(id);
             var onlinePay = GetOnlinePay(platformId);
@@ -42,13 +50,14 @@ namespace Ayatta.Web.Controllers
             }
             return View();
         }
+        */
 
         /// <summary>
         /// 用户在支付平台支付完成后支付平台会重定向到该地址
         /// </summary>
         /// <param name="platformId">支付平台Id</param>
         /// <returns></returns>
-        [HttpGet("/callback/{platformId}")]
+        [HttpGet("callback/{platformId}")]
         public IActionResult Callback(int platformId = 2)
         {
             var onlinePay = GetOnlinePay(platformId);
@@ -67,7 +76,7 @@ namespace Ayatta.Web.Controllers
         /// </summary>
         /// <param name="platformId">支付平台Id</param>
         /// <returns></returns>
-        [Route("/notify/{platformId}")]
+        [Route("notify/{platformId}")]
         public IActionResult Notify(int platformId = 2)
         {
             var onlinePay = GetOnlinePay(platformId);
@@ -101,16 +110,42 @@ namespace Ayatta.Web.Controllers
         [HttpGet("order/{id}")]
         public IActionResult Order(string id)
         {
-            var s = Request.Query;
+            var identity = User;
+            if (!identity)
+            {
+                return Content("登录");
+            }
 
-            //var model = new ViewModel<Payment>();
+            var status = DefaultStorage.OrderStatusGet(id, identity.Id, false);
+            if (status != OrderStatus.WaitBuyerPay)
+            {
+                return Redirect("http://localhost:39272/order/detail/" + id);
+            }
+            var model = new PayOrder();
+            model.Account = new Account();
+            var order = DefaultStorage.OrderGet(id, identity.Id, false, true);
 
-            var order = DefaultStorage.OrderGet(id);
+            if (order.PaymentType.IsOnlinePay() && order.Status == OrderStatus.WaitBuyerPay && order.Paid < order.Total)
+            {
+                var platforms = PaymentPlatformList();
+                //var tempEBanks = PaymentEBankList();
+                //var eBanks = new List<PaymentEBank>();
 
-            //model.Data = payment;
+                //foreach (var platform in platforms)
+                //{
+                //    var p = platform;
+                //    var x = eBanks.Select(o => o.BankId);
+                //    var temp = tempEBanks.Where(o => o.PlatformId == p.Id && o.Status && !x.Contains(o.BankId));
+                //    eBanks.AddRange(temp);
+                //}
 
 
-            return View();
+                model.Order = order;
+                model.Platforms = platforms;
+                //model.Banks = eBanks;
+                return View(model);
+            }
+            return Redirect("http://localhost:39272/order/detail/" + id);
         }
 
         /// <summary>
@@ -123,82 +158,58 @@ namespace Ayatta.Web.Controllers
         [HttpPost("order/{id}")]
         public IActionResult Order(string id, int platformId, int bankId = 0)
         {
+            //可处理多次提交支付情况
             var identity = User;
             if (!identity)
             {
                 //未登录
             }
-
-            var now = DateTime.Now;
-            var userId = identity.Id;
-
-            var order = DefaultStorage.OrderGet(id);
-
-            if (order != null)
+            //再次检查订单状态
+            var status = DefaultStorage.OrderStatusGet(id, identity.Id, false);
+            if (status != OrderStatus.WaitBuyerPay)
             {
-                if (order.PaymentType.IsOnlinePay() && order.Status == OrderStatus.WaitBuyerPay)
-                {
-                    var onlinePay = GetOnlinePay(platformId);
-                    if (onlinePay != null)
-                    {
-                        var payment = new Payment();
-
-                        payment.Id = Payment.NewId();
-
-                        payment.No = string.Empty;
-                        payment.Type = 0;
-                        payment.UserId = userId;
-                        payment.Method = 1;
-                        payment.Amount = 0.01m;// order.Unpaid;
-                        payment.Subject = "test";
-                        payment.Message = "";
-                        payment.RawData = "";
-                        payment.BankId = 0;
-                        payment.BankCode = string.Empty;
-                        payment.BankName = string.Empty;
-                        payment.BankCard = 0;
-                        payment.PlatformId = platformId;
-                        payment.CardNo = string.Empty;
-                        payment.CardPwd = string.Empty;
-                        payment.CardAmount = 0;
-                        payment.RelatedId = order.Id;
-                        payment.IpAddress = "106.2.161.2";
-                        payment.Extra = "";
-                        payment.Status = false;
-                        payment.CreatedBy = "";
-                        payment.CreatedOn = now;
-                        payment.ModifiedBy = "";
-                        payment.ModifiedOn = now;
-
-                        var paymentBanks = DefaultStorage.PaymentBankList(platformId);
-                        var paymentBank = paymentBanks.FirstOrDefault(o => o.Id == bankId);
-                        if (paymentBank != null)
-                        {
-                            //如果用户选择了具体的银行则填充Payment相关银行信息
-                            payment.BankId = paymentBank.Id;
-                            payment.BankCode = paymentBank.Code;
-                            payment.BankName = paymentBank.Bank.Name;
-                        }
-                        var status = DefaultStorage.PaymentCreate(payment);
-                        if (status)
-                        {
-                            var url = onlinePay.Pay(payment);
-                            if (platformId == 3)
-                            {
-                                //RenderQRCode(url);
-                            }
-                            return Redirect(url);//跳转到第三方支付平台进行支付
-                        }
-                        return Content("创建支付单失败");
-
-                    }
-                    return Content("参数错误(OnlinePay)");
-                }
-                return Redirect("http://my.ayatta.com/order/" + order.Id);
+                return Redirect("http://localhost:39272/order/detail/" + id);
             }
-            return NotFound();
-        }
 
+            var order = DefaultStorage.OrderGet(id, identity.Id, false);
+
+            if (order.PaymentType.IsOnlinePay() && order.Status == OrderStatus.WaitBuyerPay && order.Paid < order.Total)
+            {
+                var onlinePay = GetOnlinePay(platformId);
+                if (onlinePay != null)
+                {
+                    var ipAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                    var payment = order.ToPayment(platformId, ipAddress);//支付宝 微信需ip
+                    var paymentBanks = DefaultStorage.PaymentBankList(platformId);
+                    var paymentBank = paymentBanks.FirstOrDefault(o => o.Id == bankId);
+                    if (paymentBank != null)
+                    {
+                        //如果用户选择了具体的银行则填充Payment相关银行信息
+                        payment.BankId = paymentBank.Id;
+                        payment.BankCode = paymentBank.Code;
+                        payment.BankName = paymentBank.Bank.Name;
+                    }
+                    var created = DefaultStorage.PaymentCreate(payment);
+                    if (created)
+                    {
+                        var url = onlinePay.Pay(payment);
+                        if (string.IsNullOrEmpty(url))
+                        {
+                            return Content("创建支付平台信息失败");
+                        }
+                        if (platformId == 3)
+                        {
+                            //RenderQRCode(url);
+                        }
+                        return Redirect(url);//跳转到第三方支付平台进行支付
+                    }
+                    return Content("创建支付信息失败");
+                }
+                return Content("参数错误(OnlinePay)");
+            }
+
+            return Redirect("http://i.ayatta.com/order/detail/" + order.Id);
+        }
 
         #endregion
 
@@ -248,16 +259,17 @@ namespace Ayatta.Web.Controllers
 
                         //TODO 处理一次支付多个订单的情况
 
-                        var order = DefaultStorage.OrderGet(orderId); //获取订单
+                        var order = DefaultStorage.OrderGet(orderId, payment.UserId, false); //获取订单
                         if (order != null)
                         {
                             //订单为在线支付 状态为待付款
                             if (order.PaymentType.IsOnlinePay() && order.Status == OrderStatus.WaitBuyerPay)
                             {
                                 var amount = payment.Amount;
-                                var paidUp = (payment.Amount + order.Paid) == order.Total;
+                                var done = (payment.Amount + order.Paid) == order.Total;
+
                                 //是否已付清(付清后如果是在线支付订单则会更新订单状态为已付款待发货并更新订单有效期)
-                                status = DefaultStorage.OrderPaid(orderId, amount, paidUp); //更新订单已付金额及状态
+                                status = DefaultStorage.OrderPaid(orderId, amount, done); //更新订单已付金额及状态
 
                                 if (status) return;
 

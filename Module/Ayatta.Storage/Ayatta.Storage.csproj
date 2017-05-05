@@ -16,5 +16,9 @@
     <ProjectReference Include="..\Ayatta.Domain\Ayatta.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Param\" />
+  </ItemGroup>
+
 </Project>
 

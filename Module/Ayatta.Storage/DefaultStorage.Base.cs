@@ -400,9 +400,9 @@ namespace Ayatta.Storage
 
         #endregion
 
-        #region PaymentPlatform
+        #region 支付平台
         ///<summary>
-        /// PaymentPlatformCreate
+        /// 创建支付平台
         ///</summary>
         ///<param name="o">PaymentPlatform</param>
         ///<returns></returns>
@@ -432,7 +432,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// PaymentPlatformUpdate
+        /// 更新支付平台
         ///</summary>
         ///<param name="o">PaymentPlatform</param>
         ///<returns></returns>
@@ -462,7 +462,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// PaymentPlatformGet
+        /// 获取支付平台
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
@@ -474,7 +474,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// PaymentPlatformList
+        /// 获取支付平台
         ///</summary>
         ///<returns></returns>
         public IList<PaymentPlatform> PaymentPlatformList()
@@ -550,9 +550,9 @@ namespace Ayatta.Storage
         }
 
         /// <summary>
-        /// PaymentBankList
+        /// 获取支付平台下的银行
         /// </summary>
-        /// <param name="platformId">platformId</param>
+        /// <param name="platformId">支付平台id</param>
         /// <returns></returns>
         public IList<PaymentBank> PaymentBankList(int platformId)
         {

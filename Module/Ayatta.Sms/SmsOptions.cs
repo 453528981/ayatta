@@ -28,6 +28,8 @@ namespace Ayatta.Sms
         /// 存贮Storage
         /// </summary>
         public ISmsStorage SmsStorage { get; set; }
+
+
         SmsOptions IOptions<SmsOptions>.Value => this;
 
         //public IList<IThrottle> Throttles { get; set; }

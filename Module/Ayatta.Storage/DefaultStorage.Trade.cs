@@ -11,7 +11,7 @@ namespace Ayatta.Storage
         #region 订单
 
         ///<summary>
-        /// 订单创建
+        /// 创建订单
         ///</summary>
         ///<param name="o">订单</param>
         ///<returns></returns>
@@ -183,8 +183,9 @@ namespace Ayatta.Storage
             });
         }
 
+        /*
         /// <summary>
-        /// 订单状态更新
+        /// 更新订单状态
         /// </summary>
         /// <param name="id">订单id</param>
         /// <param name="status">订单状态</param>
@@ -198,41 +199,50 @@ namespace Ayatta.Storage
                 return TradeConn.Execute(sql, new { id, status }) > 0;
             });
         }
+        */
 
         /// <summary>
-        /// 订单已付金额及状态更新
+        /// 更新订单已付金额及状态
         /// </summary>
-        /// <param name="id">订单Id</param>
+        /// <param name="id">订单id</param>
         /// <param name="amount">本次支金额</param>
-        /// <param name="paidUp">是否已付清(付清后如果是在线支付订单则会更新订单状态为已付款待发货并更新订单有效期)</param>
+        /// <param name="done">是否已付清(付清后如果是在线支付订单则会更新订单状态为已付款待发货并更新订单有效期)</param>
         /// <returns></returns>
-        public bool OrderPaid(string id, decimal amount, bool paidUp)
+        public bool OrderPaid(string id, decimal amount, bool done)
         {
+            var time = DateTime.Now;
+            var expire = time.AddDays(7);
             return Try(nameof(OrderPaid), () =>
             {
-                var sql = @"update orderinfo set Paid=Paid+@amount,PaidOn=now() where id=@id";
-                if (paidUp)
+                var sql = @"update orderinfo set Paid=Paid+@amount,PaidOn=@time where status=2 and id=@id";
+                if (done)
                 {
-                    sql = @"update orderinfo set Paid=Paid+@amount,PaidOn=now(),ExpiredOn=date_add(now(),interval 1 week),status=2 where id=@id and ";
+                    sql = @"update orderinfo set Paid=Paid+@amount,PaidOn=@time,ExpiredOn=@expire,Status=3 where status=2 and id=@id and ";
                 }
-                return TradeConn.Execute(sql, new { id, amount }) > 0;
+                return TradeConn.Execute(sql, new { id, amount, time, expire }) > 0;
             });
         }
 
         /// <summary>
-        /// 订单获取
+        /// 获取订单
         /// </summary>
         /// <param name="id">订单id</param>
+        /// <param name="userId">用户id</param>
+        /// <param name="isSeller">是否为卖家</param>
         /// <param name="includeItems">是否包含明细</param>
         /// <returns></returns>
-        public Order OrderGet(string id, bool includeItems = false)
+        public Order OrderGet(string id, int userId, bool isSeller, bool includeItems = false)
         {
             return Try(nameof(OrderGet), () =>
             {
                 if (includeItems)
                 {
-                    var sql = @"select * from orderinfo where id=@id;select * from orderitem where orderid=@id;";
-                    var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                    var sql = @"select * from orderinfo where id=@id and BuyerId=@userId;select * from orderitem where orderid=@id and BuyerId=@userId;";
+                    if (isSeller)
+                    {
+                        sql = @"select * from orderinfo where id=@id and SellerId=@userId;select * from orderitem where orderid=@id and SellerId=@userId;;";
+                    }
+                    var cmd = SqlBuilder.Raw(sql, new { id, userId }).ToCommand();
                     using (var reader = TradeConn.QueryMultiple(cmd))
                     {
                         var o = reader.Read<Order>().FirstOrDefault();
@@ -248,17 +258,25 @@ namespace Ayatta.Storage
                     var cmd = SqlBuilder
                     .Select("*").From("orderinfo")
                     .Where("id=@id", new { id })
+                    .Where(isSeller ? "SellerId=@userId" : "BuyerId=@userId", new { userId })
                     .ToCommand();
                     return TradeConn.QueryFirstOrDefault<Order>(cmd);
                 }
             });
         }
 
+        /// <summary>
+        /// 获取订单备注 Flag Memo Message
+        /// </summary>
+        /// <param name="id">订单id</param>
+        /// <param name="userId">用户id</param>
+        /// <param name="isSeller">是否为卖家</param>
+        /// <returns></returns>
         public Magic<byte, string, string> OrderMemoGet(string id, int userId, bool isSeller)
         {
             return Try(nameof(OrderMemoGet), () =>
             {
-                var fields = "BuyerFlag as First,[BuyerMemo as Second,BuyerMessage as Third";
+                var fields = "BuyerFlag as First,BuyerMemo as Second,BuyerMessage as Third";
                 if (isSeller)
                 {
                     fields = "SellerFlag as First,SellerMemo as Second,'' as Third";
@@ -274,6 +292,15 @@ namespace Ayatta.Storage
             });
         }
 
+        /// <summary>
+        /// 更新订单备注
+        /// </summary>
+        /// <param name="id">订单id</param>
+        /// <param name="userId">用户id</param>
+        /// <param name="isSeller">是否为卖家</param>
+        /// <param name="flag">标识</param>
+        /// <param name="memo">备注</param>
+        /// <returns></returns>
         public bool OrderMemoUpdate(string id, int userId, bool isSeller, byte flag, string memo)
         {
             return Try(nameof(OrderMemoGet), () =>
@@ -283,7 +310,7 @@ namespace Ayatta.Storage
                 .Column(isSeller, "SellerMemo", memo)
                 .Column(!isSeller, "BuyerFlag", flag)
                 .Column(!isSeller, "BuyerMemo", memo)
-                .Where(isSeller ? "SellerId=@userId" : "BuyerId=@UserId", new { userId })
+                .Where(isSeller ? "SellerId=@userId" : "BuyerId=@userId", new { userId })
                 .Where("Id=@Id", new { id })
                 .ToCommand();
 
@@ -291,6 +318,13 @@ namespace Ayatta.Storage
             });
         }
 
+        /// <summary>
+        /// 获取订单状态
+        /// </summary>
+        /// <param name="id">订单id</param>
+        /// <param name="userId">用户id</param>
+        /// <param name="isSeller">是否为卖家</param>
+        /// <returns></returns>
         public OrderStatus OrderStatusGet(string id, int userId, bool isSeller)
         {
             return Try(nameof(OrderStatusGet), () =>
@@ -299,24 +333,31 @@ namespace Ayatta.Storage
                 .Select("Status")
                 .From("orderinfo")
                 .Where("Id=@Id", new { id })
-                .Where(isSeller ? "SellerId=@userId" : "BuyerId=@UserId", new { userId })
+                .Where(isSeller ? "SellerId=@userId" : "BuyerId=@userId", new { userId })
                 .ToCommand(0);
 
                 return TradeConn.ExecuteScalar<OrderStatus>(cmd);
             });
         }
 
-        public bool OrderStatusUpdate(string id, OrderStatus status, int userId, bool isSeller, string cancelReason = null)
+        /// <summary>
+        /// 取消订单
+        /// </summary>
+        /// <param name="id">订单id</param>
+        /// <param name="userId">用户id</param>
+        /// <param name="cancelId">取消类型 0为none 1为系统取消 2为买家取消 3为卖家取消</param>
+        /// <param name="cancelReason">取消原因</param>
+        /// <returns></returns>
+        public bool OrderCancel(string id, int userId, byte cancelId, string cancelReason = "")
         {
             return Try(nameof(OrderMemoGet), () =>
             {
                 var cmd = SqlBuilder.Update("orderinfo")
-                .Column("Status", status)
-                .Column(status == OrderStatus.Finished, "FinishedOn=now()")
-                .Column(status == OrderStatus.Canceled, "CancelId", isSeller ? 2 : 1)
-                .Column(status == OrderStatus.Canceled && !string.IsNullOrEmpty(cancelReason), "CancelReason", cancelReason)
+                .Column("Status", OrderStatus.Canceled)
+                .Column("CancelId", cancelId)
+                .Column("CancelReason", cancelReason)
+                .Column("FinishedOn", DateTime.Now)
                 .Where("Id=@Id", new { id })
-                .Where(isSeller ? "SellerId=@userId" : "BuyerId=@UserId", new { userId })
                 .ToCommand();
 
                 return TradeConn.Execute(cmd) > 0;

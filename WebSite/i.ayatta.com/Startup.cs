@@ -1,5 +1,4 @@
-﻿using MediatR;
-//using Ayatta.Event;
+﻿//using Ayatta.Event;
 using System.Reflection;
 using System.Text.Unicode;
 using System.Text.Encodings.Web;

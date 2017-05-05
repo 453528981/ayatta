@@ -34,7 +34,7 @@ namespace Ayatta.Sms
             client.BaseAddress = new Uri(options.SmsBaseUrl);
         }
 
-        public async Task<SmsResut> SendMessage(string mobile, string topic, string message, int uid = 0)
+        public async Task<SmsResut> SendMessage(string mobile, string message, string topic = "", int uid = 0)
         {
             if (!string.IsNullOrEmpty(options.Blacklist))
             {

@@ -1,7 +1,7 @@
 ﻿using System;
-using MediatR;
+//using MediatR;
 using System.Linq;
-using Ayatta.Event;
+//using Ayatta.Event;
 using Ayatta.Domain;
 using Ayatta.Storage;
 using Ayatta.Extension;
@@ -16,10 +16,10 @@ namespace Ayatta.Web.Controllers
     [Route("promotion")]
     public class PromotionController : BaseController
     {
-        private readonly IMediator mediator;
-        public PromotionController(IMediator mediator, DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<PromotionController> logger) : base(defaultStorage, defaultCache, logger)
+       // private readonly IMediator mediator;
+        public PromotionController( DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<PromotionController> logger) : base(defaultStorage, defaultCache, logger)
         {
-            this.mediator = mediator;
+            //this.mediator = mediator;
         }
 
         [HttpGet("activity-list")]

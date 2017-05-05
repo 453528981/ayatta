@@ -8,7 +8,6 @@ namespace Ayatta.Domain
     #region Account
     ///<summary>
     /// Account
-    /// created on 2016-07-16 12:59:11
     ///</summary>
     [ProtoContract]
     public class Account : IEntity<int>
@@ -73,6 +72,9 @@ namespace Ayatta.Domain
         ///</summary>
         [ProtoMember(10)]
         public DateTime ModifiedOn { get; set; }
+
+
+        public decimal AvailableMoney { get { return 0; } }
 
     }
 

@@ -43,6 +43,15 @@ namespace Ayatta.OnlinePay
             Platform = platform;
             Name = platform.Name;
             Client = new HttpClient { BaseAddress = new Uri(platform.GatewayUrl) };
+
+            if (Platform.NotifyUrl.EndsWith("notify/"))
+            {
+                Platform.NotifyUrl = Platform.NotifyUrl + Platform.Id;
+            }
+            if (Platform.CallbackUrl.EndsWith("callback/"))
+            {
+                Platform.CallbackUrl = Platform.CallbackUrl + Platform.Id;
+            }
         }
 
         /// <summary>

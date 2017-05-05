@@ -19,7 +19,6 @@ namespace Ayatta.OnlinePay
 
         private static string PaymentType => "1"; //支付类型 默认值为 1 商品购买
 
-        //private static string SellerId => "tt7shop24@126.com";//卖家支付宝账号（邮箱或手机号码格式）或其对应的支付宝唯一用户号（以2088开头的纯16位数字）
 
         /// <summary>
         /// 支付宝支付
@@ -62,7 +61,7 @@ namespace Ayatta.OnlinePay
             param.Add("out_trade_no", payId);
             param.Add("subject", payment.Subject);//商品的标题/交易标题/订单标题/订单关键字等。该参数最长为128个汉字。
             param.Add("payment_type", PaymentType);
-            param.Add("seller_id", Platform.MerchantId);
+            param.Add("seller_id", Platform.MerchantId);//卖家支付宝账号（邮箱或手机号码格式）或其对应的支付宝唯一用户号（以2088开头的纯16位数字）
             param.Add("total_fee", amount);
             param.Add("body", body);//对一笔交易的具体描述信息。如果是多种商品，请将商品描述字符串累加传给body
 

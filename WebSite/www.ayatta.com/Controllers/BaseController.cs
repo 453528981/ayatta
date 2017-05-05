@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Collections.Generic;
 
 namespace Ayatta.Web.Controllers
 {
@@ -156,6 +157,23 @@ namespace Ayatta.Web.Controllers
             return userId;
         }
         #endregion
+
+        protected IList<PaymentPlatform> PaymentPlatformList()
+        {
+            var key = "payment-platmfors";
+            return DefaultCache.Put(key, () => PaymentPlatformList(true), DateTime.Now.AddDays(1));
+        }
+
+        private IList<PaymentPlatform> PaymentPlatformList(bool status)
+        {
+            var platforms = DefaultStorage.PaymentPlatformList();
+            foreach (var o in platforms)
+            {
+                o.Banks = DefaultStorage.PaymentBankList(o.Id);
+            }
+            return platforms;
+
+        }
     }
 
 }

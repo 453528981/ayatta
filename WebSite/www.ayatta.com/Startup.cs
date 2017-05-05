@@ -23,7 +23,9 @@ namespace Ayatta.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddSingleton(x => Configuration);
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
+
 
             services.AddAntiforgery(options =>
             {

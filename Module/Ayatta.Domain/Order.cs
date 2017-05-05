@@ -1,8 +1,8 @@
 using System;
 using ProtoBuf;
 using System.Linq;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Ayatta.Domain
 {
@@ -479,6 +479,22 @@ namespace Ayatta.Domain
         }
 
         /// <summary>
+        /// 订单状态文本
+        /// </summary>
+        public string StatusText
+        {
+            get
+            {
+                if (StatusDic.ContainsKey(Status))
+                {
+                    return StatusDic[Status];
+                }
+                return string.Empty;
+            }
+        }
+
+
+        /// <summary>
         /// 详细地址
         /// </summary>
         /// <returns></returns>
@@ -491,6 +507,45 @@ namespace Ayatta.Domain
         }
 
         #endregion
+
+        /// <summary>
+        /// 订单状态字典
+        /// </summary>
+        public static IDictionary<OrderStatus, string> StatusDic
+        {
+            get
+            {
+                var dic = new Dictionary<OrderStatus, string>();
+                dic.Add(OrderStatus.None, "");
+                dic.Add(OrderStatus.Pending, "待处理");
+                dic.Add(OrderStatus.WaitBuyerPay, "待支付");
+                dic.Add(OrderStatus.WaitSellerSend, "待发货");
+
+                dic.Add(OrderStatus.SellerSendPart, "已部分发货");
+                dic.Add(OrderStatus.WaitBuyerConfirm, "已发货");
+
+                dic.Add(OrderStatus.Canceled, "已取消");
+                dic.Add(OrderStatus.Closed, "已关闭");
+                dic.Add(OrderStatus.Finished, "已完成");
+                dic.Add(OrderStatus.Deleted, "已删除");
+                return dic;
+            }
+        }
+
+        public static IDictionary<byte, string> FlagColorDic
+        {
+            get
+            {
+                var dic = new Dictionary<byte, string>();
+                dic.Add(0, "");
+                dic.Add(1, "c-red");
+                dic.Add(2, "c-orange");
+                dic.Add(3, "c-green");
+                dic.Add(4, "c-blue");
+                dic.Add(5, "c-purple");
+                return dic;
+            }
+        }
 
         /*
         public static IDictionary<OrderCategory, string> CategoryDic
@@ -541,6 +596,47 @@ namespace Ayatta.Domain
         //public virtual IList<GiftCardUsageHistory> GiftCardUsageHistory { get; set; }
 
         #endregion
+
+
+        public Status Validate()
+        {
+            return new Status();
+        }
+
+        public Payment ToPayment(int platformId, string ipAddress)
+        {
+            var now = DateTime.Now;
+            var payment = new Payment();
+
+            payment.Id = Payment.NewId();
+
+            payment.No = string.Empty;
+            payment.Type = 0;
+            payment.UserId = BuyerId;
+            payment.Method = 0;
+            payment.Amount = Total;
+            payment.Subject = "test";
+            payment.Message = "";
+            payment.RawData = "";
+            payment.BankId = 0;
+            payment.BankCode = string.Empty;
+            payment.BankName = string.Empty;
+            payment.BankCard = 0;
+            payment.PlatformId = platformId;
+            payment.CardNo = string.Empty;
+            payment.CardPwd = string.Empty;
+            payment.CardAmount = 0;
+            payment.RelatedId = Id;
+            payment.IpAddress = ipAddress;
+            payment.Extra = string.Empty;
+            payment.Status = false;
+            payment.CreatedBy = "sys";
+            payment.CreatedOn = now;
+            payment.ModifiedBy = string.Empty;
+            payment.ModifiedOn = now;
+            return payment;
+        }
+
 
         /// <summary>
         /// 计算退还积分

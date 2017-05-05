@@ -667,7 +667,7 @@ namespace Ayatta.Cart
                         item.Total = (o.Price * o.Quantity) - o.Discount;
                         item.TaxRate = 0;
                         item.Picture = o.Picture;
-                        item.PropText = string.Join("", o.PropTexts);
+                        item.PropText = string.Join(";", o.PropTexts);
                         item.IsGift = false;
                         item.IsVirtual = o.IsVirtual;
                         item.IsService = false;

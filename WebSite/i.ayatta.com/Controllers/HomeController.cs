@@ -8,12 +8,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Ayatta.Web.Controllers
 {
-
     public class HomeController : BaseController
     {
         public HomeController(DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<HomeController> logger) : base(defaultStorage, defaultCache, logger)
         {
-
         }
 
         [HttpGet("/")]
@@ -29,5 +27,9 @@ namespace Ayatta.Web.Controllers
             return View();
         }
 
+        
+
     }
+
+
 }
