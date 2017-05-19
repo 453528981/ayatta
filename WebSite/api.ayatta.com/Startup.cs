@@ -31,13 +31,15 @@ namespace Ayatta.Web
            
             services.AddDefaultStorage();
 
+            services.AddSmsService();
+
             services.AddCart(o =>
             {
                 o.Expire = new TimeSpan(2, 0, 0);
             });
             services.AddMvc();
 
-            services.AddSmsService();
+            
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

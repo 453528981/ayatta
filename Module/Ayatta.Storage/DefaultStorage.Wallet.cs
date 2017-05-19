@@ -5,6 +5,10 @@ namespace Ayatta.Storage
 {
     public partial class DefaultStorage
     {
+        #region 账户
+
+        #endregion
+
         #region 支付
         ///<summary>
         /// 支付信息创建
@@ -70,6 +74,21 @@ namespace Ayatta.Storage
         }
 
         /// <summary>
+        /// 支付信息状态获取
+        /// </summary>
+        /// <param name="id">支付信息id</param>
+        /// <returns></returns>
+        public bool PaymentStatusGet(string id)
+        {
+            return Try(nameof(PaymentStatusGet), () =>
+            {
+                var sql = @"select status from Payment where id=@id";
+
+                return WalletConn.QueryFirstOrDefault<bool>(sql, new { id });
+            });
+        }
+
+        /// <summary>
         /// 支付信息状态更新
         /// </summary>
         /// <param name="id">支付信息Id</param>
@@ -105,7 +124,7 @@ namespace Ayatta.Storage
                 .Column("Subject", o.Subject)
                 .Column("Message", o.Message)
                 .Column("RawData", o.RawData)
-                .Column("ForAdmin", o.ForAdmin)
+                .Column("Extra", o.Extra)
                 .Column("CreatedBy", o.CreatedBy)
                 .Column("CreatedOn", o.CreatedOn)
                 .ToCommand(true);
@@ -115,5 +134,6 @@ namespace Ayatta.Storage
 
 
         #endregion
+
     }
 }

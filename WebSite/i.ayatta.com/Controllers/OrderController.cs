@@ -1,13 +1,14 @@
+using Ayatta.Domain;
 using Ayatta.Storage;
 using Ayatta.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
-using Ayatta.Domain;
 
 namespace Ayatta.Web.Controllers
 {
-    [Route("order")]
+    [Authorize, Route("order")]
     public class OrderController : BaseController
     {
         public OrderController(DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<OrderController> logger) : base(defaultStorage, defaultCache, logger)
@@ -86,7 +87,6 @@ namespace Ayatta.Web.Controllers
         /// <param name="id">¶©µ¥ºÅ</param>
         /// <returns></returns>
         [HttpGet("cancel/{id}")]
-
         public IActionResult OrderCancel(string id)
         {
             var model = new Result<OrderStatus>();
@@ -118,7 +118,7 @@ namespace Ayatta.Web.Controllers
 
             if (status == OrderStatus.None || status == OrderStatus.Pending || status == OrderStatus.WaitBuyerPay)
             {
-                result.Status = DefaultStorage.OrderCancel(id, User.Id, 2, reason);
+                result.Status = DefaultStorage.OrderCancel(id, User.Id, false, 2, reason);
                 if (result.Status)
                 {
                     result.Status = true;

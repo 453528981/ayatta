@@ -4,7 +4,7 @@ using ProtoBuf;
 namespace Ayatta.Domain
 {
     ///<summary>
-    /// PaymentBank
+    /// 支付平台银行
     ///</summary>
     [ProtoContract]
     public class PaymentBank : IEntity<int>

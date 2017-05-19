@@ -6,8 +6,7 @@ using System.Collections.Generic;
 namespace Ayatta.Domain
 {
     ///<summary>
-    /// UserAddress
-    /// created on 2016-07-02 14:43:42
+    /// 用户地址
     ///</summary>
     [ProtoContract]
     public class UserAddress : IEntity<int>
@@ -126,6 +125,36 @@ namespace Ayatta.Domain
         /// </summary>
         public string Address => Province + City + District + Street;
 
+        /// <summary>
+        /// 省Id
+        /// </summary>
+        public string ProvinceId
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(RegionId))
+                {
+                    return RegionId.Substring(0, 2);
+                }
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// 市Id
+        /// </summary>
+        public string CityId
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(RegionId))
+                {
+                    return RegionId.Substring(0, 4);
+                }
+                return string.Empty;
+            }
+        }
+
         public override bool Equals(object obj)
         {
             var target = obj as UserAddress;
@@ -140,7 +169,7 @@ namespace Ayatta.Domain
 
         public override int GetHashCode()
         {
-            return Id^UserId;
+            return Id ^ UserId;
         }
 
     }

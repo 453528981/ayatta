@@ -22,6 +22,15 @@ namespace Ayatta.Extension
                 ')', '[', ']', '{', '}', '|', '^', '`', '~', '–', '‘', '’', '“', '”', '»', '«'
             };
 
+        public static string Hash(this string input)
+        {
+            using (var h = MD5.Create())
+            {
+                var bs = h.ComputeHash(Encoding.UTF8.GetBytes(input));
+                return bs.ToHex();
+            }
+        }
+
         public static bool IsNullOrEmpty(this string target)
         {
             return string.IsNullOrEmpty(target);

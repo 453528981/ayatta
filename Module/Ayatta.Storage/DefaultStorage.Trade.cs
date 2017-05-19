@@ -205,7 +205,7 @@ namespace Ayatta.Storage
         /// 更新订单已付金额及状态
         /// </summary>
         /// <param name="id">订单id</param>
-        /// <param name="amount">本次支金额</param>
+        /// <param name="amount">本次支付金额</param>
         /// <param name="done">是否已付清(付清后如果是在线支付订单则会更新订单状态为已付款待发货并更新订单有效期)</param>
         /// <returns></returns>
         public bool OrderPaid(string id, decimal amount, bool done)
@@ -217,7 +217,7 @@ namespace Ayatta.Storage
                 var sql = @"update orderinfo set Paid=Paid+@amount,PaidOn=@time where status=2 and id=@id";
                 if (done)
                 {
-                    sql = @"update orderinfo set Paid=Paid+@amount,PaidOn=@time,ExpiredOn=@expire,Status=3 where status=2 and id=@id and ";
+                    sql = @"update orderinfo set Paid=Paid+@amount,PaidOn=@time,ExpiredOn=@expire,Status=3 where status=2 and id=@id";
                 }
                 return TradeConn.Execute(sql, new { id, amount, time, expire }) > 0;
             });
@@ -345,10 +345,11 @@ namespace Ayatta.Storage
         /// </summary>
         /// <param name="id">订单id</param>
         /// <param name="userId">用户id</param>
+        /// <param name="isSeller">是否为卖家</param>
         /// <param name="cancelId">取消类型 0为none 1为系统取消 2为买家取消 3为卖家取消</param>
         /// <param name="cancelReason">取消原因</param>
         /// <returns></returns>
-        public bool OrderCancel(string id, int userId, byte cancelId, string cancelReason = "")
+        public bool OrderCancel(string id, int userId, bool isSeller, byte cancelId, string cancelReason = "")
         {
             return Try(nameof(OrderMemoGet), () =>
             {
@@ -357,6 +358,7 @@ namespace Ayatta.Storage
                 .Column("CancelId", cancelId)
                 .Column("CancelReason", cancelReason)
                 .Column("FinishedOn", DateTime.Now)
+                .Where(isSeller ? "SellerId=@userId" : "BuyerId=@userId", new { userId })
                 .Where("Id=@Id", new { id })
                 .ToCommand();
 
@@ -364,6 +366,13 @@ namespace Ayatta.Storage
             });
         }
 
+        /// <summary>
+        /// 延迟订单有效期
+        /// </summary>
+        /// <param name="id">订单id</param>
+        /// <param name="sellerId"></param>
+        /// <param name="day"></param>
+        /// <returns></returns>
         public bool OrderDelay(string id, int sellerId, int day)
         {
             return Try(nameof(OrderDelay), () =>
@@ -392,6 +401,24 @@ namespace Ayatta.Storage
             }
             return list;
         }
+
+        /// <summary>
+        /// 获取订单信息
+        /// </summary>
+        /// <param name="id">订单id</param>
+        /// <returns></returns>
+        public OrderMini OrderMiniGet(string id,int userId)
+        {
+            var fields = "Id,Type,Quantity,SubTotal,Freight,Tax,Discount,Total,Paid,PayId,PaidOn,PointUse,PointRealUse,PointReward,Coupon,CouponUse,GiftCard,GiftCardUse,Weight,ETicket,IsVirtual,IsBonded,IsOversea,PaymentType,ShipmentType,ExpiredOn,BuyerId,BuyerName,SellerId,SellerName,MediaId,TraceCode,Status,CreatedOn";
+
+            var cmd = SqlBuilder
+               .Select(fields)
+               .From("orderinfo")
+               .Where("Id=@Id", new { id })
+               .ToCommand(0);
+
+            return TradeConn.QueryFirstOrDefault<OrderMini>(cmd);
+        }
         #endregion
 
         #region 订单Note
@@ -406,13 +433,16 @@ namespace Ayatta.Storage
             {
                 var cmd = SqlBuilder.Insert("OrderNote")
                 .Column("Type", o.Type)
+                .Column("UserId", o.UserId)
                 .Column("OrderId", o.OrderId)
                 .Column("Subject", o.Subject)
                 .Column("Message", o.Message)
+                .Column("Extra", o.Extra)
                 .Column("CreatedBy", o.CreatedBy)
                 .Column("CreatedOn", o.CreatedOn)
                 .ToCommand(true);
                 return TradeConn.ExecuteScalar<int>(cmd);
+                
             });
         }
 

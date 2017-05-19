@@ -110,7 +110,7 @@ namespace Ayatta.Web.Controllers
 
             if (status == OrderStatus.Pending || status == OrderStatus.WaitBuyerPay)
             {
-                result.Status = DefaultStorage.OrderCancel(id, User.Id, 3, reason);
+                result.Status = DefaultStorage.OrderCancel(id, User.Id,true, 3, reason);
                 if (result.Status)
                 {
                     result.Status = true;

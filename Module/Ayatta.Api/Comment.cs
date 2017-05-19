@@ -98,9 +98,9 @@ namespace Ayatta.Api
         public int UserId { get; set; }
 
         /// <summary>
-        /// 用户昵称
+        /// 用户名
         /// </summary>
-        public string Nickname { get; set; }
+        public string UserName { get; set; }
 
         /// <summary>
         /// 卖家Id

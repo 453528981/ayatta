@@ -1,0 +1,9 @@
+[
+  {
+    "job-name": "My Job1",
+    "job-type": "Ayatta.Web.Jobs.TestJob, Ayatta.Web",
+    "cron-expression": "*/1 * * * *",
+    "timezone": "China Standard Time",
+    "queue": "default"
+  }
+]

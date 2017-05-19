@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace Ayatta.Domain
 {
+    /// <summary>
+    /// 订单
+    /// </summary>
 
     public partial class Order : IEntity<string>
     {
@@ -603,41 +606,6 @@ namespace Ayatta.Domain
             return new Status();
         }
 
-        public Payment ToPayment(int platformId, string ipAddress)
-        {
-            var now = DateTime.Now;
-            var payment = new Payment();
-
-            payment.Id = Payment.NewId();
-
-            payment.No = string.Empty;
-            payment.Type = 0;
-            payment.UserId = BuyerId;
-            payment.Method = 0;
-            payment.Amount = Total;
-            payment.Subject = "test";
-            payment.Message = "";
-            payment.RawData = "";
-            payment.BankId = 0;
-            payment.BankCode = string.Empty;
-            payment.BankName = string.Empty;
-            payment.BankCard = 0;
-            payment.PlatformId = platformId;
-            payment.CardNo = string.Empty;
-            payment.CardPwd = string.Empty;
-            payment.CardAmount = 0;
-            payment.RelatedId = Id;
-            payment.IpAddress = ipAddress;
-            payment.Extra = string.Empty;
-            payment.Status = false;
-            payment.CreatedBy = "sys";
-            payment.CreatedOn = now;
-            payment.ModifiedBy = string.Empty;
-            payment.ModifiedOn = now;
-            return payment;
-        }
-
-
         /// <summary>
         /// 计算退还积分
         /// </summary>
@@ -734,6 +702,223 @@ namespace Ayatta.Domain
             var i = GenerateInc();
             return now.ToString("yyMMddHHmmss") + (buyerId % 64).ToString("00") + (sellerId % 64).ToString("00") + i.ToString("00");
         }
+    }
+
+    /// <summary>
+    /// 订单Mini
+    /// </summary>
+    public class OrderMini : IEntity<string>
+    {
+        ///<summary>
+        /// 订单Id
+        ///</summary>
+        public string Id { get; set; }
+
+        ///<summary>
+        /// 订单类型:0网购订单 1竞购订单 2竞购补差订单 3积分兑换订单
+        ///</summary>
+        public OrderType Type { get; set; }
+
+        ///<summary>
+        /// 商品总数量
+        ///</summary>
+        public int Quantity { get; set; }
+
+        ///<summary>
+        /// 订单小计(商品总金额)
+        ///</summary>
+        public decimal SubTotal { get; set; }
+
+        ///<summary>
+        /// 运费
+        ///</summary>
+        public decimal Freight { get; set; }
+
+        ///<summary>
+        /// 关税税费
+        ///</summary>
+        public decimal Tax { get; set; }
+
+        ///<summary>
+        /// 订单优惠总金额(使用积分抵扣 优惠券 店铺优惠等)
+        ///</summary>
+        public decimal Discount { get; set; }
+
+        ///<summary>
+        /// 订单总金额(需要支付的总金额[SubTotal+Postage-Discount])
+        ///</summary>
+        public decimal Total { get; set; }
+
+        ///<summary>
+        /// 已支付金额(一个订单可能分多次支付)
+        ///</summary>
+        public decimal Paid { get; set; }
+
+        ///<summary>
+        /// 支付流水号
+        ///</summary>
+        public string PayId { get; set; }
+
+        ///<summary>
+        /// 支付日期(最后一次支付完成整个订单的时间)
+        ///</summary>
+        public DateTime? PaidOn { get; set; }
+
+        ///<summary>
+        /// 使用积分
+        ///</summary>
+        public int PointUse { get; set; }
+
+        ///<summary>
+        /// 实际使用积分
+        ///</summary>
+        public int PointRealUse { get; set; }
+
+        ///<summary>
+        /// 奖励积分
+        ///</summary>
+        public int PointReward { get; set; }
+
+        ///<summary>
+        /// 优惠券
+        ///</summary>
+        public string Coupon { get; set; }
+
+        ///<summary>
+        /// 优惠券抵消金额
+        ///</summary>
+        public decimal CouponUse { get; set; }
+
+        ///<summary>
+        /// 礼品卡
+        ///</summary>
+        public string GiftCard { get; set; }
+
+        ///<summary>
+        /// 礼品卡抵消金额
+        ///</summary>
+        public decimal GiftCardUse { get; set; }
+
+        ///<summary>
+        /// 重量
+        ///</summary>
+        public decimal Weight { get; set; }
+
+        ///<summary>
+        /// 电子凭证
+        ///</summary>
+        public string ETicket { get; set; }
+
+        ///<summary>
+        /// 是否为虚拟物品 无需发货订单
+        ///</summary>
+        public bool IsVirtual { get; set; }
+
+        ///<summary>
+        /// 是否为保税仓发货
+        ///</summary>
+        public bool IsBonded { get; set; }
+
+        ///<summary>
+        /// 是否为海外直邮
+        ///</summary>
+        public bool IsOversea { get; set; }
+
+        ///<summary>
+        /// 支付方式
+        ///</summary>
+        public PaymentType PaymentType { get; set; }
+
+
+        ///<summary>
+        /// 配送方式
+        ///</summary>
+        public ShipmentType ShipmentType { get; set; }
+
+        ///<summary>
+        /// 超时时间
+        ///</summary>
+        public DateTime ExpiredOn { get; set; }
+
+        ///<summary>
+        /// 买家Id
+        ///</summary>
+        public int BuyerId { get; set; }
+
+        ///<summary>
+        /// 买家用户名
+        ///</summary>
+        public string BuyerName { get; set; }
+
+        ///<summary>
+        /// 卖家Id
+        ///</summary>
+        public int SellerId { get; set; }
+
+        ///<summary>
+        /// 卖家用户名
+        ///</summary>
+        public string SellerName { get; set; }
+
+        ///<summary>
+        /// 媒体Id
+        ///</summary>
+        public int MediaId { get; set; }
+
+        ///<summary>
+        /// 媒体跟踪码
+        ///</summary>
+        public string TraceCode { get; set; }
+
+        ///<summary>
+        /// 订单状态
+        ///</summary>
+        public OrderStatus Status { get; set; }
+
+        ///<summary>
+        /// 创建时间
+        ///</summary>
+        public DateTime CreatedOn { get; set; }
+
+        /// <summary>
+        /// 未支付金额（待支付）
+        /// </summary>
+        public decimal Unpaid => Total - Paid;
+
+        public Payment ToPayment(int platformId, string ipAddress)
+        {
+            var now = DateTime.Now;
+            var payment = new Payment();
+
+            payment.Id = Payment.NewId();
+
+            payment.No = string.Empty;
+            payment.Type = 0;
+            payment.UserId = BuyerId;
+            payment.Method = 0;
+            payment.Amount = Unpaid;//待支付金额=总金额-已支付金额
+            payment.Subject = "test";
+            payment.Message = "";
+            payment.RawData = "";
+            payment.BankId = 0;
+            payment.BankCode = string.Empty;
+            payment.BankName = string.Empty;
+            payment.BankCard = 0;
+            payment.PlatformId = platformId;
+            payment.CardNo = string.Empty;
+            payment.CardPwd = string.Empty;
+            payment.CardAmount = 0;
+            payment.RelatedId = Id;
+            payment.IpAddress = ipAddress;
+            payment.Extra = string.Empty;
+            payment.Status = false;
+            payment.CreatedBy = "sys";
+            payment.CreatedOn = now;
+            payment.ModifiedBy = string.Empty;
+            payment.ModifiedOn = now;
+            return payment;
+        }
+
     }
 
 }

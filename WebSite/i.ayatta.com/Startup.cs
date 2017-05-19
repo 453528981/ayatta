@@ -40,6 +40,8 @@ namespace Ayatta.Web
 
             services.AddDefaultStorage();
 
+            services.AddSmsService();
+
             services.AddSession(options =>
             {
                 options.CookieName = "x-session";

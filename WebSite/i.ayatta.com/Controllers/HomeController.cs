@@ -27,7 +27,16 @@ namespace Ayatta.Web.Controllers
             return View();
         }
 
-        
+        public IActionResult Profile()
+        {
+            return View();
+        }
+
+        public IActionResult Address()
+        {
+            return View();
+        }
+
 
     }
 

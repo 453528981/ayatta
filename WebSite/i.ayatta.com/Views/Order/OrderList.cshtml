@@ -138,7 +138,7 @@
 
                                             <strong class="c-red">￥@(item.Total.ToString("N"))</strong>
                                         </p>
-                                        
+
                                         <p class="m-b-5">
 
                                             <span>运费：￥@(item.Freight.ToString("N"))</span>
@@ -216,7 +216,9 @@
     </div>
 }
 @section js{
-    <script src="~/js/dialog.js"></script>
+
+    <script src="@(WebSite.Static)/js/bootstrap-dialog.js"></script>
+
     <script>
         +function ($) {
             var d = "";

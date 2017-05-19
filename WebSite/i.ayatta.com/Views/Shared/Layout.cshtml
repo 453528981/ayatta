@@ -564,6 +564,7 @@
     </footer>
 
     <!-- Page Loader -->
+    <!--
     <div class="page-loader">
         <div class="preloader pls-blue">
             <svg class="pl-circular" viewBox="25 25 50 50">
@@ -573,6 +574,7 @@
             <p>Please wait...</p>
         </div>
     </div>
+    -->
     <div id="dynamic-placeholder"></div>
     <!-- Older IE warning message -->
     <!--[if lt IE 9]>
@@ -628,7 +630,7 @@
     <script src="@(WebSite.Static)/js/bootstrap.min.js"></script>
     <script src="@(WebSite.Static)/js/bootstrap-growl.min.js"></script>
     <script src="@(WebSite.Static)/js/bootstrap-select.min.js"></script>
-
+    <script src="@(WebSite.Static)/js/bootstrap-dialog.js"></script>
     <script src="@(WebSite.Static)/js/malihu-custom-scrollbar.min.js"></script>
 
     <!-- Placeholder for IE9 -->
@@ -637,8 +639,8 @@
     <![endif]-->
     @RenderSection("js", required: false)
     <script src="@(WebSite.Static)/js/app.global.js"></script>
-    <script src="/js/functions.js"></script>
-    <script src="/js/demo.js"></script>
+    @*<script src="/js/functions.js"></script>
+    <script src="/js/demo.js"></script>*@
     @RenderSection("jsOmega", required: false)
 </body>
 

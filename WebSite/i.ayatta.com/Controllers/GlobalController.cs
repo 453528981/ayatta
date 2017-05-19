@@ -61,6 +61,14 @@ namespace Ayatta.Web.Controllers
             return NotFound();
         }
 
+        [HttpGet("region/{parentId}")]
+
+        public IActionResult Region(string parentId)
+        {
+            var data = DefaultStorage.RegionList(parentId);
+            return Json(data);
+        }
+
         /// <summary>
         /// 
         /// </summary>

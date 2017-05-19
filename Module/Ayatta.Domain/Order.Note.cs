@@ -6,52 +6,53 @@ namespace Ayatta.Domain
     ///<summary>
     /// OrderNote
     ///</summary>
-    [ProtoContract]
+    [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
     public class OrderNote : IEntity<int>
     {
 
         ///<summary>
         /// Id
         ///</summary>
-        [ProtoMember(1)]
         public int Id { get; set; }
 
         ///<summary>
         /// 类型
         ///</summary>
-        [ProtoMember(2)]
         public int Type { get; set; }
+
+        ///<summary>
+        /// UserId
+        ///</summary>
+        public int UserId { get; set; }
 
         ///<summary>
         /// 订单Id
         ///</summary>
-        [ProtoMember(3)]
         public string OrderId { get; set; }
 
         ///<summary>
         /// 主题
         ///</summary>
-        [ProtoMember(4)]
         public string Subject { get; set; }
 
         ///<summary>
         /// 消息
         ///</summary>
-        [ProtoMember(5)]
         public string Message { get; set; }
 
         ///<summary>
-        /// 创建者 UserName
+        /// 扩展
         ///</summary>
-        [ProtoMember(6)]
+        public string Extra { get; set; }
+
+        ///<summary>
+        /// 创建者
+        ///</summary>
         public string CreatedBy { get; set; }
 
         ///<summary>
         /// 创建时间
         ///</summary>
-        [ProtoMember(7)]
         public DateTime CreatedOn { get; set; }
-
     }
-
 }

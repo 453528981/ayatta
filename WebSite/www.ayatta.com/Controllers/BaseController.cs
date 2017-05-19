@@ -174,6 +174,8 @@ namespace Ayatta.Web.Controllers
             return platforms;
 
         }
+
+
     }
 
 }

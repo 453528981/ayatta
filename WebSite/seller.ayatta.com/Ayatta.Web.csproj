@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Content Remove="wwwroot/css\bootstrap-select.min.css" />
+    <Content Remove="wwwroot/js\dialog.js" />
   </ItemGroup>
 
   <ItemGroup>

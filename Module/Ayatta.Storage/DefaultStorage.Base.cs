@@ -201,7 +201,7 @@ namespace Ayatta.Storage
         public int HelpCreate(Help o)
         {
             var cmd = SqlBuilder.Insert("Help")
-            .Column("GroupId", o.GroupId)
+            .Column("ParentId", o.ParentId)
             .Column("Title", o.Title)
             .Column("NavUrl", o.NavUrl)
             .Column("Content", o.Content)
@@ -223,7 +223,7 @@ namespace Ayatta.Storage
         public bool HelpUpdate(Help o)
         {
             var cmd = SqlBuilder.Update("Help")
-            .Column("GroupId", o.GroupId)
+            .Column("ParentId", o.ParentId)
             .Column("Title", o.Title)
             .Column("NavUrl", o.NavUrl)
             .Column("Content", o.Content)
@@ -251,11 +251,123 @@ namespace Ayatta.Storage
 
         #endregion
 
-        #region Region
+        #region 国家
         ///<summary>
-        /// RegionCreate
+        /// 国家创建
         ///</summary>
-        ///<param name="o">Region</param>
+        ///<param name="o">国家</param>
+        ///<returns></returns>
+        public bool CountryCreate(Country o)
+        {
+            return Try(nameof(CountryCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("Country")
+                .Column("Id", o.Id)
+                .Column("Code", o.Code)
+                .Column("Name", o.Name)
+                .Column("Flag", o.Flag)
+                .Column("EnName", o.EnName)
+                .Column("Extra", o.Extra)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 国家更新
+        ///</summary>
+        ///<param name="o">国家</param>
+        ///<returns></returns>
+        public bool CountryUpdate(Country o)
+        {
+            return Try(nameof(CountryCreate), () =>
+            {
+                var cmd = SqlBuilder.Update("Country")
+                .Column("Code", o.Code)
+                .Column("Name", o.Name)
+                .Column("Flag", o.Flag)
+                .Column("EnName", o.EnName)
+                .Column("Extra", o.Extra)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 国家获取
+        ///</summary>
+        ///<param name="id">三位数字代码</param>
+        ///<returns></returns>
+        public Country CountryGet(int id)
+        {
+            return Try(nameof(CountryGet), () =>
+            {
+                var sql = @"select * from Country where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<Country>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 国家获取
+        ///</summary>
+        ///<param name="code">三位字母代码</param>
+        ///<returns></returns>
+        public Country CountryGet(string code)
+        {
+            return Try(nameof(CountryGet), () =>
+            {
+                var sql = @"select * from Country where code=@code";
+                var cmd = SqlBuilder.Raw(sql, new { code }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<Country>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 国家是否存在
+        ///</summary>
+        ///<param name="id">三位数字代码</param>
+        ///<returns></returns>
+        public bool CountryExist(int id)
+        {
+            return Try(nameof(CountryExist), () =>
+            {
+                var sql = @"select 1 from Country where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.ExecuteScalar<bool>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 国家是否存在
+        ///</summary>
+        ///<param name="code">三位字母代码</param>
+        ///<returns></returns>
+        public bool CountryExist(string code)
+        {
+            return Try(nameof(CountryExist), () =>
+            {
+                var sql = @"select 1 from Country where code=@code";
+                var cmd = SqlBuilder.Raw(sql, new { code }).ToCommand();
+                return BaseConn.ExecuteScalar<bool>(cmd);
+            });
+        }
+
+        #endregion
+
+        #region 中国行政区(省市区)
+        ///<summary>
+        /// 行政区创建
+        ///</summary>
+        ///<param name="o">行政区</param>
         ///<returns></returns>
         public bool RegionCreate(Region o)
         {
@@ -277,9 +389,9 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// RegionUpdate
+        /// 行政区更新
         ///</summary>
-        ///<param name="o">Region</param>
+        ///<param name="o">行政区</param>
         ///<returns></returns>
         public bool RegionUpdate(Region o)
         {
@@ -300,7 +412,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// RegionGet
+        /// 行政区获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
@@ -312,7 +424,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// RegionList
+        /// 行政区列表
         ///</summary>
         ///<returns></returns>
         public IList<Region> RegionList()
@@ -323,7 +435,19 @@ namespace Ayatta.Storage
         }
 
         /// <summary>
-        /// RegionPagedList
+        /// 行政区列表
+        /// </summary>
+        /// <param name="parentId">父id</param>
+        /// <returns></returns>
+        public IList<Region> RegionList(string parentId)
+        {
+            var sql = @"select * from Region where ParentId=@parentId";
+            var cmd = SqlBuilder.Raw(sql, new { parentId }).ToCommand();
+            return BaseConn.Query<Region>(cmd).ToList();
+        }
+
+        /// <summary>
+        /// 行政区列表分页
         /// </summary>
         /// <param name="page">分页</param>
         /// <param name="size">分页大小</param>
@@ -340,11 +464,11 @@ namespace Ayatta.Storage
 
         #endregion
 
-        #region Bank
+        #region 银行
         ///<summary>
-        /// BankCreate
+        /// 银行创建
         ///</summary>
-        ///<param name="o">Bank</param>
+        ///<param name="o">银行</param>
         ///<returns></returns>
         public int BankCreate(Bank o)
         {
@@ -364,9 +488,9 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// BankUpdate
+        /// 银行更新
         ///</summary>
-        ///<param name="o">Bank</param>
+        ///<param name="o">银行</param>
         ///<returns></returns>
         public bool BankUpdate(Bank o)
         {
@@ -386,7 +510,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// BankGet
+        /// 银行获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
@@ -486,11 +610,11 @@ namespace Ayatta.Storage
 
         #endregion
 
-        #region PaymentBank
+        #region 支付平台银行
         ///<summary>
-        /// PaymentBankCreate
+        /// 支付平台银行创建
         ///</summary>
-        ///<param name="o">PaymentBank</param>
+        ///<param name="o">支付平台银行</param>
         ///<returns></returns>
         public int PaymentBankCreate(PaymentBank o)
         {
@@ -515,9 +639,9 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// PaymentBankUpdate
+        /// 支付平台银行更新
         ///</summary>
-        ///<param name="o">PaymentBank</param>
+        ///<param name="o">支付平台银行</param>
         ///<returns></returns>
         public bool PaymentBankUpdate(PaymentBank o)
         {
@@ -538,7 +662,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// PaymentBankGet
+        /// 支付平台银行获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
@@ -550,7 +674,7 @@ namespace Ayatta.Storage
         }
 
         /// <summary>
-        /// 获取支付平台下的银行
+        /// 支付平台下的银行列表
         /// </summary>
         /// <param name="platformId">支付平台id</param>
         /// <returns></returns>
@@ -561,6 +685,215 @@ namespace Ayatta.Storage
             return BaseConn.Query<PaymentBank, PaymentPlatform, Bank>(sql, new { platformId }).ToList();
         }
 
+        #endregion
+
+        #region 幻灯片
+
+        ///<summary>
+        /// 幻灯片创建
+        ///</summary>
+        ///<param name="o">幻灯片</param>
+        ///<returns></returns>
+        public bool SlideCreate(Slide o)
+        {
+            return Try(nameof(SlideCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("Slide")
+                .Column("Id", o.Id)
+                .Column("Name", o.Name)
+                .Column("Title", o.Title)
+                .Column("Width", o.Width)
+                .Column("Height", o.Height)
+                .Column("Thumb", o.Thumb)
+                .Column("ThumbW", o.ThumbW)
+                .Column("ThumbH", o.ThumbH)
+                .Column("Description", o.Description)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge)
+                .Column("Extra", o.Extra)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand();
+
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 幻灯片更新
+        ///</summary>
+        ///<param name="o">Slide</param>
+        ///<returns></returns>
+        public bool SlideUpdate(Slide o)
+        {
+            return Try(nameof(SlideUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("Slide")
+                .Column("Name", o.Name)
+                .Column("Title", o.Title)
+                .Column("Width", o.Width)
+                .Column("Height", o.Height)
+                .Column("Thumb", o.Thumb)
+                .Column("ThumbW", o.ThumbW)
+                .Column("ThumbH", o.ThumbH)
+                .Column("Description", o.Description)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge)
+                .Column("Extra", o.Extra)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 幻灯片获取
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="includeItems">是否包含条目</param>
+        /// <param name="current">是否筛选当前时间生效的条目</param>
+        /// <returns></returns>
+        public Slide SlideGet(string id, bool includeItems, bool current = false)
+        {
+            return Try(nameof(ItemGet), () =>
+            {
+                if (includeItems)
+                {
+                    var where = current ? " and StartedOn<=now() and StoppedOn>=now()" : string.Empty;
+                    var sql = @"select * from Slide where id=@id;select * from SlideItem where SlideId=@id " + where + ";";
+                    var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                    using (var reader = StoreConn.QueryMultiple(cmd))
+                    {
+                        var o = reader.Read<Slide>().FirstOrDefault();
+                        if (o != null)
+                        {
+                            o.Items = reader.Read<SlideItem>().ToList();
+                        }
+                        return o;
+                    }
+                }
+                else
+                {
+                    var sql = @"select * from Slide where id=@id";
+                    var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                    return BaseConn.QueryFirstOrDefault<Slide>(cmd);
+                }
+            });
+        }
+
+        /// <summary>
+        /// 幻灯片删除
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool SlideDelete(string id)
+        {
+            return Try(nameof(SlideItemGet), () =>
+            {
+                var sql = @"delete * from SlideItem where SlideId=@id;delete * from Slide where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 幻灯片条目创建
+        ///</summary>
+        ///<param name="o">幻灯片条目</param>
+        ///<returns></returns>
+        public int SlideItemCreate(SlideItem o)
+        {
+            return Try(nameof(SlideItemCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("SlideItem")
+                .Column("SlideId", o.SlideId)
+                .Column("GroupId", o.GroupId)
+                .Column("Name", o.Name)
+                .Column("Title", o.Title)
+                .Column("NavUrl", o.NavUrl)
+                .Column("ImageSrc", o.ImageSrc)
+                .Column("ThumbSrc", o.ThumbSrc)
+                .Column("Description", o.Description)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge)
+                .Column("Extra", o.Extra)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return BaseConn.ExecuteScalar<int>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 幻灯片条目更新
+        ///</summary>
+        ///<param name="o">幻灯片条目</param>
+        ///<returns></returns>
+        public bool SlideItemUpdate(SlideItem o)
+        {
+            return Try(nameof(SlideItemUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("SlideItem")
+                .Column("SlideId", o.SlideId)
+                .Column("GroupId", o.GroupId)
+                .Column("Name", o.Name)
+                .Column("Title", o.Title)
+                .Column("NavUrl", o.NavUrl)
+                .Column("ImageSrc", o.ImageSrc)
+                .Column("ThumbSrc", o.ThumbSrc)
+                .Column("Description", o.Description)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge)
+                .Column("Extra", o.Extra)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 幻灯片条目获取
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public SlideItem SlideItemGet(int id)
+        {
+            return Try(nameof(SlideItemGet), () =>
+            {
+                var sql = @"select * from SlideItem where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<SlideItem>(cmd);
+            });
+        }
+
+        /// <summary>
+        /// 幻灯片条目删除
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool SlideItemDelete(string id)
+        {
+            return Try(nameof(SlideItemDelete), () =>
+            {
+                var sql = @"delete * from SlideItem where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
         #endregion
 
     }

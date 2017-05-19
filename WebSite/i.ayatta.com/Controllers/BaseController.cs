@@ -5,10 +5,12 @@ using Ayatta.Storage;
 using Ayatta.Web.Extensions;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Ayatta.Web.Controllers
 {
+    [Authorize]
     public abstract class BaseController : AbstractController
     {
         public new Identity User
@@ -16,8 +18,18 @@ namespace Ayatta.Web.Controllers
             get { return base.User.AsIdentity(); }
         }
         protected BaseController(DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<BaseController> logger) : base(defaultStorage, defaultCache, logger)
-        {           
+        {
 
+        }
+
+        /// <summary>
+        /// 行政区列表(从缓存里取 有效7天)
+        /// </summary>
+        /// <returns></returns>
+        protected IList<Region> RegionList()
+        {
+            var key = "base-region";
+            return DefaultCache.Put(key, () => DefaultStorage.RegionList(), DateTime.Now.AddDays(7));
         }
 
         private IList<Catg.Tiny> CatgTinyList()

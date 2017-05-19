@@ -83,7 +83,6 @@ namespace Ayatta.Domain
     #region CashFlow
     ///<summary>
     /// CashFlow
-    /// created on 2016-07-16 12:59:35
     ///</summary>
     [ProtoContract]
     public class CashFlow : IEntity<int>
@@ -286,10 +285,9 @@ namespace Ayatta.Domain
 
     #endregion
 
-    #region Payment
+    #region 支付单
     ///<summary>
-    /// PaymentBill
-    /// created on 2016-07-16 20:00:36
+    /// 支付单
     ///</summary>
     [ProtoContract]
     public class Payment : IEntity<string>
@@ -512,7 +510,6 @@ namespace Ayatta.Domain
     #region PaymentNote
     ///<summary>
     /// PaymentNote
-    /// created on 2016-07-16 13:00:16
     ///</summary>
     [ProtoContract]
     public class PaymentNote : IEntity<int>
@@ -561,13 +558,13 @@ namespace Ayatta.Domain
         public string RawData { get; set; }
 
         ///<summary>
-        /// 只是管理员可见
+        /// 扩展
         ///</summary>
         [ProtoMember(8)]
-        public bool ForAdmin { get; set; }
+        public string Extra { get; set; }
 
         ///<summary>
-        /// 创建者 UserName
+        /// 创建者
         ///</summary>
         [ProtoMember(9)]
         public string CreatedBy { get; set; }

@@ -491,18 +491,18 @@ namespace Ayatta.Storage
             return Try(nameof(UserAddressUpdate), () =>
             {
                 var cmd = SqlBuilder.Update("UserAddress")
-                .Column("GroupId", o.GroupId)
+                //.Column("GroupId", o.GroupId)
                 .Column("Consignee", o.Consignee)
-                .Column("CompanyName", o.CompanyName)
-                .Column("CountryId", o.CountryId)
+                .Column("CompanyName", o.CompanyName ?? string.Empty)
+                //.Column("CountryId", o.CountryId)
                 .Column("RegionId", o.RegionId)
                 .Column("Province", o.Province)
                 .Column("City", o.City)
                 .Column("District", o.District)
                 .Column("Street", o.Street)
                 .Column("PostalCode", o.PostalCode)
-                .Column("Phone", o.Phone)
-                .Column("Mobile", o.Mobile)
+                .Column("Phone", o.Phone ?? string.Empty)
+                .Column("Mobile", o.Mobile ?? string.Empty)
                 .Column("IsDefault", o.IsDefault)
                 .Column("ModifiedBy", o.ModifiedBy)
                 .Column("ModifiedOn", o.ModifiedOn)
@@ -550,7 +550,7 @@ namespace Ayatta.Storage
         ///<returns></returns>
         public IList<UserAddress> UserAddressList(int userId)
         {
-            return UserAddressList(userId,0);
+            return UserAddressList(userId, 0);
         }
 
         /// <summary>

@@ -18,6 +18,7 @@ namespace Ayatta.Web.Controllers
         public PayController(DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<PayController> logger) : base(defaultStorage, defaultCache, logger)
         {
         }
+
         /*
         [HttpGet("for/{id}")]
         public IActionResult Pay(string id)
@@ -171,7 +172,7 @@ namespace Ayatta.Web.Controllers
                 return Redirect("http://localhost:39272/order/detail/" + id);
             }
 
-            var order = DefaultStorage.OrderGet(id, identity.Id, false);
+            var order = DefaultStorage.OrderMiniGet(id, identity.Id);
 
             if (order.PaymentType.IsOnlinePay() && order.Status == OrderStatus.WaitBuyerPay && order.Paid < order.Total)
             {
@@ -180,15 +181,19 @@ namespace Ayatta.Web.Controllers
                 {
                     var ipAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     var payment = order.ToPayment(platformId, ipAddress);//支付宝 微信需ip
-                    var paymentBanks = DefaultStorage.PaymentBankList(platformId);
-                    var paymentBank = paymentBanks.FirstOrDefault(o => o.Id == bankId);
-                    if (paymentBank != null)
+                    if (bankId > 0)
                     {
-                        //如果用户选择了具体的银行则填充Payment相关银行信息
-                        payment.BankId = paymentBank.Id;
-                        payment.BankCode = paymentBank.Code;
-                        payment.BankName = paymentBank.Bank.Name;
+                        var paymentBanks = DefaultStorage.PaymentBankList(platformId);
+                        var paymentBank = paymentBanks.FirstOrDefault(o => o.Id == bankId);
+                        if (paymentBank != null)
+                        {
+                            //如果用户选择了具体的银行则填充Payment相关银行信息
+                            payment.BankId = paymentBank.Id;
+                            payment.BankCode = paymentBank.Code;
+                            payment.BankName = paymentBank.Bank.Name;
+                        }
                     }
+
                     var created = DefaultStorage.PaymentCreate(payment);
                     if (created)
                     {
@@ -237,114 +242,193 @@ namespace Ayatta.Web.Controllers
         /// <returns></returns>
         private bool Notified(Notification notification)
         {
+            try
+            {
+                var now = DateTime.Now;
+                var payment = DefaultStorage.PaymentGet(notification.PayId);
+                if (payment == null)
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        Logger.LogWarning(1, "支付单({0})未找到", notification.PayId);
+
+                        var note = new PaymentNote();
+                        note.PayId = notification.PayId;
+                        note.PayNo = notification.PayNo;
+                        note.UserId = 0;
+                        note.Subject = "支付单未找到";
+                        note.Message = string.Empty;
+                        note.RawData = notification.Input;
+                        note.Extra = string.Empty;
+                        note.CreatedBy = "sys";
+                        note.CreatedOn = now;
+
+                        PaymentNoteCreate(note);
+                    });
+                    return false;
+                }
+                if (payment.Status)
+                {
+                    return true;//付款单已支付成功 直接返回true  (支付平台可能会多次通知)
+                }
+
+                var status = DefaultStorage.PaymentStatusUpdate(notification.PayId, notification.PayNo, true);//更新支付单状态
+
+                if (status)
+                {
+                    //异步处理支付成功后的相关逻辑
+                    Task.Factory.StartNew(() => Async(payment));
+                }
+                else
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        Logger.LogWarning(1, "更新支付单({0})状态失败", notification.PayId);
+
+                        var note = new PaymentNote();
+                        note.PayId = notification.PayId;
+                        note.PayNo = notification.PayNo;
+                        note.UserId = payment.UserId;
+                        note.Subject = "更新支付单状态失败";
+                        note.Message = string.Empty;
+                        note.RawData = notification.Input;
+                        note.Extra = string.Empty;
+                        note.CreatedBy = "sys";
+                        note.CreatedOn = now;
+
+                        PaymentNoteCreate(note);
+                    });
+                }
+
+                return status;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(1, e, "处理支付平台通知发生异常");
+
+                return false;
+            }
+        }
+
+        private void PaymentNoteCreate(PaymentNote note)
+        {
+            var status = DefaultStorage.PaymentNoteCreate(note) > 0;
+
+            if (!status)
+            {
+                Logger.LogError(1, "生成PaymentNote失败 支付单({0})", note.PayId);
+            }
+        }
+
+        /// <summary>
+        /// 处理订单 支持多次支付/合并支付
+        /// </summary>
+        /// <param name="payment"></param>
+        private void Async(Payment payment)
+        {
             var now = DateTime.Now;
 
-            var payment = DefaultStorage.PaymentGet(notification.PayId);
-            if (payment.Status)
+            if (payment.Status && payment.Type == 0)
             {
-                return true;//付款单已支付成功 直接返回true  (支付平台可能会多次通知)
-            }
+                var fail = 0m;//更新失败
+                var remain = payment.Amount;//单独或合并支付总金额
 
-            payment.No = notification.PayNo;//获取支付平台交易号
-
-            var status = DefaultStorage.PaymentStatusUpdate(payment.Id, payment.No, true);//更新支付单状态
-            if (status)
-            {
-                //异步处理支付成功后的相关逻辑
-                Task.Factory.StartNew(() =>
+                var oids = payment.RelatedId.Split(',');//可能为多个订单号
+                foreach (var oid in oids)
                 {
-                    if (payment.Type == 0) //处理订单
+                    if (remain <= 0)
                     {
-                        var orderId = payment.RelatedId;//可能为多个订单号
-
-                        //TODO 处理一次支付多个订单的情况
-
-                        var order = DefaultStorage.OrderGet(orderId, payment.UserId, false); //获取订单
-                        if (order != null)
+                        break;
+                    }
+                    var order = DefaultStorage.OrderMiniGet(oid, payment.UserId); //获取订单
+                    if (order != null)
+                    {
+                        //订单为在线支付 状态为待付款
+                        if (order.PaymentType.IsOnlinePay() && order.Status == OrderStatus.WaitBuyerPay)
                         {
-                            //订单为在线支付 状态为待付款
-                            if (order.PaymentType.IsOnlinePay() && order.Status == OrderStatus.WaitBuyerPay)
+                            var status = false;//更新订单结果
+                            var amount = order.Unpaid;//待支付金额
+                            if (remain - amount >= 0)
                             {
-                                var amount = payment.Amount;
-                                var done = (payment.Amount + order.Paid) == order.Total;
-
-                                //是否已付清(付清后如果是在线支付订单则会更新订单状态为已付款待发货并更新订单有效期)
-                                status = DefaultStorage.OrderPaid(orderId, amount, done); //更新订单已付金额及状态
-
-                                if (status) return;
-
-                                Logger.LogWarning(2, "更新订单({orderId})已付金额及状态失败", orderId);
-
-                                var note = new OrderNote();
-                                note.Id = 0;
-                                note.Type = 0;
-                                note.OrderId = orderId;
-                                note.Subject = "更新订单已付金额及状态失败";
-                                note.Message = payment.Id;
-                                note.CreatedBy = "";
-                                note.CreatedOn = now;
-
-                                status = DefaultStorage.OrderNoteCreate(note) > 0;
-
-                                if (!status)
+                                //付清(付清后如果是在线支付订单则会更新订单状态为已付款待发货并更新订单有效期)
+                                status = DefaultStorage.OrderPaid(oid, amount, true); //更新订单已付金额及状态
+                                if (status)
                                 {
-                                    Logger.LogError(2, "生成OrderNote失败 支付单({paymentId}) 订单({orderId}", payment.Id, orderId);
+                                    remain -= amount;
+                                }
+                                else
+                                {
+                                    fail += amount;
                                 }
                             }
-                        }
-                        else
-                        {
-                            Logger.LogWarning(1, "支付单({paymentId})未匹配到订单({orderId})", payment.Id, orderId);
-
-                            var note = new PaymentNote();
-                            note.Id = 0;
-                            note.PayId = payment.Id;
-                            note.PayNo = payment.No;
-                            note.UserId = payment.UserId;
-                            note.Subject = "支付单未匹配到订单";
-                            note.Message = orderId;
-                            note.RawData = "";
-                            note.CreatedBy = "";
-                            note.CreatedOn = now;
-
-                            status = DefaultStorage.PaymentNoteCreate(note) > 0;
+                            else
+                            {
+                                //剩余金额不足 需多次支付
+                                status = DefaultStorage.OrderPaid(oid, remain, false);
+                                if (status)
+                                {
+                                    remain = 0;
+                                }
+                                else
+                                {
+                                    fail += remain;
+                                }
+                            }
 
                             if (!status)
                             {
-                                Logger.LogError(1, "生成PaymentNote失败 支付单({paymentId}) 订单({orderId})", payment.Id, orderId);
+                                Logger.LogWarning(2, "更新订单({orderId})已付金额及状态失败", oid);
+
+                                var note = new OrderNote();
+                                note.Type = 1;
+                                note.UserId = payment.UserId;
+                                note.OrderId = oid;
+                                note.Subject = "更新订单已付金额/状态失败";
+                                note.Message = string.Format("支付单({0})更新订单({1})已付金额/状态失败", payment.Id, oid);
+                                note.Extra = (remain - amount >= 0 ? amount : remain).ToString("F2");
+                                note.CreatedBy = "sys";
+                                note.CreatedOn = now;
+
+                                if (DefaultStorage.OrderNoteCreate(note) == 0)
+                                {
+                                    Logger.LogError(2, "生成OrderNote失败 支付单({paymentId}) 订单({orderId}", payment.Id, oid);
+                                }
+
                             }
+
                         }
                     }
-                });
-            }
-            else
-            {
-                Task.Factory.StartNew(() =>
-                {
-                    Logger.LogWarning(1, "更新支付单({paymentId})状态失败", payment.Id);
-
-                    var note = new PaymentNote();
-                    note.Id = 0;
-                    note.PayId = payment.Id;
-                    note.PayNo = payment.No;
-                    note.UserId = payment.UserId;
-                    note.Subject = "更新支付单状态失败";
-                    note.Message = "";
-                    note.RawData = "";
-                    note.ForAdmin = true;
-                    note.CreatedBy = "";
-                    note.CreatedOn = now;
-
-                    status = DefaultStorage.PaymentNoteCreate(note) > 0;
-
-                    if (!status)
+                    else
                     {
-                        Logger.LogError(1, "生成PaymentNote失败 支付单({paymentId})", payment.Id);
+                        Logger.LogWarning(1, "支付单({paymentId})未匹配到订单({orderId})", payment.Id, oid);
+
+                        var note = new PaymentNote();
+                        note.PayId = payment.Id;
+                        note.PayNo = payment.No;
+                        note.UserId = payment.UserId;
+                        note.Subject = "支付单未匹配到订单";
+                        note.Message = string.Format("支付单({0})未匹配到订单({1})", payment.Id, oid);
+                        note.RawData = string.Empty;
+                        note.Extra = oid;
+                        note.CreatedBy = "sys";
+                        note.CreatedOn = now;
+
+                        if (DefaultStorage.PaymentNoteCreate(note) == 0)
+                        {
+                            Logger.LogError(1, "生成PaymentNote失败 支付单({paymentId}) 订单({orderId})", payment.Id, oid);
+                        }
                     }
-                });
+                }
+
+                if (remain - fail > 0)
+                {
+                    //用户在支付平台支付成功 但未能及时收到通知或成功处理 造成用户多次支付 需把用户多支付的金额 退到用户钱包
+
+
+                }
             }
-            return status;
         }
+
         #endregion
     }
 }

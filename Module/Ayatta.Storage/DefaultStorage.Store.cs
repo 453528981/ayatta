@@ -6,6 +6,7 @@ using System.Linq;
 using Ayatta.Domain;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Ayatta.Storage.Param;
 
 namespace Ayatta.Storage
 {
@@ -580,33 +581,145 @@ namespace Ayatta.Storage
         #region 商品评价
 
         ///<summary>
-        /// 商品评价创建
+        /// 商品评价是否存在
         ///</summary>
-        ///<param name="o">商品评价</param>
+        ///<param name="id">商品id</param>
         ///<returns></returns>
-        public bool ItemCommentCreate(ItemComment o)
+        public bool ItemCommentExist(int id)
+        {
+            return Try(nameof(ItemCommentExist), () =>
+            {
+                var cmd = SqlBuilder.Select("1")
+                .From("ItemComment")
+                .Where("Id=@id", new { id })
+                .ToCommand();
+
+                return StoreConn.ExecuteScalar<bool>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 获取商品评价汇总摘要
+        ///</summary>
+        ///<param name="id">商品id</param>
+        ///<returns></returns>
+        public ItemComment ItemCommentGet(int id)
+        {
+            var sql = @"select * from ItemComment where id=@id";
+            var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+            return StoreConn.QueryFirstOrDefault<ItemComment>(cmd);
+        }
+
+
+        /// <summary>
+        /// 创建商品评价汇总摘要
+        /// </summary>
+        ///<param name="id">商品id</param>
+        /// <returns></returns>
+        public bool ItemCommentCreate(int id)
         {
             return Try(nameof(ItemCommentCreate), () =>
             {
                 var cmd = SqlBuilder.Insert("ItemComment")
-                .Column("Id", o.Id)
-                .Column("SkuId", o.SkuId)
-                .Column("AvgScore", o.AvgScore)
-                .Column("ImgCount", o.ImgCount)
-                .Column("SumCount", o.SumCount)
-                .Column("CountA", o.CountA)
-                .Column("CountB", o.CountB)
-                .Column("CountC", o.CountC)
-                .Column("CountD", o.CountD)
-                .Column("CountE", o.CountE)
-                .Column("TagData", o.TagData)
-                .Column("CreatedOn", o.CreatedOn)
-                .Column("ModifiedOn", o.ModifiedOn)
+                .Column("Id", id)
+                .Column("ImgCount", 0)
+                .Column("SumCount", 0)
+                .Column("CountA", 0)
+                .Column("CountB", 0)
+                .Column("CountC", 0)
+                .Column("CountD", 0)
+                .Column("CountE", 0)
+                .Column("TagData", string.Empty)
+                .Column("CreatedOn", DateTime.Now)
+                .Column("ModifiedOn", string.Empty)
                 .ToCommand();
 
                 return StoreConn.Execute(cmd) > 0;
             });
         }
+
+
+
+        ///<summary>
+        /// 创建商品评价
+        ///</summary>
+        ///<param name="o">商品评价详情</param>
+        ///<returns></returns>
+        public int CommentCreate(Comment o)
+        {
+            return Try(nameof(CommentCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("Comment")
+                .Column("Score", o.Score)
+                .Column("Content", o.Content)
+                .Column("ItemId", o.ItemId)
+                .Column("ItemImg", o.ItemImg)
+                .Column("ItemName", o.ItemName)
+                .Column("SkuId", o.SkuId)
+                .Column("SkuProp", o.SkuProp)
+                .Column("TagData", o.TagData)
+                .Column("ImageData", o.ImageData)
+                .Column("Recommend", o.Recommend)
+                .Column("LikeCount", o.LikeCount)
+                .Column("ReplyCount", o.ReplyCount)
+                .Column("RewardPoint", o.RewardPoint)
+                .Column("UserId", o.UserId)
+                .Column("UserName", o.UserName)
+                .Column("SellerId", o.SellerId)
+                .Column("OrderId", o.OrderId)
+                .Column("Status", o.Status)
+                .Column("CreatedBy", o.CreatedBy)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return StoreConn.ExecuteScalar<int>(cmd);
+            });
+        }
+
+        public IPagedList<Comment> CommentPagedList(PagedParam param)
+        {
+            var cmd = SqlBuilder.Select("*")
+                .From("Comment")
+                .ToCommand(param.PageIndex, param.PageSize);
+            var list = TradeConn.PagedList<Comment>(param.PageIndex, param.PageSize, cmd);
+            var ids = string.Join(",", list.Select(x => x.Id));
+            var sql = "select * from CommentReply where CommentId in(" + ids + ")";
+            var items = TradeConn.Query<CommentReply>(sql);
+            foreach (var o in list)
+            {
+                o.Replies = items.Where(x => x.ParentId == o.Id).ToList();
+            }
+            return list;
+        }
+
+        ///<summary>
+        /// 创建评价回复
+        ///</summary>
+        ///<param name="o">评价回复</param>
+        ///<returns></returns>
+        public int CommentReplyCreate(CommentReply o)
+        {
+            return Try(nameof(CommentReplyCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("CommentReply")
+                .Column("ItemId", o.ItemId)
+                .Column("ParentId", o.ParentId)
+                .Column("CommentId", o.CommentId)
+                .Column("Reply", o.Reply)
+                .Column("Replier", o.Replier)
+                .Column("RepliedOn", o.RepliedOn)
+                .Column("SellerId", o.SellerId)
+                .Column("SellerName", o.SellerName)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .ToCommand(true);
+                return StoreConn.ExecuteScalar<int>(cmd);
+            });
+
+        }
+
+
 
         #endregion
 
@@ -624,20 +737,23 @@ namespace Ayatta.Storage
                 .Column("SkuId", o.SkuId)
                 .Column("ItemId", o.ItemId)
                 .Column("GroupId", o.GroupId)
-                .Column("Question", o.Question)
                 .Column("UserId", o.UserId)
-                .Column("UserNickname", o.UserNickname)
+                .Column("UserName", o.UserName)
+                .Column("Question", o.Question)
                 .Column("Reply", o.Reply)
+                .Column("ReplyFlag", o.ReplyFlag)
                 .Column("Replier", o.Replier)
-                .Column("ReplierId", o.ReplierId)
                 .Column("RepliedOn", o.RepliedOn)
                 .Column("SellerId", o.SellerId)
+                .Column("SellerName", o.SellerName)
+                .Column("Useful", o.Useful)
                 .Column("Status", o.Status)
                 .Column("CreatedBy", o.CreatedBy)
                 .Column("CreatedOn", o.CreatedOn)
                 .Column("ModifiedBy", o.ModifiedBy)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .ToCommand(true);
+
                 return StoreConn.ExecuteScalar<int>(cmd);
             });
         }
@@ -646,21 +762,22 @@ namespace Ayatta.Storage
         /// 商品咨询回复
         /// </summary>
         /// <param name="id">商品咨询id</param>
+        /// <param name="sellerId">卖家Id</param>
         /// <param name="reply">回复内容</param>
         /// <param name="replier">回复者</param>
-        /// <param name="replierId">回复者id</param>
+        /// <param name="replyFlag">回复处理标识</param>
         /// <returns></returns>
-        public bool ConsultationReply(int id, string reply, string replier, int replierId)
+        public bool ConsultationReply(int id, int sellerId, string reply, string replier, byte replyFlag)
         {
             return Try(nameof(ConsultationReply), () =>
             {
                 var cmd = SqlBuilder.Update("Consultation")
                 .Column("Reply", reply)
+                .Column("ReplyFlag", replyFlag)
                 .Column("Replier", replier)
-                .Column("ReplierId", replierId)
                 .Column("RepliedOn", DateTime.Now)
                 .Column("Status", 0)
-               .Where("Id=@id", new { id })
+                .Where("Id=@id and SellerId=@sellerId", new { id, sellerId })
                .ToCommand();
                 return StoreConn.Execute(cmd) > 0;
             });

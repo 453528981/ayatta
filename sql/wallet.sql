@@ -108,8 +108,8 @@ UserId int not null default 0 comment 'UserId',
 Subject nvarchar(50) not null default '' comment '主题',
 Message nvarchar(500) not null default '' comment '消息',
 RawData nvarchar(500) not null default '' comment '支付平台 支付信息',
-ForAdmin bool not null default 0 comment '只是管理员可见',
-CreatedBy nvarchar(50) not null default '' comment '创建者 UserName',
+Extra nvarchar(500) not null default '' comment '扩展',
+CreatedBy nvarchar(50) not null default '' comment '创建者',
 CreatedOn datetime default current_timestamp  not null comment '创建时间',
 primary key (Id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='支付记录';
