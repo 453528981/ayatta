@@ -1,4 +1,7 @@
 ﻿<div class="container">
+    <div >
+    @await Component.InvokeAsync("HomeSlide", "1705251537")
+</div>
     <div class="block-header">
         <h2>Generic Class Reference <small>Following are the custom generic classes available with the template and can be used alongside with any elements. To modify or delete, please refer 'generic.less'</small></h2>
 
@@ -415,3 +418,13 @@
     <p>@User.AsIdentity().Id</p>
     <p>@User.AsIdentity().Name</p>
 </div>
+
+@section jsOmega{
+    <script>
+        $(function () {
+            $('.carousel').carousel({
+                interval: 2000
+            })
+        });
+    </script>
+}

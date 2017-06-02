@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 
 namespace Ayatta.Web
 {
@@ -33,7 +34,7 @@ namespace Ayatta.Web
                 options.CookieName = "x-xsrf-token";
                 options.FormFieldName = "x-xsrf-token";
             });
-
+            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddDistributedMemoryCache();
 
             services.AddDefaultStorage();

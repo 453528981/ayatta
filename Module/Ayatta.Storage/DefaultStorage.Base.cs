@@ -7,6 +7,7 @@ namespace Ayatta.Storage
 {
     public partial class DefaultStorage
     {
+        #region 类目
         public Catg CatgGet(int id)
         {
             var sql = @"select * from catg where id=@id;
@@ -93,167 +94,254 @@ namespace Ayatta.Storage
             var cmd = SqlBuilder.Raw(sql, new { catgId, propId }).ToCommand();
             return BaseConn.Query<Catg.Prop.Value>(cmd).ToList();
         }
+        #endregion
 
-        #region OAuthProvider
+        #region 第三方登录
         ///<summary>
-        /// OAuthProviderCreate
+        /// 第三方登录 创建
         ///</summary>
         ///<param name="o">OAuthProvider</param>
         ///<returns></returns>
         public bool OAuthProviderCreate(OAuthProvider o)
         {
-            var cmd = SqlBuilder.Insert("OAuthProvider")
+            return Try(nameof(OAuthProviderCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("OAuthProvider")
                 .Column("Id", o.Id)
                 .Column("Name", o.Name)
                 .Column("ClientId", o.ClientId)
                 .Column("ClientSecret", o.ClientSecret)
-                .Column("Scope", o.Scope)
+                .Column("Scope", o.Scope ?? string.Empty)
                 .Column("CallbackEndpoint", o.CallbackEndpoint)
                 .Column("BaseUrl", o.BaseUrl)
                 .Column("AuthorizationEndpoint", o.AuthorizationEndpoint)
                 .Column("TokenEndpoint", o.TokenEndpoint)
-                .Column("UserEndpoint", o.UserEndpoint)
+                .Column("UserEndpoint", o.UserEndpoint ?? string.Empty)
                 .Column("Priority", o.Priority)
-                .Column("Badge", o.Badge)
-                .Column("Extra", o.Extra)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
                 .Column("Status", o.Status)
                 .Column("CreatedOn", o.CreatedOn)
                 .Column("ModifiedBy", o.ModifiedBy)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .ToCommand();
-            return BaseConn.Execute(cmd) > 0;
+                return BaseConn.Execute(cmd) > 0;
+            });
+
         }
 
         ///<summary>
-        /// OAuthProviderUpdate
+        /// 第三方登录 更新
         ///</summary>
         ///<param name="o">OAuthProvider</param>
         ///<returns></returns>
         public bool OAuthProviderUpdate(OAuthProvider o)
         {
-            var cmd = SqlBuilder.Update("OAuthProvider")
-            .Column("Name", o.Name)
-            .Column("ClientId", o.ClientId)
-            .Column("ClientSecret", o.ClientSecret)
-            .Column("Scope", o.Scope)
-            .Column("CallbackEndpoint", o.CallbackEndpoint)
-            .Column("BaseUrl", o.BaseUrl)
-            .Column("AuthorizationEndpoint", o.AuthorizationEndpoint)
-            .Column("TokenEndpoint", o.TokenEndpoint)
-            .Column("UserEndpoint", o.UserEndpoint)
-            .Column("Priority", o.Priority)
-            .Column("Badge", o.Badge)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .Where("Id=@id", new { o.Id })
-            .ToCommand();
-            return BaseConn.Execute(cmd) > 0;
+            return Try(nameof(OAuthProviderUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("OAuthProvider")
+                .Column("Name", o.Name)
+                .Column("ClientId", o.ClientId)
+                .Column("ClientSecret", o.ClientSecret)
+                .Column("Scope", o.Scope ?? string.Empty)
+                .Column("CallbackEndpoint", o.CallbackEndpoint)
+                .Column("BaseUrl", o.BaseUrl)
+                .Column("AuthorizationEndpoint", o.AuthorizationEndpoint)
+                .Column("TokenEndpoint", o.TokenEndpoint)
+                .Column("UserEndpoint", o.UserEndpoint ?? string.Empty)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+
         }
 
         ///<summary>
-        /// OAuthProviderGet
+        /// 第三方登录 删除
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public bool OAuthProviderDelete(string id)
+        {
+            return Try(nameof(OAuthProviderDelete), () =>
+            {
+                var sql = @"delete from OAuthProvider where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 第三方登录 是否存在
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public bool OAuthProviderExist(string id)
+        {
+            return Try(nameof(OAuthProviderExist), () =>
+            {
+                var sql = @"select 1 from OAuthProvider where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.ExecuteScalar<bool>(cmd);
+            });
+        }
+
+
+        ///<summary>
+        /// 第三方登录 获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
         public OAuthProvider OAuthProviderGet(string id)
         {
-            var sql = @"select * from OAuthProvider where id=@id";
-            var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-            return BaseConn.QueryFirstOrDefault<OAuthProvider>(cmd);
+            return Try(nameof(OAuthProviderGet), () =>
+            {
+                var sql = @"select * from OAuthProvider where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<OAuthProvider>(cmd);
+            });
         }
 
-        /**
         ///<summary>
-        /// OAuthProviderGet
-        /// created on 2016-07-14 17:00:13
-        ///</summary>
-        ///<param name="name">name</param>
-        ///<returns></returns>
-        public OAuthProvider OAuthProviderGet(string name)
-        {
-            var sql = @"select * from OAuthProvider where name=@name";
-            var cmd = SqlBuilder.Raw(sql, new { name }).ToCommand();
-            return BaseConn.QueryFirstOrDefault<OAuthProvider>(cmd);
-        }
-    */
-        ///<summary>
-        /// OAuthProviderList
+        /// 第三方登录 列表
         ///</summary>
         ///<returns></returns>
         public IList<OAuthProvider> OAuthProviderList()
         {
-
-            var sql = @"select * from OAuthProvider";
-            var cmd = SqlBuilder.Raw(sql).ToCommand();
-            return BaseConn.Query<OAuthProvider>(cmd).ToList();
+            return Try(nameof(OAuthProviderList), () =>
+            {
+                var sql = @"select * from OAuthProvider";
+                var cmd = SqlBuilder.Raw(sql).ToCommand();
+                return BaseConn.Query<OAuthProvider>(cmd).ToList();
+            });
         }
 
         #endregion
 
-        #region Help
+        #region 帮助
         ///<summary>
-        /// HelpCreate
+        /// 帮助 创建
         ///</summary>
-        ///<param name="o">Help</param>
+        ///<param name="o">帮助</param>
         ///<returns></returns>
         public int HelpCreate(Help o)
         {
-            var cmd = SqlBuilder.Insert("Help")
-            .Column("ParentId", o.ParentId)
-            .Column("Title", o.Title)
-            .Column("NavUrl", o.NavUrl)
-            .Column("Content", o.Content)
-            .Column("Priority", o.Priority)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("CreatedOn", o.CreatedOn)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .ToCommand(true);
-            return BaseConn.ExecuteScalar<int>(cmd);
+            return Try(nameof(HelpCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("Help")
+                .Column("ParentId", o.ParentId)
+                .Column("Title", o.Title)
+                .Column("NavUrl", o.NavUrl ?? string.Empty)
+                .Column("Content", o.Content ?? string.Empty)
+                .Column("Priority", o.Priority)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return BaseConn.ExecuteScalar<int>(cmd);
+            });
+
         }
 
         ///<summary>
-        /// HelpUpdate
+        /// 帮助 更新
         ///</summary>
-        ///<param name="o">Help</param>
+        ///<param name="o">帮助</param>
         ///<returns></returns>
         public bool HelpUpdate(Help o)
         {
-            var cmd = SqlBuilder.Update("Help")
-            .Column("ParentId", o.ParentId)
-            .Column("Title", o.Title)
-            .Column("NavUrl", o.NavUrl)
-            .Column("Content", o.Content)
-            .Column("Priority", o.Priority)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .Where("Id=@id", new { o.Id })
-            .ToCommand();
-            return BaseConn.Execute(cmd) > 0;
+            return Try(nameof(HelpUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("Help")
+                .Column("ParentId", o.ParentId)
+                .Column("Title", o.Title)
+                .Column("NavUrl", o.NavUrl ?? string.Empty)
+                .Column("Content", o.Content ?? string.Empty)
+                .Column("Priority", o.Priority)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+
         }
 
         ///<summary>
-        /// HelpGet
+        /// 帮助 删除
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public bool HelpDelete(int id)
+        {
+            return Try(nameof(HelpDelete), () =>
+            {
+                var sql = @"delete from Help where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 帮助 获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
         public Help HelpGet(int id)
         {
-            var sql = @"select * from Help where id=@id";
-            var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-            return BaseConn.QueryFirstOrDefault<Help>(cmd);
+            return Try(nameof(HelpGet), () =>
+            {
+                var sql = @"select * from Help where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<Help>(cmd);
+            });
+        }
+
+        /// <summary>
+        /// 帮助 分页
+        /// </summary>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
+        /// <returns></returns>
+        public IPagedList<Help> HelpPagedList(int page = 1, int size = 20, string keyword = null, bool? status = null)
+        {
+            if (size < 0)
+            {
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(HelpPagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*").From("Help")
+                .Where(!string.IsNullOrEmpty(keyword), "Title=@keyword", new { keyword })//Regex.IsMatch(keyword, "^\\d+$")
+                .Where(status.HasValue, "Status=@status", new { status })
+                .ToCommand(page, size);
+
+                return BaseConn.PagedList<Help>(page, size, cmd);
+            });
         }
 
         #endregion
 
         #region 国家
         ///<summary>
-        /// 国家创建
+        /// 国家 创建
         ///</summary>
         ///<param name="o">国家</param>
         ///<returns></returns>
@@ -267,10 +355,10 @@ namespace Ayatta.Storage
                 .Column("Name", o.Name)
                 .Column("Flag", o.Flag)
                 .Column("EnName", o.EnName)
-                .Column("Extra", o.Extra)
+                .Column("Extra", o.Extra ?? string.Empty)
                 .Column("Status", o.Status)
                 .Column("CreatedOn", o.CreatedOn)
-                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .ToCommand();
                 return BaseConn.Execute(cmd) > 0;
@@ -278,7 +366,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// 国家更新
+        /// 国家 更新
         ///</summary>
         ///<param name="o">国家</param>
         ///<returns></returns>
@@ -291,9 +379,9 @@ namespace Ayatta.Storage
                 .Column("Name", o.Name)
                 .Column("Flag", o.Flag)
                 .Column("EnName", o.EnName)
-                .Column("Extra", o.Extra)
+                .Column("Extra", o.Extra ?? string.Empty)
                 .Column("Status", o.Status)
-                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .Where("Id=@id", new { o.Id })
                 .ToCommand();
@@ -302,7 +390,22 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// 国家获取
+        /// 国家 删除
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public bool CountryDelete(int id)
+        {
+            return Try(nameof(CountryDelete), () =>
+            {
+                var sql = @"delete from Country where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 国家 获取
         ///</summary>
         ///<param name="id">三位数字代码</param>
         ///<returns></returns>
@@ -317,7 +420,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// 国家获取
+        /// 国家 获取
         ///</summary>
         ///<param name="code">三位字母代码</param>
         ///<returns></returns>
@@ -332,7 +435,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// 国家是否存在
+        /// 国家 是否存在
         ///</summary>
         ///<param name="id">三位数字代码</param>
         ///<returns></returns>
@@ -347,7 +450,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// 国家是否存在
+        /// 国家 是否存在
         ///</summary>
         ///<param name="code">三位字母代码</param>
         ///<returns></returns>
@@ -361,93 +464,138 @@ namespace Ayatta.Storage
             });
         }
 
+        /// <summary>
+        /// 国家 分页
+        /// </summary>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
+        /// <returns></returns>
+        public IPagedList<Country> CountryPagedList(int page = 1, int size = 20, string keyword = null, bool? status = null)
+        {
+            if (size < 0)
+            {
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(CountryPagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*").From("Country")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })//Regex.IsMatch(keyword, "^\\d+$")
+                .Where(status.HasValue, "Status=@status", new { status })
+                .ToCommand(page, size);
+
+                return BaseConn.PagedList<Country>(page, size, cmd);
+            });
+        }
+
         #endregion
 
         #region 中国行政区(省市区)
         ///<summary>
-        /// 行政区创建
+        /// 行政区 创建
         ///</summary>
         ///<param name="o">行政区</param>
         ///<returns></returns>
         public bool RegionCreate(Region o)
         {
-            var cmd = SqlBuilder.Insert("Region")
-             .Column("Id", o.Id)
-            .Column("ParentId", o.ParentId)
-            .Column("Name", o.Name)
-            .Column("PostalCode", o.PostalCode)
-            .Column("GroupId", o.GroupId)
-            .Column("Priority", o.Priority)
-            .Column("Badge", o.Badge)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("CreatedOn", o.CreatedOn)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .ToCommand(true);
-            return BaseConn.Execute(cmd) > 0;
+            return Try(nameof(RegionCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("Region")
+                .Column("Id", o.Id)
+                .Column("ParentId", o.ParentId)
+                .Column("Name", o.Name)
+                .Column("PostalCode", o.PostalCode)
+                .Column("GroupId", o.GroupId)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return BaseConn.Execute(cmd) > 0;
+            });
         }
 
         ///<summary>
-        /// 行政区更新
+        /// 行政区 更新
         ///</summary>
         ///<param name="o">行政区</param>
         ///<returns></returns>
         public bool RegionUpdate(Region o)
         {
-            var cmd = SqlBuilder.Update("Region")
-            .Column("ParentId", o.ParentId)
-            .Column("Name", o.Name)
-            .Column("PostalCode", o.PostalCode)
-            .Column("GroupId", o.GroupId)
-            .Column("Priority", o.Priority)
-            .Column("Badge", o.Badge)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .Where("Id=@id and ParentId=@parentId", new { o.Id, o.ParentId })
-            .ToCommand();
-            return BaseConn.Execute(cmd) > 0;
+            return Try(nameof(RegionUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("Region")
+                .Column("ParentId", o.ParentId)
+                .Column("Name", o.Name)
+                .Column("PostalCode", o.PostalCode)
+                .Column("GroupId", o.GroupId)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id and ParentId=@parentId", new { o.Id, o.ParentId })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
         }
 
         ///<summary>
-        /// 行政区获取
+        /// 行政区 获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
         public Region RegionGet(string id)
         {
-            var sql = @"select * from Region where id=@id";
-            var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-            return BaseConn.QueryFirstOrDefault<Region>(cmd);
+            return Try(nameof(RegionGet), () =>
+            {
+                var sql = @"select * from Region where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<Region>(cmd);
+            });
         }
 
         ///<summary>
-        /// 行政区列表
+        /// 行政区 列表
         ///</summary>
         ///<returns></returns>
         public IList<Region> RegionList()
         {
-            var sql = @"select * from Region";
-            var cmd = SqlBuilder.Raw(sql).ToCommand();
-            return BaseConn.Query<Region>(cmd).ToList();
+            return Try(nameof(RegionList), () =>
+            {
+                var sql = @"select * from Region";
+                var cmd = SqlBuilder.Raw(sql).ToCommand();
+                return BaseConn.Query<Region>(cmd).ToList();
+            });
         }
 
         /// <summary>
-        /// 行政区列表
+        /// 行政区 列表
         /// </summary>
         /// <param name="parentId">父id</param>
         /// <returns></returns>
         public IList<Region> RegionList(string parentId)
         {
-            var sql = @"select * from Region where ParentId=@parentId";
-            var cmd = SqlBuilder.Raw(sql, new { parentId }).ToCommand();
-            return BaseConn.Query<Region>(cmd).ToList();
+            return Try(nameof(RegionList), () =>
+            {
+                var sql = @"select * from Region where ParentId=@parentId";
+                var cmd = SqlBuilder.Raw(sql, new { parentId }).ToCommand();
+                return BaseConn.Query<Region>(cmd).ToList();
+            });
         }
 
         /// <summary>
-        /// 行政区列表分页
+        /// 行政区 分页
         /// </summary>
         /// <param name="page">分页</param>
         /// <param name="size">分页大小</param>
@@ -455,234 +603,345 @@ namespace Ayatta.Storage
         /// <returns></returns>
         public IPagedList<Region> RegionPagedList(int page = 1, int size = 50, string parentId = null)
         {
-            var cmd = SqlBuilder.Select("*").From("Region")
+            return Try(nameof(RegionPagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*").From("Region")
                 .Where(!string.IsNullOrEmpty(parentId), "parentId=@parentId", new { parentId })
                 .ToCommand(page, size);
-
-            return BaseConn.PagedList<Region>(page, size, cmd);
+                return BaseConn.PagedList<Region>(page, size, cmd);
+            });
         }
 
         #endregion
 
         #region 银行
         ///<summary>
-        /// 银行创建
+        /// 银行 创建
         ///</summary>
         ///<param name="o">银行</param>
         ///<returns></returns>
         public int BankCreate(Bank o)
         {
-            var cmd = SqlBuilder.Insert("Bank")
-            .Column("Name", o.Name)
-            .Column("IconSrc", o.IconSrc)
-            .Column("Description", o.Description)
-            .Column("Priority", o.Priority)
-            .Column("Badge", o.Badge)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("CreatedOn", o.CreatedOn)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .ToCommand(true);
-            return BaseConn.ExecuteScalar<int>(cmd);
+            return Try(nameof(BankCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("Bank")
+                .Column("Name", o.Name)
+                .Column("IconSrc", o.IconSrc ?? string.Empty)
+                .Column("Description", o.Description ?? string.Empty)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return BaseConn.ExecuteScalar<int>(cmd);
+            });
         }
 
         ///<summary>
-        /// 银行更新
+        /// 银行 更新
         ///</summary>
         ///<param name="o">银行</param>
         ///<returns></returns>
         public bool BankUpdate(Bank o)
         {
-            var cmd = SqlBuilder.Update("Bank")
-            .Column("Name", o.Name)
-            .Column("IconSrc", o.IconSrc)
-            .Column("Description", o.Description)
-            .Column("Priority", o.Priority)
-            .Column("Badge", o.Badge)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .Where("Id=@id", new { o.Id })
-            .ToCommand();
-            return BaseConn.Execute(cmd) > 0;
+            return Try(nameof(BankUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("Bank")
+                .Column("Name", o.Name)
+                .Column("IconSrc", o.IconSrc ?? string.Empty)
+                .Column("Description", o.Description ?? string.Empty)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
         }
 
         ///<summary>
-        /// 银行获取
+        /// 银行 删除
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public bool BankDelete(int id)
+        {
+            return Try(nameof(BankDelete), () =>
+            {
+                var sql = @"delete from Bank where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 银行 获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
         public Bank BankGet(int id)
         {
-            var sql = @"select * from Bank where id=@id";
-            var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-            return BaseConn.QueryFirstOrDefault<Bank>(cmd);
+            return Try(nameof(BankGet), () =>
+            {
+                var sql = @"select * from Bank where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<Bank>(cmd);
+            });
         }
 
+        /// <summary>
+        /// 银行 列表
+        /// </summary>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
+        /// <returns></returns>
+        public IPagedList<Bank> BankPagedList(int page = 1, int size = 20, string keyword = null, bool? status = null)
+        {
+            if (size < 0)
+            {
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(BankPagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*").From("Bank")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })//Regex.IsMatch(keyword, "^\\d+$")
+                .Where(status.HasValue, "Status=@status", new { status })
+                .ToCommand(page, size);
+                return BaseConn.PagedList<Bank>(page, size, cmd);
+            });
+        }
 
         #endregion
 
         #region 支付平台
         ///<summary>
-        /// 创建支付平台
+        /// 支付平台 创建
         ///</summary>
         ///<param name="o">PaymentPlatform</param>
         ///<returns></returns>
         public int PaymentPlatformCreate(PaymentPlatform o)
         {
-            var cmd = SqlBuilder.Insert("PaymentPlatform")
-            .Column("Name", o.Name)
-            .Column("IconSrc", o.IconSrc)
-            .Column("MerchantId", o.MerchantId)
-            .Column("PrivateKey", o.PrivateKey)
-            .Column("PublicKey", o.PublicKey)
-            .Column("GatewayUrl", o.GatewayUrl)
-            .Column("CallbackUrl", o.CallbackUrl)
-            .Column("NotifyUrl", o.NotifyUrl)
-            .Column("QueryUrl", o.QueryUrl)
-            .Column("RefundUrl", o.RefundUrl)
-            .Column("Description", o.Description)
-            .Column("Priority", o.Priority)
-            .Column("Badge", o.Badge)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("CreatedOn", o.CreatedOn)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .ToCommand(true);
-            return BaseConn.ExecuteScalar<int>(cmd);
+            return Try(nameof(PaymentPlatformCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("PaymentPlatform")
+                .Column("Name", o.Name)
+                .Column("IconSrc", o.IconSrc ?? string.Empty)
+                .Column("MerchantId", o.MerchantId)
+                .Column("PrivateKey", o.PrivateKey ?? string.Empty)
+                .Column("PublicKey", o.PublicKey ?? string.Empty)
+                .Column("GatewayUrl", o.GatewayUrl)
+                .Column("CallbackUrl", o.CallbackUrl)
+                .Column("NotifyUrl", o.NotifyUrl)
+                .Column("QueryUrl", o.QueryUrl ?? string.Empty)
+                .Column("RefundUrl", o.RefundUrl ?? string.Empty)
+                .Column("Description", o.Description ?? string.Empty)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return BaseConn.ExecuteScalar<int>(cmd);
+            });
         }
 
         ///<summary>
-        /// 更新支付平台
+        /// 支付平台 更新
         ///</summary>
         ///<param name="o">PaymentPlatform</param>
         ///<returns></returns>
         public bool PaymentPlatformUpdate(PaymentPlatform o)
         {
-            var cmd = SqlBuilder.Update("PaymentPlatform")
-            .Column("Name", o.Name)
-            .Column("IconSrc", o.IconSrc)
-            .Column("MerchantId", o.MerchantId)
-            .Column("PrivateKey", o.PrivateKey)
-            .Column("PublicKey", o.PublicKey)
-            .Column("GatewayUrl", o.GatewayUrl)
-            .Column("CallbackUrl", o.CallbackUrl)
-            .Column("NotifyUrl", o.NotifyUrl)
-            .Column("QueryUrl", o.QueryUrl)
-            .Column("RefundUrl", o.RefundUrl)
-            .Column("Description", o.Description)
-            .Column("Priority", o.Priority)
-            .Column("Badge", o.Badge)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .Where("Id=@id", new { o.Id })
-            .ToCommand();
-            return BaseConn.Execute(cmd) > 0;
+            return Try(nameof(PaymentPlatformUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("PaymentPlatform")
+                .Column("Name", o.Name)
+                .Column("IconSrc", o.IconSrc ?? string.Empty)
+                .Column("MerchantId", o.MerchantId)
+                .Column("PrivateKey", o.PrivateKey ?? string.Empty)
+                .Column("PublicKey", o.PublicKey ?? string.Empty)
+                .Column("GatewayUrl", o.GatewayUrl)
+                .Column("CallbackUrl", o.CallbackUrl)
+                .Column("NotifyUrl", o.NotifyUrl)
+                .Column("QueryUrl", o.QueryUrl ?? string.Empty)
+                .Column("RefundUrl", o.RefundUrl ?? string.Empty)
+                .Column("Description", o.Description ?? string.Empty)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
         }
 
         ///<summary>
-        /// 获取支付平台
+        /// 支付平台 删除
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public bool PaymentPlatformDelete(int id)
+        {
+            return Try(nameof(PaymentPlatformDelete), () =>
+            {
+                var sql = @"delete from PaymentPlatform where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 支付平台 获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
         public PaymentPlatform PaymentPlatformGet(int id)
         {
-            var sql = @"select * from PaymentPlatform where id=@id";
-            var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-            return BaseConn.QueryFirstOrDefault<PaymentPlatform>(cmd);
+            return Try(nameof(PaymentPlatformGet), () =>
+            {
+                var sql = @"select * from PaymentPlatform where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<PaymentPlatform>(cmd);
+            });
         }
 
-        ///<summary>
-        /// 获取支付平台
-        ///</summary>
-        ///<returns></returns>
-        public IList<PaymentPlatform> PaymentPlatformList()
+
+        /// <summary>
+        /// 支付平台 列表
+        /// </summary>
+        /// <param name="keyword"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public IList<PaymentPlatform> PaymentPlatformList(string keyword = null, bool? status = null)
         {
-            var sql = @"select * from PaymentPlatform";
-            var cmd = SqlBuilder.Raw(sql).ToCommand();
-            return BaseConn.Query<PaymentPlatform>(cmd).ToList();
+            return Try(nameof(PaymentPlatformList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*").From("PaymentPlatform")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })
+                .Where(status.HasValue, "Status=@status", new { status })
+                .ToCommand();
+                return BaseConn.Query<PaymentPlatform>(cmd).ToList();
+            });
         }
 
         #endregion
 
         #region 支付平台银行
         ///<summary>
-        /// 支付平台银行创建
+        /// 支付平台银行 创建
         ///</summary>
         ///<param name="o">支付平台银行</param>
         ///<returns></returns>
         public int PaymentBankCreate(PaymentBank o)
         {
-
             return Try(nameof(PaymentBankCreate), () =>
             {
                 var cmd = SqlBuilder.Insert("PaymentBank")
-                            .Column("BankId", o.BankId)
-                            .Column("PlatformId", o.PlatformId)
-                            .Column("Code", o.Code)
-                            .Column("Description", o.Description)
-                            .Column("Priority", o.Priority)
-                            .Column("Badge", o.Badge)
-                            .Column("Extra", o.Extra)
-                            .Column("Status", o.Status)
-                            .Column("CreatedOn", o.CreatedOn)
-                            .Column("ModifiedBy", o.ModifiedBy)
-                            .Column("ModifiedOn", o.ModifiedOn)
-                            .ToCommand(true);
+                .Column("BankId", o.BankId)
+                .Column("PlatformId", o.PlatformId)
+                .Column("Code", o.Code)
+                .Column("Description", o.Description)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge)
+                .Column("Extra", o.Extra)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
                 return BaseConn.ExecuteScalar<int>(cmd);
             });
         }
 
         ///<summary>
-        /// 支付平台银行更新
+        /// 支付平台银行 更新
         ///</summary>
         ///<param name="o">支付平台银行</param>
         ///<returns></returns>
         public bool PaymentBankUpdate(PaymentBank o)
         {
-            var cmd = SqlBuilder.Update("PaymentBank")
-            .Column("BankId", o.BankId)
-            .Column("PlatformId", o.PlatformId)
-            .Column("Code", o.Code)
-            .Column("Description", o.Description)
-            .Column("Priority", o.Priority)
-            .Column("Badge", o.Badge)
-            .Column("Extra", o.Extra)
-            .Column("Status", o.Status)
-            .Column("ModifiedBy", o.ModifiedBy)
-            .Column("ModifiedOn", o.ModifiedOn)
-            .Where("Id=@id", new { o.Id })
-            .ToCommand();
-            return BaseConn.Execute(cmd) > 0;
+            return Try(nameof(PaymentBankUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("PaymentBank")
+                .Column("BankId", o.BankId)
+                .Column("PlatformId", o.PlatformId)
+                .Column("Code", o.Code)
+                .Column("Description", o.Description)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge)
+                .Column("Extra", o.Extra)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
         }
 
         ///<summary>
-        /// 支付平台银行获取
+        /// 支付平台银行 删除
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public bool PaymentBankDelete(int id)
+        {
+            return Try(nameof(PaymentPlatformDelete), () =>
+            {
+                var sql = @"delete from PaymentBank where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 支付平台银行 获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
         public PaymentBank PaymentBankGet(int id)
         {
-            var sql = @"select * from PaymentBank where id=@id";
-            var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-            return BaseConn.QueryFirstOrDefault<PaymentBank>(cmd);
+            return Try(nameof(PaymentBankGet), () =>
+            {
+                var sql = @"select * from PaymentBank where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<PaymentBank>(cmd);
+            });
         }
 
         /// <summary>
-        /// 支付平台下的银行列表
+        /// 支付平台银行 列表
         /// </summary>
         /// <param name="platformId">支付平台id</param>
         /// <returns></returns>
         public IList<PaymentBank> PaymentBankList(int platformId)
         {
-            var sql = @"select * from PaymentBank a inner join PaymentPlatform b on a.PlatformId=b.Id inner join PaymentBank c on a.BankId=c.Id where a.PlatformId=@platformId";
-            var cmd = SqlBuilder.Raw(sql).ToCommand();
-            return BaseConn.Query<PaymentBank, PaymentPlatform, Bank>(sql, new { platformId }).ToList();
+            return Try(nameof(PaymentBankGet), () =>
+            {
+                var sql = @"select * from PaymentBank a inner join PaymentPlatform b on a.PlatformId=b.Id inner join PaymentBank c on a.BankId=c.Id where a.PlatformId=@platformId";
+                var cmd = SqlBuilder.Raw(sql).ToCommand();
+                return BaseConn.Query<PaymentBank, PaymentPlatform, Bank>(sql, new { platformId }).ToList();
+            });
         }
 
         #endregion
@@ -690,7 +949,7 @@ namespace Ayatta.Storage
         #region 幻灯片
 
         ///<summary>
-        /// 幻灯片创建
+        /// 幻灯片 创建
         ///</summary>
         ///<param name="o">幻灯片</param>
         ///<returns></returns>
@@ -707,10 +966,10 @@ namespace Ayatta.Storage
                 .Column("Thumb", o.Thumb)
                 .Column("ThumbW", o.ThumbW)
                 .Column("ThumbH", o.ThumbH)
-                .Column("Description", o.Description)
+                .Column("Description", o.Description ?? string.Empty)
                 .Column("Priority", o.Priority)
-                .Column("Badge", o.Badge)
-                .Column("Extra", o.Extra)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
                 .Column("Status", o.Status)
                 .Column("CreatedOn", o.CreatedOn)
                 .Column("ModifiedBy", o.ModifiedBy)
@@ -722,7 +981,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// 幻灯片更新
+        /// 幻灯片 更新
         ///</summary>
         ///<param name="o">Slide</param>
         ///<returns></returns>
@@ -738,10 +997,10 @@ namespace Ayatta.Storage
                 .Column("Thumb", o.Thumb)
                 .Column("ThumbW", o.ThumbW)
                 .Column("ThumbH", o.ThumbH)
-                .Column("Description", o.Description)
+                .Column("Description", o.Description ?? string.Empty)
                 .Column("Priority", o.Priority)
-                .Column("Badge", o.Badge)
-                .Column("Extra", o.Extra)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
                 .Column("Status", o.Status)
                 .Column("ModifiedBy", o.ModifiedBy)
                 .Column("ModifiedOn", o.ModifiedOn)
@@ -752,7 +1011,37 @@ namespace Ayatta.Storage
         }
 
         /// <summary>
-        /// 幻灯片获取
+        /// 幻灯片 删除
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool SlideDelete(string id)
+        {
+            return Try(nameof(SlideDelete), () =>
+            {
+                var sql = @"delete from SlideItem where SlideId=@id;delete from Slide where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 幻灯片 是否存在
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public bool SlideExist(string id)
+        {
+            return Try(nameof(OAuthProviderExist), () =>
+            {
+                var sql = @"select 1 from Slide where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.ExecuteScalar<bool>(cmd);
+            });
+        }
+
+        /// <summary>
+        /// 幻灯片 获取
         /// </summary>
         /// <param name="id">id</param>
         /// <param name="includeItems">是否包含条目</param>
@@ -760,14 +1049,14 @@ namespace Ayatta.Storage
         /// <returns></returns>
         public Slide SlideGet(string id, bool includeItems, bool current = false)
         {
-            return Try(nameof(ItemGet), () =>
+            return Try(nameof(SlideGet), () =>
             {
                 if (includeItems)
                 {
                     var where = current ? " and StartedOn<=now() and StoppedOn>=now()" : string.Empty;
-                    var sql = @"select * from Slide where id=@id;select * from SlideItem where SlideId=@id " + where + ";";
+                    var sql = @"select * from Slide where id=@id;select * from SlideItem where SlideId=@id  and Status=1" + where + ";";
                     var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-                    using (var reader = StoreConn.QueryMultiple(cmd))
+                    using (var reader = BaseConn.QueryMultiple(cmd))
                     {
                         var o = reader.Read<Slide>().FirstOrDefault();
                         if (o != null)
@@ -787,22 +1076,38 @@ namespace Ayatta.Storage
         }
 
         /// <summary>
-        /// 幻灯片删除
+        /// 幻灯片 分页
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
         /// <returns></returns>
-        public bool SlideDelete(string id)
+
+        public IPagedList<Slide> SlidePagedList(int page = 1, int size = 20, string keyword = null, bool? status = null)
         {
-            return Try(nameof(SlideItemGet), () =>
+            if (size < 0)
             {
-                var sql = @"delete * from SlideItem where SlideId=@id;delete * from Slide where id=@id;";
-                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-                return BaseConn.Execute(cmd) > 0;
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(SlidePagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })//Regex.IsMatch(keyword, "^\\d+$")
+                .Where(status.HasValue, "Status=@status", new { status })
+                .From("Slide")
+                .ToCommand(page, size);
+                return BaseConn.PagedList<Slide>(page, size, cmd);
             });
         }
 
         ///<summary>
-        /// 幻灯片条目创建
+        /// 幻灯片条目 创建
         ///</summary>
         ///<param name="o">幻灯片条目</param>
         ///<returns></returns>
@@ -817,16 +1122,16 @@ namespace Ayatta.Storage
                 .Column("Title", o.Title)
                 .Column("NavUrl", o.NavUrl)
                 .Column("ImageSrc", o.ImageSrc)
-                .Column("ThumbSrc", o.ThumbSrc)
-                .Column("Description", o.Description)
+                .Column("ThumbSrc", o.ThumbSrc ?? string.Empty)
+                .Column("Description", o.Description ?? string.Empty)
                 .Column("StartedOn", o.StartedOn)
                 .Column("StoppedOn", o.StoppedOn)
                 .Column("Priority", o.Priority)
-                .Column("Badge", o.Badge)
-                .Column("Extra", o.Extra)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
                 .Column("Status", o.Status)
                 .Column("CreatedOn", o.CreatedOn)
-                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .ToCommand(true);
                 return BaseConn.ExecuteScalar<int>(cmd);
@@ -834,7 +1139,7 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// 幻灯片条目更新
+        /// 幻灯片条目 更新
         ///</summary>
         ///<param name="o">幻灯片条目</param>
         ///<returns></returns>
@@ -849,15 +1154,15 @@ namespace Ayatta.Storage
                 .Column("Title", o.Title)
                 .Column("NavUrl", o.NavUrl)
                 .Column("ImageSrc", o.ImageSrc)
-                .Column("ThumbSrc", o.ThumbSrc)
-                .Column("Description", o.Description)
+                .Column("ThumbSrc", o.ThumbSrc ?? string.Empty)
+                .Column("Description", o.Description ?? string.Empty)
                 .Column("StartedOn", o.StartedOn)
                 .Column("StoppedOn", o.StoppedOn)
                 .Column("Priority", o.Priority)
-                .Column("Badge", o.Badge)
-                .Column("Extra", o.Extra)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
                 .Column("Status", o.Status)
-                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .Where("Id=@id", new { o.Id })
                 .ToCommand();
@@ -865,8 +1170,23 @@ namespace Ayatta.Storage
             });
         }
 
+        /// <summary>
+        /// 幻灯片条目 删除
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool SlideItemDelete(string id)
+        {
+            return Try(nameof(SlideItemDelete), () =>
+            {
+                var sql = @"delete * from SlideItem where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
         ///<summary>
-        /// 幻灯片条目获取
+        /// 幻灯片条目 获取
         ///</summary>
         ///<param name="id">id</param>
         ///<returns></returns>
@@ -881,19 +1201,38 @@ namespace Ayatta.Storage
         }
 
         /// <summary>
-        /// 幻灯片条目删除
+        /// 幻灯片条目 分页
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="slideId">幻灯片id</param>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
         /// <returns></returns>
-        public bool SlideItemDelete(string id)
+        public IPagedList<SlideItem> SlideItemPagedList(string slideId, int page = 1, int size = 20, string keyword = null, bool? status = null)
         {
-            return Try(nameof(SlideItemDelete), () =>
+            if (size < 0)
             {
-                var sql = @"delete * from SlideItem where id=@id;";
-                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-                return BaseConn.Execute(cmd) > 0;
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(SlideItemPagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })
+                .Where(status.HasValue, "Status=@status", new { status })
+                .Where("SlideId=@slideId", new { slideId })
+                .From("SlideItem")
+                .ToCommand(page, size);
+                return BaseConn.PagedList<SlideItem>(page, size, cmd);
             });
         }
+
+
         #endregion
 
     }

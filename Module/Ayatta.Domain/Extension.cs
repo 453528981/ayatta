@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Ayatta.Domain
 {
-    public static class Extension
+    public  static partial class Extension
     {
         public static bool IsOnlinePay(this PaymentType type)
         {

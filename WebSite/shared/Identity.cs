@@ -10,7 +10,10 @@
         /// </summary>
         public int Id { get; }
 
-        //public string Guid { get; set; }
+        /// <summary>
+        /// Guid
+        /// </summary>
+        public string Guid { get; set; }
 
         /// <summary>
         /// Name
@@ -22,9 +25,10 @@
         /// </summary>
         public string DisplayName { get; }
 
-        internal Identity(int id, string name = null, string displayName = null)
+        internal Identity(int id, string guid=null, string name = null, string displayName = null)
         {
             Id = id;
+            Guid = guid;
             Name = name;
             DisplayName = displayName;
         }

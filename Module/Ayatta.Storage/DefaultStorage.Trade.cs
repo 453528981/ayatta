@@ -27,80 +27,80 @@ namespace Ayatta.Storage
                         try
                         {
                             var cmd = SqlBuilder.Insert("OrderInfo")
-                                .Column("Id", o.Id)
-                                .Column("Type", o.Type)
-                                .Column("Quantity", o.Quantity)
-                                .Column("SubTotal", o.SubTotal)
-                                .Column("Freight", o.Freight)
-                                .Column("Tax", o.Tax)
-                                .Column("Discount", o.Discount)
-                                .Column("Total", o.Total)
-                                .Column("Paid", o.Paid)
-                                .Column("PayId", o.PayId)
-                                .Column("PaidOn", o.PaidOn)
-                                .Column("PointUse", o.PointUse)
-                                .Column("PointRealUse", o.PointRealUse)
-                                .Column("PointReward", o.PointReward)
-                                .Column("Coupon", o.Coupon)
-                                .Column("CouponUse", o.CouponUse)
-                                .Column("GiftCard", o.GiftCard)
-                                .Column("GiftCardUse", o.GiftCardUse)
-                                .Column("PromotionData", o.PromotionData)
-                                .Column("Weight", o.Weight)
-                                .Column("ETicket", o.ETicket)
-                                .Column("IsVirtual", o.IsVirtual)
-                                .Column("IsBonded", o.IsBonded)
-                                .Column("IsOversea", o.IsOversea)
-                                .Column("PaymentType", o.PaymentType)
-                                .Column("PaymentData", o.PaymentData)
-                                .Column("ShipmentType", o.ShipmentType)
-                                .Column("ShipmentData", o.ShipmentData)
-                                .Column("ExpiredOn", o.ExpiredOn)
-                                .Column("ConsignedOn", o.ConsignedOn)
-                                .Column("FinishedOn", o.FinishedOn)
-                                .Column("InvoiceType", o.InvoiceType)
-                                .Column("InvoiceTitle", o.InvoiceTitle)
-                                .Column("InvoiceContent", o.InvoiceContent)
-                                .Column("InvoiceStatus", o.InvoiceStatus)
-                                .Column("LogisticsNo", o.LogisticsNo)
-                                .Column("LogisticsType", o.LogisticsType)
-                                .Column("LogisticsCode", o.LogisticsCode)
-                                .Column("LogisticsName", o.LogisticsName)
-                                .Column("Receiver", o.Receiver)
-                                .Column("ReceiverPhone", o.ReceiverPhone)
-                                .Column("ReceiverMobile", o.ReceiverMobile)
-                                .Column("ReceiverRegionId", o.ReceiverRegionId)
-                                .Column("ReceiverProvince", o.ReceiverProvince)
-                                .Column("ReceiverCity", o.ReceiverCity)
-                                .Column("ReceiverDistrict", o.ReceiverDistrict)
-                                .Column("ReceiverStreet", o.ReceiverStreet)
-                                .Column("ReceiverPostalCode", o.ReceiverPostalCode)
-                                .Column("BuyerId", o.BuyerId)
-                                .Column("BuyerName", o.BuyerName)
-                                .Column("BuyerFlag", o.BuyerFlag)
-                                .Column("BuyerMemo", o.BuyerMemo)
-                                .Column("BuyerRated", o.BuyerRated)
-                                .Column("BuyerMessage", o.BuyerMessage)
-                                .Column("SellerId", o.SellerId)
-                                .Column("SellerName", o.SellerName)
-                                .Column("SellerFlag", o.SellerFlag)
-                                .Column("SellerMemo", o.SellerMemo)
-                                .Column("HasReturn", o.HasReturn)
-                                .Column("HasRefund", o.HasRefund)
-                                .Column("CancelId", o.CancelId)
-                                .Column("CancelReason", o.CancelReason)
-                                .Column("RelatedId", o.RelatedId)
-                                .Column("MediaId", o.MediaId)
-                                .Column("TraceCode", o.TraceCode)
-                                .Column("IpAddress", o.IpAddress)
-                                .Column("Extra", o.Extra)
-                                .Column("Status", o.Status)
-                                .Column("CreatedBy", o.CreatedBy)
-                                .Column("CreatedOn", o.CreatedOn)
-                                .Column("ModifiedBy", o.ModifiedBy)
-                                .Column("ModifiedOn", o.ModifiedOn)
+                            .Column("Id", o.Id)
+                            .Column("Type", o.Type)
+                            .Column("Quantity", o.Quantity)
+                            .Column("SubTotal", o.SubTotal)
+                            .Column("Freight", o.Freight)
+                            .Column("Tax", o.Tax)
+                            .Column("Discount", o.Discount)
+                            .Column("Total", o.Total)
+                            .Column("Paid", o.Paid)
+                            .Column("PayId", o.PayId)
+                            .Column("PaidOn", o.PaidOn)
+                            .Column("PointUse", o.PointUse)
+                            .Column("PointRealUse", o.PointRealUse)
+                            .Column("PointReward", o.PointReward)
+                            .Column("Coupon", o.Coupon)
+                            .Column("CouponUse", o.CouponUse)
+                            .Column("GiftCard", o.GiftCard)
+                            .Column("GiftCardUse", o.GiftCardUse)
+                            .Column("PromotionData", o.PromotionData)
+                            .Column("Weight", o.Weight)
+                            .Column("ETicket", o.ETicket)
+                            .Column("IsVirtual", o.IsVirtual)
+                            .Column("IsBonded", o.IsBonded)
+                            .Column("IsOversea", o.IsOversea)
+                            .Column("PaymentType", o.PaymentType)
+                            .Column("PaymentData", o.PaymentData)
+                            .Column("ShipmentType", o.ShipmentType)
+                            .Column("ShipmentData", o.ShipmentData)
+                            .Column("ExpiredOn", o.ExpiredOn)
+                            .Column("ConsignedOn", o.ConsignedOn)
+                            .Column("FinishedOn", o.FinishedOn)
+                            .Column("InvoiceType", o.InvoiceType)
+                            .Column("InvoiceTitle", o.InvoiceTitle)
+                            .Column("InvoiceContent", o.InvoiceContent)
+                            .Column("InvoiceStatus", o.InvoiceStatus)
+                            .Column("LogisticsNo", o.LogisticsNo)
+                            .Column("LogisticsType", o.LogisticsType)
+                            .Column("LogisticsCode", o.LogisticsCode)
+                            .Column("LogisticsName", o.LogisticsName)
+                            .Column("Receiver", o.Receiver)
+                            .Column("ReceiverPhone", o.ReceiverPhone)
+                            .Column("ReceiverMobile", o.ReceiverMobile)
+                            .Column("ReceiverRegionId", o.ReceiverRegionId)
+                            .Column("ReceiverProvince", o.ReceiverProvince)
+                            .Column("ReceiverCity", o.ReceiverCity)
+                            .Column("ReceiverDistrict", o.ReceiverDistrict)
+                            .Column("ReceiverStreet", o.ReceiverStreet)
+                            .Column("ReceiverPostalCode", o.ReceiverPostalCode)
+                            .Column("BuyerId", o.BuyerId)
+                            .Column("BuyerName", o.BuyerName)
+                            .Column("BuyerFlag", o.BuyerFlag)
+                            .Column("BuyerMemo", o.BuyerMemo)
+                            .Column("BuyerRated", o.BuyerRated)
+                            .Column("BuyerMessage", o.BuyerMessage)
+                            .Column("SellerId", o.SellerId)
+                            .Column("SellerName", o.SellerName)
+                            .Column("SellerFlag", o.SellerFlag)
+                            .Column("SellerMemo", o.SellerMemo)
+                            .Column("HasReturn", o.HasReturn)
+                            .Column("HasRefund", o.HasRefund)
+                            .Column("CancelId", o.CancelId)
+                            .Column("CancelReason", o.CancelReason)
+                            .Column("RelatedId", o.RelatedId)
+                            .Column("MediaId", o.MediaId)
+                            .Column("TraceCode", o.TraceCode)
+                            .Column("IpAddress", o.IpAddress)
+                            .Column("Extra", o.Extra)
+                            .Column("Status", o.Status)
+                            .Column("CreatedBy", o.CreatedBy)
+                            .Column("CreatedOn", o.CreatedOn)
+                            .Column("ModifiedBy", o.ModifiedBy)
+                            .Column("ModifiedOn", o.ModifiedOn)
 
-                                .ToCommand(false, tran);
+                            .ToCommand(false, tran);
 
 
                             var status = conn.Execute(cmd) > 0;
@@ -110,52 +110,52 @@ namespace Ayatta.Storage
                                 foreach (var item in o.Items)
                                 {
                                     cmd = SqlBuilder.Insert("OrderItem")
-                                        .Column("Id", item.Id)
-                                        .Column("OrderId", item.OrderId)
-                                        .Column("SpuId", item.SpuId)
-                                        .Column("ItemId", item.ItemId)
-                                        .Column("SkuId", item.SkuId)
-                                        .Column("CatgRId", item.CatgRId)
-                                        .Column("CatgMId", item.CatgMId)
-                                        .Column("CatgId", item.CatgId)
-                                        .Column("PackageId", item.PackageId)
-                                        .Column("PackageName", item.PackageName)
-                                        .Column("Code", item.Code)
-                                        .Column("Name", item.Name)
-                                        .Column("Price", item.Price)
-                                        .Column("PriceShow", item.PriceShow)
-                                        .Column("Quantity", item.Quantity)
-                                        .Column("Tax", item.Tax)
-                                        .Column("Adjust", item.Adjust)
-                                        .Column("Discount", item.Discount)
-                                        .Column("Total", item.Total)
-                                        .Column("TaxRate", item.TaxRate)
-                                        .Column("Picture", item.Picture)
-                                        .Column("PropText", item.PropText)
-                                        .Column("IsGift", item.IsGift)
-                                        .Column("IsVirtual", item.IsVirtual)
-                                        .Column("IsService", item.IsService)
-                                        .Column("PromotionData", item.PromotionData)
-                                        .Column("ExpiredOn", item.ExpiredOn)
-                                        .Column("ConsignedOn", item.ConsignedOn)
-                                        .Column("FinishedOn", item.FinishedOn)
-                                        .Column("LogisticsNo", item.LogisticsNo)
-                                        .Column("LogisticsName", item.LogisticsName)
-                                        .Column("ReturnId", item.ReturnId)
-                                        .Column("ReturnStatus", item.ReturnStatus)
-                                        .Column("RefundId", item.RefundId)
-                                        .Column("RefundStatus", item.RefundStatus)
-                                        .Column("BuyerId", item.BuyerId)
-                                        .Column("BuyerName", item.BuyerName)
-                                        .Column("BuyerRated", item.BuyerRated)
-                                        .Column("SellerId", item.SellerId)
-                                        .Column("SellerName", item.SellerName)
-                                        .Column("Extra", item.Extra)
-                                        .Column("Status", item.Status)
-                                        .Column("CreatedOn", item.CreatedOn)
-                                        .Column("ModifiedBy", item.ModifiedBy)
-                                        .Column("ModifiedOn", item.ModifiedOn)
-                                        .ToCommand(false, tran);
+                                    .Column("Id", item.Id)
+                                    .Column("OrderId", item.OrderId)
+                                    .Column("SpuId", item.SpuId)
+                                    .Column("ItemId", item.ItemId)
+                                    .Column("SkuId", item.SkuId)
+                                    .Column("CatgRId", item.CatgRId)
+                                    .Column("CatgMId", item.CatgMId)
+                                    .Column("CatgId", item.CatgId)
+                                    .Column("PackageId", item.PackageId)
+                                    .Column("PackageName", item.PackageName)
+                                    .Column("Code", item.Code)
+                                    .Column("Name", item.Name)
+                                    .Column("Price", item.Price)
+                                    .Column("PriceShow", item.PriceShow)
+                                    .Column("Quantity", item.Quantity)
+                                    .Column("Tax", item.Tax)
+                                    .Column("Adjust", item.Adjust)
+                                    .Column("Discount", item.Discount)
+                                    .Column("Total", item.Total)
+                                    .Column("TaxRate", item.TaxRate)
+                                    .Column("Picture", item.Picture)
+                                    .Column("PropText", item.PropText)
+                                    .Column("IsGift", item.IsGift)
+                                    .Column("IsVirtual", item.IsVirtual)
+                                    .Column("IsService", item.IsService)
+                                    .Column("PromotionData", item.PromotionData)
+                                    .Column("ExpiredOn", item.ExpiredOn)
+                                    .Column("ConsignedOn", item.ConsignedOn)
+                                    .Column("FinishedOn", item.FinishedOn)
+                                    .Column("LogisticsNo", item.LogisticsNo)
+                                    .Column("LogisticsName", item.LogisticsName)
+                                    .Column("ReturnId", item.ReturnId)
+                                    .Column("ReturnStatus", item.ReturnStatus)
+                                    .Column("RefundId", item.RefundId)
+                                    .Column("RefundStatus", item.RefundStatus)
+                                    .Column("BuyerId", item.BuyerId)
+                                    .Column("BuyerName", item.BuyerName)
+                                    .Column("BuyerRated", item.BuyerRated)
+                                    .Column("SellerId", item.SellerId)
+                                    .Column("SellerName", item.SellerName)
+                                    .Column("Extra", item.Extra)
+                                    .Column("Status", item.Status)
+                                    .Column("CreatedOn", item.CreatedOn)
+                                    .Column("ModifiedBy", item.ModifiedBy)
+                                    .Column("ModifiedOn", item.ModifiedOn)
+                                    .ToCommand(false, tran);
 
                                     status = conn.Execute(cmd) > 0;
                                     if (!status)
@@ -388,18 +388,21 @@ namespace Ayatta.Storage
 
         public IPagedList<Order> OrderPagedList()
         {
-            var cmd = SqlBuilder.Select("*")
+            return Try(nameof(OrderPagedList), () =>
+            {
+                var cmd = SqlBuilder.Select("*")
                 .From("orderinfo")
                 .ToCommand(1, 50);
-            var list = TradeConn.PagedList<Order>(1, 50, cmd);
-            var ids = list.Select(x => x.Id).Aggregate((a, b) => "'" + a + "','" + b + "'");
-            var sql = "select * from orderitem where orderid in(" + ids + ")";
-            var items = TradeConn.Query<OrderItem>(sql);
-            foreach (var o in list)
-            {
-                o.Items = items.Where(x => x.OrderId == o.Id).ToList();
-            }
-            return list;
+                var list = TradeConn.PagedList<Order>(1, 50, cmd);
+                var ids = list.Select(x => x.Id).Aggregate((a, b) => "'" + a + "','" + b + "'");
+                var sql = "select * from orderitem where orderid in(" + ids + ")";
+                var items = TradeConn.Query<OrderItem>(sql);
+                foreach (var o in list)
+                {
+                    o.Items = items.Where(x => x.OrderId == o.Id).ToList();
+                }
+                return list;
+            });
         }
 
         /// <summary>
@@ -407,17 +410,19 @@ namespace Ayatta.Storage
         /// </summary>
         /// <param name="id">订单id</param>
         /// <returns></returns>
-        public OrderMini OrderMiniGet(string id,int userId)
+        public OrderMini OrderMiniGet(string id, int userId)
         {
             var fields = "Id,Type,Quantity,SubTotal,Freight,Tax,Discount,Total,Paid,PayId,PaidOn,PointUse,PointRealUse,PointReward,Coupon,CouponUse,GiftCard,GiftCardUse,Weight,ETicket,IsVirtual,IsBonded,IsOversea,PaymentType,ShipmentType,ExpiredOn,BuyerId,BuyerName,SellerId,SellerName,MediaId,TraceCode,Status,CreatedOn";
 
-            var cmd = SqlBuilder
-               .Select(fields)
-               .From("orderinfo")
-               .Where("Id=@Id", new { id })
-               .ToCommand(0);
-
-            return TradeConn.QueryFirstOrDefault<OrderMini>(cmd);
+            return Try(nameof(OrderMiniGet), () =>
+            {
+                var cmd = SqlBuilder
+                .Select(fields)
+                .From("orderinfo")
+                .Where("Id=@Id", new { id })
+                .ToCommand(0);
+                return TradeConn.QueryFirstOrDefault<OrderMini>(cmd);
+            });
         }
         #endregion
 
@@ -442,7 +447,6 @@ namespace Ayatta.Storage
                 .Column("CreatedOn", o.CreatedOn)
                 .ToCommand(true);
                 return TradeConn.ExecuteScalar<int>(cmd);
-                
             });
         }
 

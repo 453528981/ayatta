@@ -16,6 +16,12 @@ namespace Ayatta.Extension
 
         private static readonly Regex StripHtmlExpression = new Regex("<\\S[^><]*>", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+        /// <summary>
+        /// 去除所有标签，只允许img,p,strong标签
+        /// </summary>
+        private static readonly Regex RemoveHtmlExpression = new Regex("<(?!img|p|/p|strong|/strong).*?>", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+
         private static readonly char[] IllegalUrlCharacters = new[]
             {
                 ';', '/', '\\', '?', ':', '@', '&', '=', '+', '$', ',', '<', '>', '#', '%', '.', '!', '*', '\'', '"', '(',
@@ -133,6 +139,11 @@ namespace Ayatta.Extension
         public static string StripHtml(this string target)
         {
             return StripHtmlExpression.Replace(target, string.Empty);
+        }
+
+        public static string RemoveHtml(this string target)
+        {
+            return RemoveHtmlExpression.Replace(target, string.Empty);
         }
 
         public static string ToBase64String(this string target)

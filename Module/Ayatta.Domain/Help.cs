@@ -28,12 +28,12 @@ namespace Ayatta.Domain
         ///<summary>
         /// 导航URL
         ///</summary>
-        public string NavUrl { get; set; }
+        public string NavUrl { get; set; } = string.Empty;
 
         ///<summary>
         /// 摘要
         ///</summary>
-        public string Summary { get; set; }
+        public string Summary { get; set; } = string.Empty;
 
         ///<summary>
         /// 内容
@@ -48,7 +48,7 @@ namespace Ayatta.Domain
         ///<summary>
         /// 扩展信息
         ///</summary>
-        public string Extra { get; set; }
+        public string Extra { get; set; } = string.Empty;
 
         ///<summary>
         /// 状态 true可用 false不可用
@@ -58,17 +58,17 @@ namespace Ayatta.Domain
         ///<summary>
         /// 创建时间
         ///</summary>
-        public DateTime CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; } = DateTime.Now;
 
         ///<summary>
         /// 最后一次编辑者
         ///</summary>
-        public string ModifiedBy { get; set; }
+        public string ModifiedBy { get; set; } = string.Empty;
 
         ///<summary>
         /// 最后一次编辑时间
         ///</summary>
-        public DateTime ModifiedOn { get; set; }
+        public DateTime ModifiedOn { get; set; } = DateTime.Now;
     }
 
 }

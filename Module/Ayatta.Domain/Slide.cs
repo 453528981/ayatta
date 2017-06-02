@@ -99,6 +99,12 @@ namespace Ayatta.Domain
         /// 支付平台
         /// </summary>
         public virtual IList<SlideItem> Items { get; set; }
+
+        public static string NewId
+        {
+            get { return DateTime.Now.ToString("yyMMddHHmm"); }
+            
+        }
     }
 
     ///<summary>

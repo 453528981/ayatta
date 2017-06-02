@@ -357,3 +357,57 @@ ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
 ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
 primary key(Id,SkuId,ItemId)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='试用申请';
+
+
+drop table if exists ActPlan;
+create table ActPlan( 
+Id int auto_increment not null comment 'Id',
+Name nvarchar(50) not null default '' comment '名称',
+Title nvarchar(50) not null default '' comment '标题',
+Icon nvarchar(300) not null default '' comment '图标',
+Picture nvarchar(300) not null default '' comment '图片',
+WarmUp int not null default 1 comment '提前预热天数',
+Summary nvarchar(300) not null default '' comment '描述',
+OpendOn datetime not null default now() comment '报名开始时间',
+ClosedOn datetime not null default now() comment '报名结束时间',
+StartedOn datetime not null default now() comment '活动开始时间 必需晚于报名结束时间',
+StoppedOn datetime not null default now() comment '活动结束时间',
+Priority int not null default 0 comment '排序优先级',
+Badge nvarchar(200) not null default '' comment '徽章 标记',
+Extra nvarchar(200) not null default '' comment '扩展信息',
+Status bool not null default 0 comment '状态 true可用 false不可用',
+CreatedOn datetime not null default current_timestamp comment '创建时间',
+ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
+ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
+primary key(Id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='官方活动计划';
+
+
+drop table if exists ActItem;
+create table ActItem( 
+Id int auto_increment not null comment 'Id',
+PlanId int not null default 0 comment '模块Id',
+GroupId int not null default 0 comment '分组Id',
+ItemId int not null default 0 comment '商品Id',
+SkuId int not null default 0 comment '商品SkuId',
+Name nvarchar(50) not null default '' comment '名称',
+Title nvarchar(50) not null default '' comment '标题',
+Price decimal(8,2) not null default 0 comment '价格',
+Link nvarchar(300) not null default '' comment '链接',
+Icon nvarchar(300) not null default '' comment '图标',
+Picture nvarchar(300) not null default '' comment '图片',
+Summary nvarchar(300) not null default '' comment '描述',
+StartedOn datetime not null default now() comment '开始时间',
+StoppedOn datetime not null default now() comment '结束时间',
+Priority int not null default 0 comment '排序优先级 从小到大',
+Badge nvarchar(200) not null default '' comment '徽章 标记',
+Extra nvarchar(200) not null default '' comment '扩展信息',
+Data nvarchar(4000) not null default '' comment '数据',
+SellerId int not null default 0 comment '卖家Id',
+SellerName nvarchar(32) not null default '' comment '卖家',
+Status bool not null default 0 comment '状态 true可用 false不可用',
+CreatedOn datetime not null default current_timestamp comment '创建时间',
+ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
+ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
+primary key(Id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='官方活动条目';

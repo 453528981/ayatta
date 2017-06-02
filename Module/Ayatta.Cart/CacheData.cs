@@ -90,6 +90,26 @@ namespace Ayatta.Cart
             };
             Baskets.Add(id, basket);
         }
+
+        internal void Merge(CacheData data)
+        {
+            if (data != null)
+            {
+                foreach (var basket in data.Baskets)
+                {
+                    AddBasket(basket.Key, basket.Value.Name, basket.Value.Name);
+                    
+                    foreach (var sku in basket.Value.Skus)
+                    {
+                        Baskets[basket.Key].AddSku(sku.Key, sku.Value.ItemId, sku.Value.Quantity);
+                    }
+                    foreach (var item in basket.Value.Items)
+                    {
+                        Baskets[basket.Key].AddItem(item.Key, item.Value.Quantity);
+                    }
+                }               
+            }
+        }
         #endregion
 
         #region 购物篮

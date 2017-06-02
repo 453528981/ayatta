@@ -31,6 +31,7 @@ namespace Ayatta.Web.Controllers
 
             var ci = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
             ci.AddClaim(new Claim(ClaimTypes.Name, user.Id.ToString()));
+            ci.AddClaim(new Claim(ClaimTypes.Hash, user.Guid));
             ci.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Name));
 
             var cp = new ClaimsPrincipal(ci);

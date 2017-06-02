@@ -66,7 +66,7 @@ namespace Ayatta.Web.Controllers
 
 
         [HttpPost("activity-detail/{id}")]
-        public async Task<ActionResult> Default(int id, bool global, Promotion.Activity model, Promotion.Activity.Rule[] rules)
+        public async Task<IActionResult> Default(int id, bool global, Promotion.Activity model, Promotion.Activity.Rule[] rules)
         {
 
             var now = DateTime.Now;

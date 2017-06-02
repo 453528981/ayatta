@@ -1,26 +1,29 @@
+using System;
 using Ayatta;
 using Ayatta.Cart;
 using Ayatta.Domain;
 using Ayatta.Storage;
 using Ayatta.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
+using Ayatta.Web.Extensions;
 
 namespace Ayatta.Web.Controllers
 {
     [Route("cart")]
     public class CartController : BaseController
     {
-        private readonly Cart.Cart cart;
-
+        private readonly CartManager cartManager;
         public CartController(CartManager cartManager, DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<CartController> logger) : base(defaultStorage, defaultCache, logger)
         {
-            var guid = "adfafadf";
-            var platform = Platform.Pc;
-            cart = cartManager.GetCart(guid, platform);
+            //var platform = Platform.Pc;
+            this.cartManager = cartManager;
+
         }
+
 
         [HttpGet]
         public IActionResult Index()
@@ -37,6 +40,7 @@ namespace Ayatta.Web.Controllers
         [HttpPost("data")]
         public IActionResult Data()
         {
+            var cart = GetCart();
             var data = cart.GetData();
             return Json(data);
         }
@@ -54,6 +58,7 @@ namespace Ayatta.Web.Controllers
         //[HttpGet,HttpPost]
         public IActionResult Operate(Operate operate, int itemId, int skuId = 0, int quantity = 1, string callback = null)
         {
+            var cart = GetCart();
             var data = cart.ProductOpt(operate, itemId, skuId, quantity);
             if (!string.IsNullOrEmpty(callback))
             {
@@ -72,6 +77,7 @@ namespace Ayatta.Web.Controllers
         [HttpPost("clean")]
         public IActionResult Clean(int[] skus = null, int[] items = null, int[] packages = null)
         {
+            var cart = GetCart();
             var data = cart.Clean(skus, items, packages);
             return Json(data);
         }
@@ -83,6 +89,7 @@ namespace Ayatta.Web.Controllers
         [HttpPost("clean")]
         public IActionResult Empty()
         {
+            var cart = GetCart();
             var data = cart.Empty();
             return Json(data);
         }
@@ -98,6 +105,7 @@ namespace Ayatta.Web.Controllers
         [HttpPost("select")]
         public IActionResult Select(Select select = Cart.Select.All, int param = 0, bool selected = true)
         {
+            var cart = GetCart();
             var status = cart.Select(select, param, selected);
             return Json(status);
         }
@@ -111,7 +119,7 @@ namespace Ayatta.Web.Controllers
         public IActionResult Confirm(bool oversea = false)
         {
             var userId = User.Id;
-
+            var cart = GetCart();
             var model = new CartModel.Confirm();
             var temp = cart.GetData(oversea);
             if (temp)
@@ -147,7 +155,7 @@ namespace Ayatta.Web.Controllers
             var userAddress = DefaultStorage.UserAddressGet(userAddressId, User.Id);
 
             var model = new CartModel.Confirm();
-
+            var cart = GetCart();
             var temp = cart.SetAddress(userAddress);
             if (!temp)
             {
@@ -166,6 +174,7 @@ namespace Ayatta.Web.Controllers
         [HttpPost("submit")]
         public IActionResult Submit()
         {
+            var cart = GetCart();
             var status = cart.Submit();
             if (status)
             {
@@ -179,5 +188,31 @@ namespace Ayatta.Web.Controllers
             return Json(status);
         }
 
+        private Cart.Cart GetCart()
+        {
+            var platform = Platform.Pc;
+
+            var guid = Request.Cookies["x-cart"];
+            if (string.IsNullOrEmpty(guid))
+            {
+                guid = User.Id > 0 ? User.Guid : Guid.NewGuid().ToString();
+                Response.Cookies.Append("x-cart", guid, new CookieOptions { HttpOnly = true, Expires = DateTime.Now.AddDays(3) });
+                return cartManager.GetCart(guid, platform);
+            }
+
+            if (User.Id > 0 && User.Guid != guid)
+            {
+                var cart = cartManager.GetCart(User.Guid, platform);
+                var status = cart.Merge(guid);
+                if (status)
+                {
+                    Response.Cookies.Append("x-cart", User.Guid, new CookieOptions { HttpOnly = true, Expires = DateTime.Now.AddDays(3) });
+                }
+                return cart;
+            }
+
+            return cartManager.GetCart(guid, platform);
+
+        }
     }
 }

@@ -264,3 +264,50 @@ primary key(Id),
 foreign key(BankId) references Bank(Id) on delete cascade,
 foreign key(PlatformId) references PaymentPlatform(Id) on delete cascade
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='支付平台银行';
+
+
+
+drop table if exists AdModule;
+create table AdModule( 
+Id int auto_increment not null comment 'Id',
+ParentId int not null default 0 comment '父Id',
+Name nvarchar(50) not null default '' comment '名称',
+Title nvarchar(50) not null default '' comment '标题',
+Path varchar(50) not null default '' comment '全路径',
+Depth int not null default 0 comment '深度',
+Icon nvarchar(300) not null default '' comment '图标',
+Picture nvarchar(300) not null default '' comment '图片',
+Summary nvarchar(300) not null default '' comment '描述',
+Priority int not null default 0 comment '排序优先级',
+Badge nvarchar(200) not null default '' comment '徽章 标记',
+Extra nvarchar(200) not null default '' comment '扩展信息',
+Status bool not null default 0 comment '状态 true可用 false不可用',
+CreatedOn datetime not null default current_timestamp comment '创建时间',
+ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
+ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
+primary key(Id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='广告模块';
+
+drop table if exists AdItem;
+create table AdItem( 
+Id int auto_increment not null comment 'Id',
+ModuleId int not null default 0 comment '模块Id',
+GroupId int not null default 0 comment '分组Id',
+Name nvarchar(50) not null default '' comment '名称',
+Title nvarchar(50) not null default '' comment '标题',
+Data nvarchar(4000) not null default '' comment '数据',
+Link nvarchar(300) not null default '' comment '链接',
+Icon nvarchar(300) not null default '' comment '图标',
+Picture nvarchar(300) not null default '' comment '图片',
+Summary nvarchar(300) not null default '' comment '描述',
+StartedOn datetime not null default now() comment '开始时间',
+StoppedOn datetime not null default now() comment '结束时间',
+Priority int not null default 0 comment '排序优先级 从小到大',
+Badge nvarchar(200) not null default '' comment '徽章 标记',
+Extra nvarchar(200) not null default '' comment '扩展信息',
+Status bool not null default 0 comment '状态 true可用 false不可用',
+CreatedOn datetime not null default current_timestamp comment '创建时间',
+ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
+ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
+primary key(Id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='广告条目';

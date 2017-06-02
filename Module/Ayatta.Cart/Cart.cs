@@ -278,13 +278,7 @@ namespace Ayatta.Cart
             try
             {
                 #region 处理购物车缓存数据
-                var cacheData = GetCacheData();
-
-                if (cacheData == null)
-                {
-                    status.Message = "获取或创建购物车缓存数据失败";
-                    return status;
-                }
+                var cacheData = GetCacheData();               
 
                 foreach (var basket in cacheData.Baskets)
                 {
@@ -349,13 +343,7 @@ namespace Ayatta.Cart
             try
             {
                 #region 处理购物车缓存数据
-                var cacheData = GetCacheData();
-
-                if (cacheData == null)
-                {
-                    status.Message = "获取或创建购物车缓存数据失败";
-                    return status;
-                }
+                var cacheData = GetCacheData();                
 
                 foreach (var basket in cacheData.Baskets)
                 {
@@ -527,12 +515,7 @@ namespace Ayatta.Cart
             try
             {
                 var cacheData = GetCacheData();
-
-                if (cacheData == null)
-                {
-                    status.Message = "获取或创建购物车缓存数据失败";
-                    return status;
-                }
+                
                 var cart = ProcessCartData(cacheData, false);
                 if (!cart)
                 {
@@ -857,6 +840,32 @@ namespace Ayatta.Cart
         }
 
         #endregion
+
+        /// <summary>
+        /// 合并临时购物车到用户购物车
+        /// </summary>
+        /// <param name="guid">临时购物车guid</param>
+        public Status Merge(string guid)
+        {
+            try
+            {
+                var cacheData = GetCacheData();
+
+                cacheData.Merge(cartCache.Get<CacheData>(guid));
+
+                SaveCacheData(cacheData);
+
+                cartCache.RemoveAsync(guid);
+
+                return new Status(0);
+            }
+            catch (Exception e)
+            {
+                var message = e.Message;
+
+                return new Status(500, message);
+            }
+        }
 
         #region 购物车数据处理
         /// <summary>
@@ -1561,17 +1570,17 @@ namespace Ayatta.Cart
             handler?.Invoke(data);
         }
 
-        /// <summary>
-        /// 获取用户选中的收货地址信息
-        /// </summary>
-        /// <param name="userId">用户Id</param>
-        /// <param name="userAddressId">用户地址Id</param>
-        /// <returns></returns>
-        private UserAddress GetUserAddress(int userId, int userAddressId)
-        {
-            var addresses = defaultStorage.UserAddressList(userId);
-            return addresses.FirstOrDefault(x => x.Id == userAddressId);
-        }
+        ///// <summary>
+        ///// 获取用户选中的收货地址信息
+        ///// </summary>
+        ///// <param name="userId">用户Id</param>
+        ///// <param name="userAddressId">用户地址Id</param>
+        ///// <returns></returns>
+        //private UserAddress GetUserAddress(int userId, int userAddressId)
+        //{
+        //    var addresses = defaultStorage.UserAddressList(userId);
+        //    return addresses.FirstOrDefault(x => x.Id == userAddressId);
+        //}
         #endregion
 
     }

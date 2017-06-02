@@ -905,5 +905,341 @@ namespace Ayatta.Storage
 
         }
     */
+
+        #region 官方活动计划
+
+        ///<summary>
+        /// 官方活动计划 创建
+        ///</summary>
+        ///<param name="o">ActPlan</param>
+        ///<returns></returns>
+        public int ActPlanCreate(ActPlan o)
+        {
+            return Try(nameof(ActPlanCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("ActPlan")
+                .Column("Name", o.Name)
+                .Column("Title", o.Title ?? string.Empty)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("WarmUp", o.WarmUp)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("OpendOn", o.OpendOn)
+                .Column("ClosedOn", o.ClosedOn)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return StoreConn.ExecuteScalar<int>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 官方活动计划 更新
+        ///</summary>
+        ///<param name="o">ActPlan</param>
+        ///<returns></returns>
+        public bool ActPlanUpdate(ActPlan o)
+        {
+            return Try(nameof(ActPlanUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("ActPlan")
+                .Column("Name", o.Name)
+                .Column("Title", o.Title ?? string.Empty)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("WarmUp", o.WarmUp)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("OpendOn", o.OpendOn)
+                .Column("ClosedOn", o.ClosedOn)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return StoreConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 官方活动计划 状态 更新
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool ActPlanStatusUpdate(int id, bool status)
+        {
+            return Try(nameof(ActPlanStatusUpdate), () =>
+            {
+                var sql = @"update ActPlan set Status=@status where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id, status }).ToCommand();
+                return StoreConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 官方活动计划 删除
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool ActPlanDelete(int id)
+        {
+            return Try(nameof(ActPlanDelete), () =>
+            {
+                var sql = @"delete from ActItem where PlanId=@id;delete from ActPlan where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return StoreConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 官方活动计划 获取
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public ActPlan ActPlanGet(int id)
+        {
+            return Try(nameof(ActPlanGet), () =>
+            {
+                var sql = @"select * from ActPlan where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return StoreConn.QueryFirstOrDefault<ActPlan>(cmd);
+            });
+        }
+
+        /// <summary>
+        /// 官方活动计划 获取
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="includeItems">是否包含条目</param>
+        /// <param name="current">是否筛选当前时间生效的条目</param>
+        /// <returns></returns>
+        public ActPlan ActPlanGet(string id, bool includeItems, bool current = false)
+        {
+            return Try(nameof(ActPlanGet), () =>
+            {
+                if (includeItems)
+                {
+                    var sql = @"select * from ActPlan where id=@id;select * from ActItem where PlanId=@id and Status=1";
+
+                    var cmd = SqlBuilder.Raw(sql, new { id })
+                    .Append(current, "StartedOn<=now() and StoppedOn>=now()")
+                    .Append(";")
+                    .ToCommand();
+                    using (var reader = BaseConn.QueryMultiple(cmd))
+                    {
+                        var o = reader.Read<ActPlan>().FirstOrDefault();
+                        if (o != null)
+                        {
+                            o.Items = reader.Read<ActItem>().ToList();
+                        }
+                        return o;
+                    }
+                }
+                else
+                {
+                    var sql = @"select * from ActPlan where id=@id";
+                    var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                    return StoreConn.QueryFirstOrDefault<ActPlan>(cmd);
+                }
+            });
+        }
+
+        /// <summary>
+        /// 官方活动计划 分页
+        /// </summary>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
+        /// <returns></returns>
+        public IPagedList<ActPlan> ActPlanPagedList(int page = 1, int size = 20, string keyword = null, bool? status = null)
+        {
+            if (size < 0)
+            {
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(ActPlanPagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*").From("ActPlan")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })
+                .Where(status.HasValue, "Status=@status", new { status })
+                .ToCommand(page, size);
+
+                return StoreConn.PagedList<ActPlan>(page, size, cmd);
+            });
+        }
+
+        ///<summary>
+        /// 官方活动条目 创建
+        ///</summary>
+        ///<param name="o">ActItem</param>
+        ///<returns></returns>
+        public int ActItemCreate(ActItem o)
+        {
+            return Try(nameof(ActItemCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("ActItem")
+                .Column("PlanId", o.PlanId)
+                .Column("GroupId", o.GroupId)
+                .Column("ItemId", o.ItemId)
+                .Column("SkuId", o.SkuId)
+                .Column("Name", o.Name ?? string.Empty)
+                .Column("Title", o.Title ?? string.Empty)
+                .Column("Price", o.Price)
+                .Column("Link", o.Link ?? string.Empty)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Data", o.Data ?? string.Empty)
+                .Column("SellerId", o.SellerId)
+                .Column("SellerName", o.SellerName)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return StoreConn.ExecuteScalar<int>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 官方活动条目 更新
+        ///</summary>
+        ///<param name="o">ActItem</param>
+        ///<returns></returns>
+        public bool ActItemUpdate(ActItem o)
+        {
+            return Try(nameof(ActItemUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("ActItem")
+                .Column("PlanId", o.PlanId)
+                .Column("GroupId", o.GroupId)
+                .Column("ItemId", o.ItemId)
+                .Column("SkuId", o.SkuId)
+                .Column("Name", o.Name ?? string.Empty)
+                .Column("Title", o.Title ?? string.Empty)
+                .Column("Price", o.Price)
+                .Column("Link", o.Link ?? string.Empty)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Data", o.Data ?? string.Empty)
+                .Column("SellerId", o.SellerId)
+                .Column("SellerName", o.SellerName)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return StoreConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 官方活动条目 状态 更新
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool ActItemStatusUpdate(int id, bool status)
+        {
+            return Try(nameof(ActItemStatusUpdate), () =>
+            {
+                var sql = @"update ActItem set Status=@status where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id, status }).ToCommand();
+                return StoreConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 官方活动条目 删除
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool ActItemDelete(int id)
+        {
+            return Try(nameof(ActItemDelete), () =>
+            {
+                var sql = @"delete from ActItem where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return StoreConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 官方活动条目 获取
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public ActItem ActItemGet(int id)
+        {
+            return Try(nameof(ActItemGet), () =>
+            {
+                var sql = @"select * from ActItem where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return StoreConn.QueryFirstOrDefault<ActItem>(cmd);
+            });
+        }
+
+        /// <summary>
+        /// 官方活动条目 分页
+        /// </summary>
+        /// <param name="planId">活动计划id</param>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
+        /// <returns></returns>
+        public IPagedList<ActItem> ActItemPagedList(string planId, int page = 1, int size = 20, string keyword = null, bool? status = null)
+        {
+            if (size < 0)
+            {
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(ActItemPagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })
+                .Where(status.HasValue, "Status=@status", new { status })
+                .Where("PlanId=@planId", new { planId })
+                .From("ActItem")
+                .ToCommand(page, size);
+                return BaseConn.PagedList<ActItem>(page, size, cmd);
+            });
+        }
+
+        #endregion
     }
 }

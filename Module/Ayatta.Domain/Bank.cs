@@ -5,7 +5,6 @@ namespace Ayatta.Domain
 {
     ///<summary>
     /// Bank
-    /// created on 2016-07-14 17:15:48
     ///</summary>
     [ProtoContract]
     public class Bank : IEntity<int>
@@ -54,7 +53,7 @@ namespace Ayatta.Domain
         public string Extra { get; set; }
 
         ///<summary>
-        /// 状态 1可用 0不可用
+        /// 状态 true可用 false不可用
         ///</summary>
         [ProtoMember(8)]
         public bool Status { get; set; }
