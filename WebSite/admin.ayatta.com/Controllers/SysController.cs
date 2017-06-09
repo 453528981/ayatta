@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Collections.Generic;
 
 namespace Ayatta.Web.Controllers
 {
     [Route("sys")]
-    public class SysController : AbstractController
+    public class SysController : BaseController
     {
         public SysController(DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<SysController> logger) : base(defaultStorage, defaultCache, logger)
         {
@@ -134,7 +135,7 @@ namespace Ayatta.Web.Controllers
         public IActionResult RegionData()
         {
             var data = DefaultStorage.RegionList();
-            var nodes = data.Select(x => new Node { Id = x.Id, Text = x.Name, ParentId = x.ParentId }).ToHierarchy("CHN");
+            var nodes = data.Select(x => new Node { Id = x.Id, Text = x.Name, Pid = x.ParentId }).ToHierarchy("CHN");
             return Json(nodes);
         }
 
@@ -660,7 +661,7 @@ namespace Ayatta.Web.Controllers
         }
 
         [HttpPost("help-detail/{i?}")]
-        public async Task<IActionResult> HelpDetail(int? id, Help model)
+        public async Task<IActionResult> HelpDetail(int? id, Help model, int pid = 0)
         {
             var now = DateTime.Now;
 
@@ -677,7 +678,7 @@ namespace Ayatta.Web.Controllers
                 model.Content = model.Content.RemoveHtml();
             }
 
-            if (id.HasValue && id.Value > 0)
+            if (id.HasValue && id.Value > 0 && pid == 0)
             {
                 var old = DefaultStorage.HelpGet(id.Value);
                 if (old == null)
@@ -702,18 +703,34 @@ namespace Ayatta.Web.Controllers
                 return Json(result);
             }
 
+            if (id.HasValue && id.Value == 0 && pid == 0)
+            {
+                result.Message = "²ÎÊý´íÎó";
+                return Json(result);
+
+            }
             model.CreatedOn = now;
             model.ModifiedBy = string.Empty;
             model.ModifiedOn = now;
+
+            var hs = DefaultStorage.HelpPidList(pid); 
+
+            model.Depth = hs.Count + 1;
+            model.Path = string.Join(",", hs);
+
             var newId = DefaultStorage.HelpCreate(model);
-            result.Status = newId > 0;
-            if (result.Status)
+
+            if (result.Status = newId > 0)
             {
+                hs.Add(newId);//²¹È«path
+                var path = string.Join(",", hs);
+                DefaultStorage.HelpPathUpdate(newId, path);
                 result.Success();
             }
 
             return Json(result);
-        }
+        }       
+
 
         [HttpPost("help-delete/{id}")]
         public IActionResult HelpDel(int id)

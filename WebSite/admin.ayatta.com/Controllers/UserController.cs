@@ -1,3 +1,4 @@
+
 using System;
 using System.Linq;
 using Ayatta.Domain;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Caching.Distributed;
 namespace Ayatta.Web.Controllers
 {
     [Route("user")]
-    public class UserController : AbstractController
+    public class UserController : BaseController
     {
         public UserController(DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<UserController> logger) : base(defaultStorage, defaultCache, logger)
         {

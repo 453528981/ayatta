@@ -235,9 +235,13 @@ namespace Ayatta.Storage
             return Try(nameof(HelpCreate), () =>
             {
                 var cmd = SqlBuilder.Insert("Help")
-                .Column("ParentId", o.ParentId)
+                .Column("Pid", o.Pid)
+                .Column("Path", o.Path ?? string.Empty)
+                .Column("Depth", o.Depth)
+                .Column("GroupId", o.GroupId)
+                .Column("Link", o.Link ?? string.Empty)
                 .Column("Title", o.Title)
-                .Column("NavUrl", o.NavUrl ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
                 .Column("Content", o.Content ?? string.Empty)
                 .Column("Priority", o.Priority)
                 .Column("Extra", o.Extra ?? string.Empty)
@@ -261,9 +265,13 @@ namespace Ayatta.Storage
             return Try(nameof(HelpUpdate), () =>
             {
                 var cmd = SqlBuilder.Update("Help")
-                .Column("ParentId", o.ParentId)
+                .Column("Pid", o.Pid)
+                .Column("Path", o.Path ?? string.Empty)
+                .Column("Depth", o.Depth)
+                .Column("GroupId", o.GroupId)
+                .Column("Link", o.Link ?? string.Empty)
                 .Column("Title", o.Title)
-                .Column("NavUrl", o.NavUrl ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
                 .Column("Content", o.Content ?? string.Empty)
                 .Column("Priority", o.Priority)
                 .Column("Extra", o.Extra ?? string.Empty)
@@ -275,6 +283,21 @@ namespace Ayatta.Storage
                 return BaseConn.Execute(cmd) > 0;
             });
 
+        }
+
+        /// <summary>
+        /// 帮助 Path 更新
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool HelpPathUpdate(int id, string path)
+        {
+            return Try(nameof(AdModulePathUpdate), () =>
+            {
+                var sql = @"update Help set Path=@path where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id, path }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
         }
 
         ///<summary>
@@ -304,6 +327,15 @@ namespace Ayatta.Storage
                 var sql = @"select * from Help where id=@id";
                 var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
                 return BaseConn.QueryFirstOrDefault<Help>(cmd);
+            });
+        }
+
+        public IList<int> HelpPidList(int pid)
+        {           
+            return Try(nameof(HelpPidList), () =>
+            {
+                var sql = @"select id from help where id in(select path from help where id=@pid)";
+                return BaseConn.Query<int>(sql,new { pid}).ToList();
             });
         }
 
@@ -1097,10 +1129,9 @@ namespace Ayatta.Storage
             return Try(nameof(SlidePagedList), () =>
             {
                 var cmd = SqlBuilder
-                .Select("*")
+                .Select("*").From("Slide")
                 .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })//Regex.IsMatch(keyword, "^\\d+$")
-                .Where(status.HasValue, "Status=@status", new { status })
-                .From("Slide")
+                .Where(status.HasValue, "Status=@status", new { status })               
                 .ToCommand(page, size);
                 return BaseConn.PagedList<Slide>(page, size, cmd);
             });
@@ -1232,6 +1263,464 @@ namespace Ayatta.Storage
             });
         }
 
+
+        #endregion
+
+        #region 广告模块        
+
+        ///<summary>
+        /// 广告模块 创建
+        ///</summary>
+        ///<param name="o">AdModule</param>
+        ///<returns></returns>
+        public int AdModuleCreate(AdModule o)
+        {
+            return Try(nameof(AdModuleCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("AdModule")
+                .Column("Pid", o.Pid)
+                .Column("Name", o.Name)
+                .Column("Title", o.Title ?? string.Empty)
+                .Column("Path", o.Path ?? string.Empty)
+                .Column("Depth", o.Depth)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return BaseConn.ExecuteScalar<int>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 广告模块 更新
+        ///</summary>
+        ///<param name="o">AdModule</param>
+        ///<returns></returns>
+        public bool AdModuleUpdate(AdModule o)
+        {
+            return Try(nameof(AdModuleUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("AdModule")
+                .Column("Name", o.Name)
+                .Column("Title", o.Title ?? string.Empty)
+                .Column("Path", o.Path ?? string.Empty)
+                .Column("Depth", o.Depth)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+
+        /// <summary>
+        /// 广告模块 Path 更新
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool AdModulePathUpdate(int id, string path)
+        {
+            return Try(nameof(AdModulePathUpdate), () =>
+            {
+                var sql = @"update AdModule set Path=@path where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id, path }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 广告模块 状态 更新
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool AdModuleStatusUpdate(int id, bool status)
+        {
+            return Try(nameof(AdModuleStatusUpdate), () =>
+            {
+                var sql = @"update AdModule set Status=@status where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id, status }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 广告模块 删除
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool AdModuleDelete(int id)
+        {
+            return Try(nameof(AdModuleDelete), () =>
+            {
+                var sql = @"delete from AdModule where Pid=@id;delete from AdModule where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 广告模块 获取
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public AdModule AdModuleGet(int id)
+        {
+            return Try(nameof(AdModuleGet), () =>
+            {
+                var sql = @"select * from AdModule where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<AdModule>(cmd);
+            });
+        }
+
+        /// <summary>
+        /// 广告模块 获取
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="includeItems">是否包含条目</param>
+        /// <param name="current">是否筛选当前时间生效的条目</param>
+        /// <returns></returns>
+        public AdModule AdModuleGet(int id, bool includeItems, bool current = false)
+        {
+            return Try(nameof(AdModuleGet), () =>
+            {
+                if (includeItems)
+                {
+                    var sql = @"select * from AdModule where id=@id;select * from AdItem where ModuleId=@id";
+
+                    var cmd = SqlBuilder.Raw(sql, new { id })
+                    .Append(current, "Status=1 and StartedOn<=now() and StoppedOn>=now()")
+                    .Append(";")
+                    .ToCommand();
+                    using (var reader = BaseConn.QueryMultiple(cmd))
+                    {
+                        var o = reader.Read<AdModule>().FirstOrDefault();
+                        if (o != null)
+                        {
+                            o.Items = reader.Read<AdItem>().ToList();
+                        }
+                        return o;
+                    }
+                }
+                else
+                {
+                    var sql = @"select * from AdModule where id=@id";
+                    var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                    return BaseConn.QueryFirstOrDefault<AdModule>(cmd);
+                }
+            });
+        }
+
+        /*
+        /// <summary>
+        /// 广告模块父级信息 获取
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IDictionary<int, string> AdModuleParentDicGet(int id)
+        {
+            var dic = new Dictionary<int, string>();
+            var sql = "SELECT ParentId from AdModule where Id=@id";
+            var i = id;
+            while (i > 0)
+            {
+                i = BaseConn.ExecuteScalar<int>(sql, new { id = i });
+                dic.Add(i, "");
+            }
+            return dic;
+            /*
+            
+            var sql = @"
+            SELECT b.id, b.name 
+            FROM ( 
+                SELECT 
+                    @r AS id, 
+                    (SELECT @r := parentid FROM AdModule WHERE id = @r) AS pid, 
+                    @l := @l + 1 AS lv
+                FROM 
+                    (SELECT @r := 5, @l := 0) vars,AdModule h 
+                WHERE @r <> 0) a 
+            INNER JOIN AdModule b ON a.id = b.id
+            ORDER BY a.lv DESC";
+           // var cmd = SqlBuilder.Raw(sql, new { r = id, l = 0 }).ToCommand();
+            //var temp = BaseConn.Query(sql, new { r = id, l = 0 });
+            //return dic;
+            using (var conn = BaseConn as MySql.Data.MySqlClient.MySqlConnection)
+            {
+                conn.Open();
+                var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn);
+               // cmd.Parameters.AddWithValue("r", id);
+                //cmd.Parameters.AddWithValue("l", 0);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        dic.Add(reader.GetInt32(0), reader.GetString(1));
+                    }
+                }
+            }
+            return dic;
+           
+        }
+        */
+
+        /// <summary>
+        /// 广告模块 列表
+        /// </summary>
+        /// <param name="parentId">父id</param>
+        /// <param name="includeSelf">是否包含本身</param>
+        /// <returns></returns>
+        public IList<AdModule> AdModuleList(params int[] ids)
+        {
+            return Try(nameof(AdModuleList), () =>
+            {
+                var sql = @"select * from AdModule";
+                if (ids != null && ids.Length > 0)
+                {
+                    if (ids.Length > 1)
+                    {
+                        sql = "select * from AdModule where id=" + ids[0];
+                    }
+                    else
+                    {
+                        var str = string.Join(",", ids);
+                        sql = "select * from AdModule where id in (" + str + ")";
+                    }
+                }
+                return BaseConn.Query<AdModule>(sql).ToList();
+            });
+        }
+
+        public IDictionary<int, int> AdModuleIdDic()
+        {
+            var dic = new Dictionary<int, int>();
+
+            return Try(nameof(AdModuleIdDic), () =>
+            {
+                var sql = @"SELECT Id,Pid from AdModule";
+                using (var reader = BaseConn.ExecuteReader(sql))
+                {
+                    while (reader.Read())
+                    {
+                        dic.Add(reader.GetInt32(0), reader.GetInt32(1));
+                    }
+                }
+                return dic;
+            });
+        }
+
+
+        /// <summary>
+        /// 广告模块 分页
+        /// </summary>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
+        /// <returns></returns>
+        public IPagedList<AdModule> AdModulePagedList(int page = 1, int size = 20, string keyword = null, bool? status = null)
+        {
+            if (size < 0)
+            {
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(AdModulePagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*").From("AdModule")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })
+                .Where(status.HasValue, "Status=@status", new { status })
+                .ToCommand(page, size);
+
+                return BaseConn.PagedList<AdModule>(page, size, cmd);
+            });
+        }
+
+        ///<summary>
+        /// 广告条目 创建
+        ///</summary>
+        ///<param name="o">AdItem</param>
+        ///<returns></returns>
+        public int AdItemCreate(AdItem o)
+        {
+            return Try(nameof(AdItemCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("AdItem")
+                .Column("Type", o.Type)
+                .Column("ModuleId", o.ModuleId)
+                .Column("GroupId", o.GroupId)
+                .Column("Name", o.Name)
+                .Column("Title", o.Title??string.Empty)
+                .Column("Link", o.Link ?? string.Empty)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("DataKey", o.DataKey ?? string.Empty)
+                .Column("DataVal", o.DataVal ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return BaseConn.ExecuteScalar<int>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 广告条目 更新
+        ///</summary>
+        ///<param name="o">AdItem</param>
+        ///<returns></returns>
+        public bool AdItemUpdate(AdItem o)
+        {
+            return Try(nameof(AdItemUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("AdItem")
+                .Column("Type", o.Type)
+                .Column("ModuleId", o.ModuleId)
+                .Column("GroupId", o.GroupId)
+                .Column("Name", o.Name)
+                .Column("Title", o.Title ?? string.Empty)
+                .Column("Link", o.Link ?? string.Empty)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("DataKey", o.DataKey ?? string.Empty)
+                .Column("DataVal", o.DataVal ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 广告条目 状态 更新
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool AdItemStatusUpdate(int id, bool status)
+        {
+            return Try(nameof(AdItemStatusUpdate), () =>
+            {
+                var sql = @"update AdItem set Status=@status where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id, status }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 广告条目 删除
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool AdItemDelete(int id)
+        {
+            return Try(nameof(AdItemDelete), () =>
+            {
+                var sql = @"delete from AdItem where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 广告条目 获取
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public AdItem AdItemGet(int id)
+        {
+            return Try(nameof(AdItemGet), () =>
+            {
+                var sql = @"select * from AdItem where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return BaseConn.QueryFirstOrDefault<AdItem>(cmd);
+            });
+        }
+
+        /// <summary>
+        /// 广告条目 列表
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="moduleIds"></param>
+        /// <returns></returns>
+        public IList<AdItem> AdItemList(bool current = false, params int[] moduleIds)
+        {
+            return Try(nameof(AdItemList), () =>
+            {
+                var cmd = SqlBuilder.Select("*").From("AdItem")
+                .Where(current, "Status=1 and StartedOn<=now() and StoppedOn>=now()")
+                .Where(moduleIds != null && moduleIds.Length == 1, "ModuleId=" + moduleIds[0])
+                .Where(moduleIds != null && moduleIds.Length > 1, "ModuleId in (" + string.Join(",", moduleIds) + ")")
+                .ToCommand();
+                return BaseConn.Query<AdItem>(cmd).ToList();
+            });
+        }
+
+        /// <summary>
+        /// 广告条目 分页
+        /// </summary>
+        /// <param name="planId">模块id</param>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
+        /// <returns></returns>
+        public IPagedList<AdItem> AdItemPagedList(int moduleId, int page = 1, int size = 20, string keyword = null, bool? status = null)
+        {
+            if (size < 0)
+            {
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(ActItemPagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*").From("AdItem")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })
+                .Where(status.HasValue, "Status=@status", new { status })
+                .Where(moduleId > 0, "ModuleId=@moduleId", new { moduleId })                
+                .ToCommand(page, size);
+                return BaseConn.PagedList<AdItem>(page, size, cmd);
+            });
+        }
 
         #endregion
 

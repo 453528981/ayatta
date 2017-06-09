@@ -25,12 +25,12 @@
         /// </summary>
         public string DisplayName { get; }
 
-        internal Identity(int id, string guid=null, string name = null, string displayName = null)
+        internal Identity(int id, string guid = null, string name = null, string displayName = null)
         {
             Id = id;
             Guid = guid;
-            Name = name;
-            DisplayName = displayName;
+            Name = name ?? string.Empty;
+            DisplayName = displayName ?? string.Empty;
         }
 
         /// <summary>

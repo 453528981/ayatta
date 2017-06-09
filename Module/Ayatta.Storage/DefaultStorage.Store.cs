@@ -2,11 +2,10 @@ using Dapper;
 using System;
 using System.Text;
 using System.Linq;
-//using Ayatta.Param;
 using Ayatta.Domain;
+using Ayatta.Storage.Param;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Ayatta.Storage.Param;
 
 namespace Ayatta.Storage
 {
@@ -581,7 +580,7 @@ namespace Ayatta.Storage
         #region 商品评价
 
         ///<summary>
-        /// 商品评价是否存在
+        /// 商品评价汇总摘要 是否存在
         ///</summary>
         ///<param name="id">商品id</param>
         ///<returns></returns>
@@ -599,20 +598,22 @@ namespace Ayatta.Storage
         }
 
         ///<summary>
-        /// 获取商品评价汇总摘要
+        /// 商品评价汇总摘要 获取
         ///</summary>
         ///<param name="id">商品id</param>
         ///<returns></returns>
         public ItemComment ItemCommentGet(int id)
         {
-            var sql = @"select * from ItemComment where id=@id";
-            var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
-            return StoreConn.QueryFirstOrDefault<ItemComment>(cmd);
+            return Try(nameof(ItemCommentGet), () =>
+            {
+                var sql = @"select * from ItemComment where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return StoreConn.QueryFirstOrDefault<ItemComment>(cmd);
+            });
         }
 
-
         /// <summary>
-        /// 创建商品评价汇总摘要
+        /// 商品评价汇总摘要 创建
         /// </summary>
         ///<param name="id">商品id</param>
         /// <returns></returns>
@@ -638,10 +639,8 @@ namespace Ayatta.Storage
             });
         }
 
-
-
         ///<summary>
-        /// 创建商品评价
+        /// 商品评价 创建
         ///</summary>
         ///<param name="o">商品评价详情</param>
         ///<returns></returns>
@@ -651,50 +650,61 @@ namespace Ayatta.Storage
             {
                 var cmd = SqlBuilder.Insert("Comment")
                 .Column("Score", o.Score)
-                .Column("Content", o.Content)
+                .Column("Content", o.Content ?? string.Empty)
+                .Column("OrderId", o.OrderId)
                 .Column("ItemId", o.ItemId)
                 .Column("ItemImg", o.ItemImg)
                 .Column("ItemName", o.ItemName)
                 .Column("SkuId", o.SkuId)
                 .Column("SkuProp", o.SkuProp)
-                .Column("TagData", o.TagData)
-                .Column("ImageData", o.ImageData)
-                .Column("Recommend", o.Recommend)
+                .Column("TagData", o.TagData ?? string.Empty)
+                .Column("ImageData", o.ImageData ?? string.Empty)
+                .Column("Priority", o.Priority)
                 .Column("LikeCount", o.LikeCount)
                 .Column("ReplyCount", o.ReplyCount)
                 .Column("RewardPoint", o.RewardPoint)
+                .Column("Reply", o.Reply ?? string.Empty)
+                .Column("ReplyTime", o.ReplyTime)
+                .Column("Append", o.Append ?? string.Empty)
+                .Column("AppendTime", o.AppendTime)
                 .Column("UserId", o.UserId)
                 .Column("UserName", o.UserName)
                 .Column("SellerId", o.SellerId)
-                .Column("OrderId", o.OrderId)
+                .Column("SellerName", o.SellerName)
                 .Column("Status", o.Status)
-                .Column("CreatedBy", o.CreatedBy)
+                .Column("CreatedBy", o.CreatedBy ?? string.Empty)
                 .Column("CreatedOn", o.CreatedOn)
-                .Column("ModifiedBy", o.ModifiedBy)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .ToCommand(true);
                 return StoreConn.ExecuteScalar<int>(cmd);
             });
         }
 
-        public IPagedList<Comment> CommentPagedList(PagedParam param)
+        /// <summary>
+        /// 商品评价 分页
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <param name="skuId"></param>
+        /// <param name="type"></param>
+        /// <param name="page"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public IPagedList<Comment> CommentPagedList(int itemId = 0, int skuId = 0, int type = 0, int page = 1, int size = 20)
         {
-            var cmd = SqlBuilder.Select("*")
-                .From("Comment")
-                .ToCommand(param.PageIndex, param.PageSize);
-            var list = TradeConn.PagedList<Comment>(param.PageIndex, param.PageSize, cmd);
-            var ids = string.Join(",", list.Select(x => x.Id));
-            var sql = "select * from CommentReply where CommentId in(" + ids + ")";
-            var items = TradeConn.Query<CommentReply>(sql);
-            foreach (var o in list)
+            return Try(nameof(CommentPagedList), () =>
             {
-                o.Replies = items.Where(x => x.ParentId == o.Id).ToList();
-            }
-            return list;
+                var cmd = SqlBuilder.Select("*").From("Comment")
+                .Where(itemId > 0, "ItemId=@itemId", new { itemId })
+                .Where(skuId > 0, "SkuId=@skuId", new { skuId })
+
+                .ToCommand(page, size);
+                return TradeConn.PagedList<Comment>(page, size, cmd);
+            });
         }
 
         ///<summary>
-        /// 创建评价回复
+        /// 评价回复 创建
         ///</summary>
         ///<param name="o">评价回复</param>
         ///<returns></returns>
@@ -703,22 +713,21 @@ namespace Ayatta.Storage
             return Try(nameof(CommentReplyCreate), () =>
             {
                 var cmd = SqlBuilder.Insert("CommentReply")
+                .Column("Pid", o.Pid)
+                .Column("Path", o.Path)
+                .Column("Depth", o.Depth)
                 .Column("ItemId", o.ItemId)
-                .Column("ParentId", o.ParentId)
                 .Column("CommentId", o.CommentId)
-                .Column("Reply", o.Reply)
-                .Column("Replier", o.Replier)
-                .Column("RepliedOn", o.RepliedOn)
-                .Column("SellerId", o.SellerId)
-                .Column("SellerName", o.SellerName)
+                .Column("Content", o.Content ?? string.Empty)
+                .Column("UserId", o.UserId)
+                .Column("UserName", o.UserName)
                 .Column("Status", o.Status)
+                .Column("CreatedBy", o.CreatedBy ?? string.Empty)
                 .Column("CreatedOn", o.CreatedOn)
                 .ToCommand(true);
                 return StoreConn.ExecuteScalar<int>(cmd);
             });
-
         }
-
 
 
         #endregion
@@ -1037,7 +1046,7 @@ namespace Ayatta.Storage
                     .Append(current, "StartedOn<=now() and StoppedOn>=now()")
                     .Append(";")
                     .ToCommand();
-                    using (var reader = BaseConn.QueryMultiple(cmd))
+                    using (var reader = StoreConn.QueryMultiple(cmd))
                     {
                         var o = reader.Read<ActPlan>().FirstOrDefault();
                         if (o != null)
@@ -1096,23 +1105,22 @@ namespace Ayatta.Storage
             return Try(nameof(ActItemCreate), () =>
             {
                 var cmd = SqlBuilder.Insert("ActItem")
+                .Column("Type", o.Type)
                 .Column("PlanId", o.PlanId)
                 .Column("GroupId", o.GroupId)
-                .Column("ItemId", o.ItemId)
-                .Column("SkuId", o.SkuId)
-                .Column("Name", o.Name ?? string.Empty)
-                .Column("Title", o.Title ?? string.Empty)
-                .Column("Price", o.Price)
+                .Column("Name", o.Name)
+                .Column("Title", o.Title??string.Empty)
                 .Column("Link", o.Link ?? string.Empty)
                 .Column("Icon", o.Icon ?? string.Empty)
                 .Column("Picture", o.Picture ?? string.Empty)
                 .Column("Summary", o.Summary ?? string.Empty)
+                .Column("DataKey", o.DataKey ?? string.Empty)
+                .Column("DataVal", o.DataVal ?? string.Empty)
                 .Column("StartedOn", o.StartedOn)
                 .Column("StoppedOn", o.StoppedOn)
                 .Column("Priority", o.Priority)
                 .Column("Badge", o.Badge ?? string.Empty)
                 .Column("Extra", o.Extra ?? string.Empty)
-                .Column("Data", o.Data ?? string.Empty)
                 .Column("SellerId", o.SellerId)
                 .Column("SellerName", o.SellerName)
                 .Column("Status", o.Status)
@@ -1120,6 +1128,7 @@ namespace Ayatta.Storage
                 .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .ToCommand(true);
+
                 return StoreConn.ExecuteScalar<int>(cmd);
             });
         }
@@ -1134,27 +1143,22 @@ namespace Ayatta.Storage
             return Try(nameof(ActItemUpdate), () =>
             {
                 var cmd = SqlBuilder.Update("ActItem")
-                .Column("PlanId", o.PlanId)
+                .Column("Type", o.Type)
                 .Column("GroupId", o.GroupId)
-                .Column("ItemId", o.ItemId)
-                .Column("SkuId", o.SkuId)
-                .Column("Name", o.Name ?? string.Empty)
+                .Column("Name", o.Name)
                 .Column("Title", o.Title ?? string.Empty)
-                .Column("Price", o.Price)
                 .Column("Link", o.Link ?? string.Empty)
                 .Column("Icon", o.Icon ?? string.Empty)
                 .Column("Picture", o.Picture ?? string.Empty)
                 .Column("Summary", o.Summary ?? string.Empty)
+                .Column("DataKey", o.DataKey ?? string.Empty)
+                .Column("DataVal", o.DataVal ?? string.Empty)
                 .Column("StartedOn", o.StartedOn)
                 .Column("StoppedOn", o.StoppedOn)
                 .Column("Priority", o.Priority)
                 .Column("Badge", o.Badge ?? string.Empty)
                 .Column("Extra", o.Extra ?? string.Empty)
-                .Column("Data", o.Data ?? string.Empty)
-                .Column("SellerId", o.SellerId)
-                .Column("SellerName", o.SellerName)
                 .Column("Status", o.Status)
-                .Column("CreatedOn", o.CreatedOn)
                 .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
                 .Column("ModifiedOn", o.ModifiedOn)
                 .Where("Id=@id", new { o.Id })
@@ -1230,16 +1234,177 @@ namespace Ayatta.Storage
             return Try(nameof(ActItemPagedList), () =>
             {
                 var cmd = SqlBuilder
-                .Select("*")
+                .Select("*").From("ActItem")
                 .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })
                 .Where(status.HasValue, "Status=@status", new { status })
-                .Where("PlanId=@planId", new { planId })
-                .From("ActItem")
+                .Where("PlanId=@planId", new { planId })                
                 .ToCommand(page, size);
-                return BaseConn.PagedList<ActItem>(page, size, cmd);
+                return StoreConn.PagedList<ActItem>(page, size, cmd);
             });
         }
 
+        #endregion
+
+        #region 文章
+        ///<summary>
+        /// 文章 创建
+        ///</summary>
+        ///<param name="o">Article</param>
+        ///<returns></returns>
+        public int ArticleCreate(Article o)
+        {
+            return Try(nameof(ArticleCreate), () =>
+            {
+                var cmd = SqlBuilder.Insert("Article")
+                .Column("Type", o.Type)
+                .Column("Name", o.Name)
+                .Column("Title", o.Title ?? string.Empty)
+                .Column("Label", o.Label ?? string.Empty)
+                .Column("Link", o.Link ?? string.Empty)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("Keyword", o.Keyword ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("Content", o.Content ?? string.Empty)
+                .Column("Source", o.Source ?? string.Empty)
+                .Column("Author", o.Author ?? string.Empty)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("ViewCount", o.ViewCount)
+                .Column("LikeCount", o.LikeCount)
+                .Column("CollectCount", o.CollectCount)
+                .Column("CommentCount", o.CommentCount)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("UserId", o.UserId)
+                .Column("CreatedBy", o.CreatedBy ?? string.Empty)
+                .Column("CreatedOn", o.CreatedOn)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .ToCommand(true);
+                return StoreConn.ExecuteScalar<int>(cmd);
+            });
+        }
+
+        ///<summary>
+        /// 文章 更新
+        ///</summary>
+        ///<param name="o">Article</param>
+        ///<returns></returns>
+        public bool ArticleUpdate(Article o)
+        {
+            return Try(nameof(ArticleUpdate), () =>
+            {
+                var cmd = SqlBuilder.Update("Article")
+                .Column("Type", o.Type)
+                .Column("Name", o.Name)
+                .Column("Title", o.Title ?? string.Empty)
+                .Column("Label", o.Label ?? string.Empty)
+                .Column("Link", o.Link ?? string.Empty)
+                .Column("Icon", o.Icon ?? string.Empty)
+                .Column("Picture", o.Picture ?? string.Empty)
+                .Column("Keyword", o.Keyword ?? string.Empty)
+                .Column("Summary", o.Summary ?? string.Empty)
+                .Column("Content", o.Content ?? string.Empty)
+                .Column("Source", o.Source ?? string.Empty)
+                .Column("Author", o.Author ?? string.Empty)
+                .Column("StartedOn", o.StartedOn)
+                .Column("StoppedOn", o.StoppedOn)
+                .Column("Priority", o.Priority)
+                .Column("Badge", o.Badge ?? string.Empty)
+                .Column("Extra", o.Extra ?? string.Empty)
+                .Column("Status", o.Status)
+                .Column("ModifiedBy", o.ModifiedBy ?? string.Empty)
+                .Column("ModifiedOn", o.ModifiedOn)
+                .Where("Id=@id", new { o.Id })
+                .ToCommand();
+                return StoreConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 文章状态 更新
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        public bool ArticleStatusUpdate(int id, byte status)
+        {
+            return Try(nameof(ArticleStatusUpdate), () =>
+            {
+                var sql = @"update Article set Status=@status where id=@id;";
+                var cmd = SqlBuilder.Raw(sql, new { id, status }).ToCommand();
+                return StoreConn.Execute(cmd) > 0;
+            });
+        }
+
+        /// <summary>
+        /// 文章 删除
+        /// </summary>
+        ///<param name="id">id</param>
+        ///<param name="userId">userId</param>
+        /// <returns></returns>
+        public bool ArticleDelete(int id, int userId = 0)
+        {
+            return Try(nameof(ArticleDelete), () =>
+            {
+                var cmd = SqlBuilder
+                .Delete("Article")
+                .Where("Id=@id", new { id })
+                .Where(userId > 0, "UserId=@userId", new { userId })
+                .ToCommand();
+                return StoreConn.Execute(cmd) > 0;
+            });
+        }
+
+        ///<summary>
+        /// 文章 获取
+        ///</summary>
+        ///<param name="id">id</param>
+        ///<returns></returns>
+        public Article ArticleGet(int id)
+        {
+            return Try(nameof(ArticleGet), () =>
+            {
+                var sql = @"select * from Article where id=@id";
+                var cmd = SqlBuilder.Raw(sql, new { id }).ToCommand();
+                return StoreConn.QueryFirstOrDefault<Article>(cmd);
+            });
+        }
+
+
+        /// <summary>
+        /// 文章 分页
+        /// </summary>
+        /// <param name="planId">模块id</param>
+        /// <param name="page">页码</param>
+        /// <param name="size">分页大小</param>
+        /// <param name="keyword">关键字</param>
+        /// <param name="status">状态</param>
+        /// <param name="userId">userId</param>
+        /// <returns></returns>
+        public IPagedList<Article> ArticlePagedList(int page = 1, int size = 20, string keyword = null, bool? status = null, int userId = 0)
+        {
+            if (size < 0)
+            {
+                size = 20;
+            }
+            if (size > 200)
+            {
+                size = 200;
+            }
+            return Try(nameof(ArticlePagedList), () =>
+            {
+                var cmd = SqlBuilder
+                .Select("*").From("Article")
+                .Where(!string.IsNullOrEmpty(keyword), "Name=@keyword", new { keyword })
+                .Where(status.HasValue, "Status=@status", new { status })
+                .Where(userId > 0, "UserId=@userId", new { userId })
+                .ToCommand(page, size);
+                return StoreConn.PagedList<Article>(page, size, cmd);
+            });
+        }
         #endregion
     }
 }

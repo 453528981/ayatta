@@ -25,7 +25,7 @@ namespace Ayatta.Web.Models
 
     public class ActItemDetailModel : Model
     {
-        public ActItem ActItem { get; set; }
+        public ActItem Item { get; set; }
     }
 
     #endregion

@@ -1,13 +1,15 @@
 ﻿using System;
 using ProtoBuf;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Ayatta.Domain
 {
     ///<summary>
-    /// 官方活动条目
+    /// 广告模块
     ///</summary>
     [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
-    public class ActItem : IEntity<int>
+    public class AdModule : IEntity<int>
     {
         #region Properties
 
@@ -17,19 +19,9 @@ namespace Ayatta.Domain
         public int Id { get; set; }
 
         ///<summary>
-        /// 分类
+        /// 父Id
         ///</summary>
-        public byte Type { get; set; }
-
-        ///<summary>
-        /// 计划Id
-        ///</summary>
-        public int PlanId { get; set; }
-
-        ///<summary>
-        /// 分组Id
-        ///</summary>
-        public int GroupId { get; set; }
+        public int Pid { get; set; }
 
         ///<summary>
         /// 名称
@@ -42,9 +34,14 @@ namespace Ayatta.Domain
         public string Title { get; set; }
 
         ///<summary>
-        /// 链接
+        /// 全路径
         ///</summary>
-        public string Link { get; set; }
+        public string Path { get; set; }
+
+        ///<summary>
+        /// 深度
+        ///</summary>
+        public int Depth { get; set; }
 
         ///<summary>
         /// 图标
@@ -62,27 +59,7 @@ namespace Ayatta.Domain
         public string Summary { get; set; }
 
         ///<summary>
-        /// 数据键
-        ///</summary>
-        public string DataKey { get; set; }
-
-        ///<summary>
-        /// 数据值
-        ///</summary>
-        public string DataVal { get; set; }
-
-        ///<summary>
-        /// 开始时间
-        ///</summary>
-        public DateTime StartedOn { get; set; }
-
-        ///<summary>
-        /// 结束时间
-        ///</summary>
-        public DateTime StoppedOn { get; set; }
-
-        ///<summary>
-        /// 排序优先级 从小到大
+        /// 排序优先级
         ///</summary>
         public int Priority { get; set; }
 
@@ -95,16 +72,6 @@ namespace Ayatta.Domain
         /// 扩展信息
         ///</summary>
         public string Extra { get; set; }
-
-        ///<summary>
-        /// 卖家Id
-        ///</summary>
-        public int SellerId { get; set; }
-
-        ///<summary>
-        /// 卖家用户名
-        ///</summary>
-        public string SellerName { get; set; }
 
         ///<summary>
         /// 状态 true可用 false不可用
@@ -128,6 +95,19 @@ namespace Ayatta.Domain
 
         #endregion
 
+        #region Navigation Properties
+
+        /// <summary>
+        /// 条目
+        /// </summary>
+        public virtual IList<AdItem> Items { get; set; }
+
+        #endregion       
+        
     }
 
+    public static partial class Extension
+    {
+
+    }
 }

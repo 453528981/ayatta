@@ -1,10 +1,10 @@
-﻿@model ActItemDetailModel
+﻿@model AdItemDetailModel
 
 <div class="container">
     <div class="card">
 
         <div class="card-header ch-alt">
-            <h2>@(Model.Item.Id > 0 ? "编辑" : "添加") 官方活动条目</h2>
+            <h2>@(Model.Item.Id > 0 ? "编辑" : "添加") 广告条目</h2>
 
         </div>
         <div class="card-body card-padding">
@@ -31,12 +31,15 @@
                         <input id="input-GroupId" name="GroupId" type="text" class="form-control" maxlength="4" value="@(Model.Item.GroupId)" placeholder="分组">
                     </div>
                 </div>
+
                 <div class="form-group">
                     <div class="fg-line">
                         <label for="input-Name">名称</label>
                         <input id="input-Name" name="Name" type="text" class="form-control" maxlength="50" value="@(Model.Item.Name)" placeholder="名称">
                     </div>
                 </div>
+
+                
 
                 <div class="form-group">
                     <div class="fg-line">
@@ -46,9 +49,22 @@
                 </div>
                 <div class="form-group">
                     <div class="fg-line">
+                        <label for="input-Link">链接</label>
+                        <input id="input-Link" name="Link" type="text" class="form-control" maxlength="300" value="@(Model.Item.Link)" placeholder="链接">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="fg-line">
                         <label for="input-Icon">图标</label>
                         <input id="input-Icon" name="Icon" type="text" class="form-control" maxlength="300" value="@(Model.Item.Icon)" placeholder="图标">
+                        <span class="input-group-addon last" onclick="$.filer('default');"><i class="zmdi zmdi-airplane"></i></span>
                     </div>
+                </div>
+                <div class="input-group">
+                    <div class="fg-line">
+                        <input type="text" class="form-control" placeholder="Flight">
+                    </div>
+                    <span class="input-group-addon last"><i class="zmdi zmdi-airplane"></i></span>
                 </div>
                 <div class="form-group">
                     <div class="fg-line">
@@ -131,6 +147,7 @@
     <link href="@(WebSite.Static)/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 }
 @section js{
+    <script src="@(WebSite.Static)/js/jquery.filer.js"></script>
     <script src="@(WebSite.Static)/js/moment.min.js"></script>
     <script src="@(WebSite.Static)/js/bootstrap-datetimepicker.min.js"></script>
 

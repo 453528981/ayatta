@@ -96,7 +96,7 @@ namespace Ayatta.Web.Controllers
         {
             var userId = User.Id;
             var weedFs = WeedFs.Instance;
-            var data = await weedFs.Explore(dir);
+            var data = await weedFs.Explore("/" + userId + "/"+dir);
             data.Path = Regex.Replace(data.Path, "^/\\d/", "/" + userId + "/");
             if (!string.IsNullOrEmpty(lastFileName))
             {

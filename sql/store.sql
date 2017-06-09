@@ -113,8 +113,6 @@ ModifiedOn timestamp not null default current_timestamp on update current_timest
 primary key (Id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品Sku';
 
-
-
 drop table if exists ItemComment;
 create table ItemComment(
 Id int not null default 0 comment '商品Id',
@@ -137,28 +135,50 @@ create table Comment(
 Id int auto_increment not null comment 'Id',
 Score tinyint not null default 3 comment '评分 1-5',
 Content varchar(500) not null default '' comment '内容',
+OrderId nvarchar(32) not null default '' comment '订单Id',
 ItemId int not null default 0 comment '商品Id',
 ItemImg nvarchar(160) not null default '' comment '商品图片',
 ItemName nvarchar(160) not null default '' comment '商品名称',
 SkuId int not null default 0 comment '商品SkuId',
-SkuProp nvarchar(160) not null default '' comment '商品销售属性',
-TagData nvarchar(200) not null default '' comment '买家印象标签',
-ImageData varchar(3000) not null default '' comment '晒图 多个以","分隔',
-Recommend bool not null default 0 comment '是否推荐',
+SkuProp nvarchar(200) not null default '' comment '商品销售属性',
+TagData nvarchar(500) not null default '' comment '买家印象标签 多个以","分隔',
+ImageData varchar(1000) not null default '' comment '晒图 多个以","分隔',
+Priority int not null default 0 comment '排序优先级',
 LikeCount int not null default 0 comment '该评价被赞成总数',
 ReplyCount int not null default 0 comment '该评价被回复总数',
 RewardPoint int not null default 0 comment '奖励积分',
-UserId int not null default 0 comment '用户Id',
-UserName nvarchar(32) not null default '' comment '用户名',
-SellerId int not null default 0 comment '商家Id',
-OrderId nvarchar(32) not null default '' comment '订单Id',
-Status tinyint not null default 1 comment '0待审核 1审核未通过 2通过 3积分已返还',
+Reply varchar(500) not null default '' comment '卖家回复',
+ReplyTime datetime comment '卖家回复时间',
+Append varchar(500) not null default '' comment '买家追加评价',
+AppendTime datetime comment '买家追加评价时间',
+UserId int not null default 0 comment '买家Id',
+UserName nvarchar(32) not null default '' comment '买家用户名',
+SellerId int not null default 0 comment '卖家Id',
+SellerName nvarchar(32) not null default '' comment '卖家用户名',
+Status tinyint not null default 0 comment '0待审核 1审核未通过 2通过 3积分已返还',
 CreatedBy nvarchar(50) not null default '' comment '来源 pc wap iphone android',
 CreatedOn datetime not null default current_timestamp comment '创建时间',
 ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
 ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
 primary key (Id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品评价';
+
+drop table if exists CommentReply;
+create table CommentReply(
+Id int auto_increment not null comment 'Id',
+Pid int not null default 0 comment '父级Id',
+Path varchar(50) not null default '' comment '全路径',
+Depth int not null default 0 comment '深度',
+ItemId int not null default 0 comment '商品Id',
+CommentId int not null default 0 comment '评价详情Id',
+Content varchar(500) not null default '' comment '内容',
+UserId int not null default 0 comment '买家Id',
+UserName nvarchar(32) not null default '' comment '买家用户名',
+Status bool not null default 0 comment '状态 true显示 false不显示',
+CreatedBy nvarchar(50) not null default '' comment '来源 pc wap iphone android',
+CreatedOn datetime not null default current_timestamp comment '创建时间',
+primary key (Id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品评价回复';
 
 /*
 drop table if exists Comment;
@@ -189,23 +209,6 @@ ModifiedOn timestamp not null default current_timestamp on update current_timest
 primary key (Id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品评价';
 
-
-drop table if exists CommentReply;
-create table CommentReply(
-Id int auto_increment not null comment 'Id',
-ItemId int not null default 0 comment '商品Id',
-ParentId int not null default 0 comment '父级Id',
-CommentId int not null default 0 comment '评价详情Id',
-Reply varchar(500) not null default '' comment '内容',
-Replier nvarchar(50) not null default '' comment '回复者',
-RepliedOn datetime comment '回复时间',
-SellerId int not null default 0 comment '卖家Id',
-SellerName nvarchar(32) not null default '' comment '卖家',
-Status bool not null default 0 comment '状态 true显示 false不显示',
-CreatedOn datetime not null default current_timestamp comment '创建时间',
-primary key (Id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品评价回复';
-*/
 
 drop table if exists Consultation;
 create table Consultation(
@@ -250,27 +253,27 @@ ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
 ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
 primary key (Id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品海关备案';
-
+*/
 
 
 drop table if exists Article;
 create table Article( 
 Id int auto_increment not null comment 'Id',
-ParentId int not null default 0 comment '父级Id',
 Type int not null default 0 comment '类型',
 Name nvarchar(100) not null default '' comment '名称 方便后台使用',
 Title nvarchar(150) not null default ''comment '标题 前台使用',
-Tag nvarchar(200) not null default '' comment '标签',
-Nav nvarchar(300) not null default '' comment '导航URL',
+Label nvarchar(200) not null default '' comment '标签',
+Link nvarchar(300) not null default '' comment '链接',
 Icon varchar(300) not null default '' comment '图标',
 Picture nvarchar(300) not null default '' comment '图片',
 Keyword nvarchar(300) not null default '' comment '关键词',
 Summary nvarchar(300) not null default '' comment '内容摘要',
-Content nvarchar(4000) not null default '' comment '详细内容',
+Content text comment '详细内容',
 Source nvarchar(50) not null default '' comment '来源',
 Author nvarchar(50) not null default '' comment '作者',
 StartedOn datetime not null default now() comment '开始时间',
 StoppedOn datetime not null default now() comment '结束时间',
+ViewCount int not null default 0 comment '浏览数量',
 LikeCount int not null default 0 comment '点赞数量',
 CollectCount int not null default 0 comment '收藏数量',
 CommentCount int not null default 0 comment '评论数量',
@@ -287,7 +290,7 @@ primary key(Id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文章';
 
 
-/*试用计划*/
+/*
 drop table if exists TrialPlan;
       
 create table TrialPlan( 
@@ -311,7 +314,7 @@ ModifiedOn timestamp not null default current_timestamp on update current_timest
 primary key(Id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='试用计划';
 
-/*试用商品*/
+
 drop table if exists TrialProduct;
       
 create table TrialProduct( 
@@ -336,7 +339,7 @@ ModifiedOn timestamp not null default current_timestamp on update current_timest
 primary key(Id,SkuId,ItemId)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='试用商品';
 
-/*试用申请*/
+
 
 drop table if exists TrialRecord;      
 
@@ -357,7 +360,7 @@ ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
 ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
 primary key(Id,SkuId,ItemId)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='试用申请';
-
+*/
 
 drop table if exists ActPlan;
 create table ActPlan( 
@@ -386,25 +389,24 @@ primary key(Id)
 drop table if exists ActItem;
 create table ActItem( 
 Id int auto_increment not null comment 'Id',
-PlanId int not null default 0 comment '模块Id',
+Type tinyint not null default 0 comment '分类店铺 商品 活动等',
+PlanId int not null default 0 comment '计划Id',
 GroupId int not null default 0 comment '分组Id',
-ItemId int not null default 0 comment '商品Id',
-SkuId int not null default 0 comment '商品SkuId',
 Name nvarchar(50) not null default '' comment '名称',
 Title nvarchar(50) not null default '' comment '标题',
-Price decimal(8,2) not null default 0 comment '价格',
 Link nvarchar(300) not null default '' comment '链接',
 Icon nvarchar(300) not null default '' comment '图标',
 Picture nvarchar(300) not null default '' comment '图片',
 Summary nvarchar(300) not null default '' comment '描述',
+DataKey nvarchar(200) not null default '' comment '数据键',
+DataVal nvarchar(4000) not null default '' comment '数据值',
 StartedOn datetime not null default now() comment '开始时间',
 StoppedOn datetime not null default now() comment '结束时间',
 Priority int not null default 0 comment '排序优先级 从小到大',
 Badge nvarchar(200) not null default '' comment '徽章 标记',
 Extra nvarchar(200) not null default '' comment '扩展信息',
-Data nvarchar(4000) not null default '' comment '数据',
 SellerId int not null default 0 comment '卖家Id',
-SellerName nvarchar(32) not null default '' comment '卖家',
+SellerName nvarchar(32) not null default '' comment '卖家用户名',
 Status bool not null default 0 comment '状态 true可用 false不可用',
 CreatedOn datetime not null default current_timestamp comment '创建时间',
 ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',

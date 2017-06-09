@@ -2,6 +2,8 @@ using Ayatta.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Ayatta.Web.Controllers
 {
@@ -47,6 +49,21 @@ namespace Ayatta.Web.Controllers
                 return NotFound();
             }
             var data = DefaultStorage.ItemMiniGet(id);
+            return Json(data);
+        }
+
+        [HttpGet("/global/weed")]
+        public async Task<IActionResult> Weed(string dir = null, string lastFileName = null)
+        {
+            var userId = User.Id;
+            var weedFs = WeedFs.Instance;
+            var data = await weedFs.Explore("/" + userId + "/" + dir);
+            data.Path = data.Path.Substring(1 + userId.ToString().Length); // Regex.Replace(data.Path, "^/\\d/", "/" + userId + "/");
+            if (!string.IsNullOrEmpty(lastFileName))
+            {
+                var temp = new { data.LastFileName, data.ShouldDisplayLoadMore, data.Files };
+                return Json(data.Files);
+            }
             return Json(data);
         }
 

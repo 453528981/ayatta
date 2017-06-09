@@ -9,6 +9,7 @@ namespace Ayatta.Domain
     [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
     public class Help : IEntity<int>
     {
+        #region Properties
 
         ///<summary>
         /// Id
@@ -18,7 +19,27 @@ namespace Ayatta.Domain
         ///<summary>
         /// 父Id
         ///</summary>
-        public int ParentId { get; set; }
+        public int Pid { get; set; }
+
+        ///<summary>
+        /// 全路径
+        ///</summary>
+        public string Path { get; set; }
+
+        ///<summary>
+        /// 深度
+        ///</summary>
+        public int Depth { get; set; }
+
+        ///<summary>
+        /// 分组Id
+        ///</summary>
+        public int GroupId { get; set; }
+
+        ///<summary>
+        /// 导航URL
+        ///</summary>
+        public string Link { get; set; }
 
         ///<summary>
         /// 标题
@@ -26,14 +47,9 @@ namespace Ayatta.Domain
         public string Title { get; set; }
 
         ///<summary>
-        /// 导航URL
-        ///</summary>
-        public string NavUrl { get; set; } = string.Empty;
-
-        ///<summary>
         /// 摘要
         ///</summary>
-        public string Summary { get; set; } = string.Empty;
+        public string Summary { get; set; }
 
         ///<summary>
         /// 内容
@@ -48,7 +64,7 @@ namespace Ayatta.Domain
         ///<summary>
         /// 扩展信息
         ///</summary>
-        public string Extra { get; set; } = string.Empty;
+        public string Extra { get; set; }
 
         ///<summary>
         /// 状态 true可用 false不可用
@@ -58,17 +74,19 @@ namespace Ayatta.Domain
         ///<summary>
         /// 创建时间
         ///</summary>
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
+        public DateTime CreatedOn { get; set; }
 
         ///<summary>
         /// 最后一次编辑者
         ///</summary>
-        public string ModifiedBy { get; set; } = string.Empty;
+        public string ModifiedBy { get; set; }
 
         ///<summary>
         /// 最后一次编辑时间
         ///</summary>
-        public DateTime ModifiedOn { get; set; } = DateTime.Now;
+        public DateTime ModifiedOn { get; set; }
+
+        #endregion
     }
 
 }

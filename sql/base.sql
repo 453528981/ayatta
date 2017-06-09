@@ -68,9 +68,12 @@ primary key (Id,CatgId,PropId)
 drop table if exists Help;
 create table Help(
 Id int auto_increment not null comment 'Id',
-ParentId int not null default 0 comment '父Id',
+Pid int not null default 0 comment '父Id',
+Path varchar(50) not null default '' comment '全路径',
+Depth int not null default 0 comment '深度',
+GroupId int not null default 0 comment '分组Id',
+Link nvarchar(300) not null default ''comment '导航URL',
 Title nvarchar(200) not null default '' comment '标题',
-NavUrl nvarchar(300) not null default ''comment '导航URL',
 Summary nvarchar(500) not null default '' comment '摘要',
 Content nvarchar(8000) not null default '' comment '内容',
 Priority int not null default 0 comment '排序优先级 从小到大',
@@ -81,6 +84,8 @@ ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
 ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
 primary key(Id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='帮助';
+
+
 
 
 drop table if exists Country ;
@@ -270,7 +275,7 @@ foreign key(PlatformId) references PaymentPlatform(Id) on delete cascade
 drop table if exists AdModule;
 create table AdModule( 
 Id int auto_increment not null comment 'Id',
-ParentId int not null default 0 comment '父Id',
+Pid int not null default 0 comment '父Id',
 Name nvarchar(50) not null default '' comment '名称',
 Title nvarchar(50) not null default '' comment '标题',
 Path varchar(50) not null default '' comment '全路径',
@@ -287,19 +292,37 @@ ModifiedBy nvarchar(50) not null default '' comment '最后一次编辑者',
 ModifiedOn timestamp not null default current_timestamp on update current_timestamp comment '最后一次编辑时间',
 primary key(Id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='广告模块';
+/*表设计可参考 http://www.cnblogs.com/xiaoxiaoqingyi/p/6954349.html*/
+
+/*
+查询id为4，路径path为 ‘1,4’ 的所有后代，可以使用如下语句：
+SELECT * FROM AdModule AS c WHERE c.path LIKE '1,4%' ;
+
+找到id为5， 路径是 '1,4,5' 的祖先
+SELECT * FROM AdModule AS c WHERE id in(1,4);
+*/
+/*
+truncate table AdModule; 
+insert into AdModule (Pid,Name,Path,Depth)values(0,'首页','1',1);
+insert into AdModule (ParentId,Name)values(1,'顶通');
+insert into AdModule (ParentId,Name)values(1,'导航');
+insert into AdModule (ParentId,Name)values(1,'菜单');
+*/
 
 drop table if exists AdItem;
 create table AdItem( 
 Id int auto_increment not null comment 'Id',
+Type tinyint not null default 0 comment '分类',
 ModuleId int not null default 0 comment '模块Id',
 GroupId int not null default 0 comment '分组Id',
 Name nvarchar(50) not null default '' comment '名称',
 Title nvarchar(50) not null default '' comment '标题',
-Data nvarchar(4000) not null default '' comment '数据',
 Link nvarchar(300) not null default '' comment '链接',
 Icon nvarchar(300) not null default '' comment '图标',
 Picture nvarchar(300) not null default '' comment '图片',
 Summary nvarchar(300) not null default '' comment '描述',
+DataKey nvarchar(200) not null default '' comment '数据键',
+DataVal nvarchar(4000) not null default '' comment '数据值',
 StartedOn datetime not null default now() comment '开始时间',
 StoppedOn datetime not null default now() comment '结束时间',
 Priority int not null default 0 comment '排序优先级 从小到大',

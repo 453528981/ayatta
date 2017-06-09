@@ -7,8 +7,8 @@ namespace Ayatta.Domain
     public class Node
     {
         public string Id { get; set; }
+        public string Pid { get; set; }
         public string Text { get; set; }
-        public string ParentId { get; set; }
         public bool IsParent { get; set; }
         public List<Node> Nodes { get; set; }
 
@@ -24,19 +24,19 @@ namespace Ayatta.Domain
             Action<Node> addChildren = null;
             addChildren = (item =>
             {
-                var children = data.Where(o => o.ParentId == item.Id).ToList();
-                if (children.Count > 0)                {
+                var children = data.Where(o => o.Pid == item.Id).ToList();
+                if (children.Count > 0)
+                {
                     item.IsParent = true;
                     item.Nodes.AddRange(children);
                     foreach (var child in children)
                     {
                         addChildren(child);
                     }
-                }              
-                
+                }                              
             });
 
-            var root = data.Where(o => o.ParentId == rootId).ToList();
+            var root = data.Where(o => o.Pid == rootId).ToList();
             root.ForEach(o => addChildren(o));
             return root;
         }

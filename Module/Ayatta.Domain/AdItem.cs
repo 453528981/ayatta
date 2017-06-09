@@ -1,13 +1,14 @@
 ﻿using System;
 using ProtoBuf;
+using System.Collections.Generic;
 
 namespace Ayatta.Domain
 {
     ///<summary>
-    /// 官方活动条目
+    /// 广告条目
     ///</summary>
     [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
-    public class ActItem : IEntity<int>
+    public class AdItem : IEntity<int>
     {
         #region Properties
 
@@ -22,9 +23,9 @@ namespace Ayatta.Domain
         public byte Type { get; set; }
 
         ///<summary>
-        /// 计划Id
+        /// 模块Id
         ///</summary>
-        public int PlanId { get; set; }
+        public int ModuleId { get; set; }
 
         ///<summary>
         /// 分组Id
@@ -97,16 +98,6 @@ namespace Ayatta.Domain
         public string Extra { get; set; }
 
         ///<summary>
-        /// 卖家Id
-        ///</summary>
-        public int SellerId { get; set; }
-
-        ///<summary>
-        /// 卖家用户名
-        ///</summary>
-        public string SellerName { get; set; }
-
-        ///<summary>
         /// 状态 true可用 false不可用
         ///</summary>
         public bool Status { get; set; }
@@ -128,6 +119,9 @@ namespace Ayatta.Domain
 
         #endregion
 
+
+
     }
+
 
 }

@@ -1,13 +1,13 @@
-@model ActItemListModel
+@model AdItemListModel
 <div class="container">
 
     <div class="card">
         <form action="?" method="get">
             <div class="card-header ch-alt">
-                <h2>官方活动条目 列表</h2>
+                <h2>广告条目 列表</h2>
                 <ul class="actions">
                     <li>
-                        <a href="/act/plan/@(Model.PlanId)/item/" title="添加">
+                        <a href="/ad/@(Model.ModuleId)/item/" title="添加">
                             <i class="zmdi zmdi-plus c-red"></i>
                         </a>
                     </li>
@@ -78,6 +78,7 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
+
                             <th>
                                 Id
                             </th>
@@ -91,9 +92,13 @@
                                 名称
                             </th>
                             <th>
-                                数据键
+                                标题
                             </th>
-                          
+
+                            <th>
+                                图标
+                            </th>
+
                             <th>
                                 开始时间
                             </th>
@@ -103,8 +108,8 @@
                             <th>
                                 排序
                             </th>
-                            <th>标记</th>
                             <th>状态</th>
+                            <th>标记</th>
                             <th>创建时间</th>
                             <th>操 作</th>
                         </tr>
@@ -128,9 +133,12 @@
                                     <td>
                                         @o.Name
                                     </td>
+                                    <td>
+                                        @o.Title
+                                    </td>
 
-                                    <td>@o.DataKey</td>
-                                  
+                                    <td></td>
+
                                     <td>
                                         @(o.StartedOn.ToString("yyyy-MM-dd HH:mm:ss"))
                                     </td>
@@ -146,8 +154,8 @@
                                         @(o.CreatedOn.ToString("yyyy-MM-dd HH:mm:ss"))
                                     </td>
                                     <td>
-                                        <a href="~/act/plan/@(Model.PlanId)/item/@(o.Id)" title="编辑"><i class="zmdi zmdi-edit f-18 c-bluegray"></i></a>
-                                        <a href="~/sys/plan/@(Model.PlanId)/item-delete/@(o.Id)" title="删除" class="m-l-10" onclick="deleteItem(this); return false;"><i class="zmdi zmdi-delete f-18 c-gray"></i></a>
+                                        <a href="~/ad/@(Model.ModuleId)/item/@(o.Id)" title="编辑"><i class="zmdi zmdi-edit f-18 c-bluegray"></i></a>
+                                        <a href="~/ad/@(Model.ModuleId)/item-delete/@(o.Id)" title="删除" class="m-l-10" onclick="deleteItem(this); return false;"><i class="zmdi zmdi-delete f-18 c-gray"></i></a>
                                     </td>
                                 </tr>
                             }

@@ -34,7 +34,7 @@ namespace Ayatta.Web.Controllers
         public IActionResult Nodes()
         {
             var data = DefaultStorage.CatgList();
-            var nodes = data.Select(x => new Node { Id = x.Id.ToString(), Text = x.Name, ParentId = x.ParentId.ToString(), IsParent = x.IsParent }).ToHierarchy("0");
+            var nodes = data.Select(x => new Node { Id = x.Id.ToString(), Text = x.Name, Pid = x.ParentId.ToString(), IsParent = x.IsParent }).ToHierarchy("0");
             return Json(nodes);
         }
 

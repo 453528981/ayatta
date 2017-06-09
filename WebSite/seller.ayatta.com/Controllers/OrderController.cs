@@ -1,9 +1,9 @@
+using Ayatta.Domain;
 using Ayatta.Storage;
 using Ayatta.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
-using Ayatta.Domain;
 
 namespace Ayatta.Web.Controllers
 {
@@ -37,7 +37,6 @@ namespace Ayatta.Web.Controllers
         /// <param name="id">¶©µ¥ºÅ</param>
         /// <returns></returns>
         [HttpGet("/order-memo/{id}")]
-
         public ActionResult OrderMemo(string id)
         {
             var identity = User;
@@ -78,7 +77,6 @@ namespace Ayatta.Web.Controllers
         /// <param name="id">¶©µ¥ºÅ</param>
         /// <returns></returns>
         [HttpGet("/order-cancel/{id}")]
-
         public ActionResult OrderCancel(string id)
         {
             var model = new Result<OrderStatus>();

@@ -19,12 +19,12 @@ namespace Ayatta.Web.Controllers
         }
 
         [HttpGet("{id}.html")]
-        public IActionResult Index(int id = 0)
+        public IActionResult Index(int id, int skuId = 0, int type = 0, int page = 1, int size = 20)
         {
             var model = new CommentIndexModel();
             model.Item = DefaultStorage.ItemMiniGet(id);
             model.Comment = DefaultStorage.ItemCommentGet(id);
-            model.Comments = DefaultStorage.CommentPagedList(new PagedParam());
+            model.Comments = DefaultStorage.CommentPagedList(id, skuId, type, page, size);
             return View(model);
         }
 

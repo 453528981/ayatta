@@ -37,7 +37,7 @@
                                     <td>
                                         @(o.Id)
                                     </td>
-                                    <td>@(o.ParentId)</td>
+                                    <td>@(o.Pid)</td>
                                     <td>
                                         @(o.Title)
                                     </td>
@@ -50,7 +50,8 @@
                                         @(o.CreatedOn.ToString("yyyy-MM-dd HH:mm:ss"))
                                     </td>
                                     <td>
-                                        <a href="~/sys/help-detail/@(o.Id)" title="编辑"><i class="zmdi zmdi-edit f-18 c-bluegray"></i></a>
+                                        @*<a href="~/sys/help-detail/@(o.Id)" title="子列表"><i class="zmdi zmdi-storage f-18 c-bluegray"></i></a>*@
+                                        <a href="~/sys/help-detail/@(o.Id)" title="编辑" class="m-l-10"><i class="zmdi zmdi-edit f-18 c-bluegray"></i></a>
                                         <a href="~/sys/help-delete/@(o.Id)" title="删除" class="m-l-10" onclick="deleteItem(this); return false;"><i class="zmdi zmdi-delete f-18 c-gray"></i></a>
 
                                     </td>

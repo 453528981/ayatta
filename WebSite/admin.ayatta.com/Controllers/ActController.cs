@@ -12,7 +12,7 @@ using Microsoft.Extensions.Caching.Distributed;
 namespace Ayatta.Web.Controllers
 {
     [Route("act")]
-    public class ActController : AbstractController
+    public class ActController : BaseController
     {
         public ActController(DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<ActController> logger) : base(defaultStorage, defaultCache, logger)
         {
@@ -144,12 +144,12 @@ namespace Ayatta.Web.Controllers
         {
             var now = DateTime.Now;
             var model = new ActItemDetailModel();
-            model.ActItem = new ActItem();
-            model.ActItem.StartedOn = now;
-            model.ActItem.StoppedOn = now.AddDays(5);
+            model.Item = new ActItem();
+            model.Item.StartedOn = now;
+            model.Item.StoppedOn = now.AddDays(5);
             if (id > 0)
             {
-                model.ActItem = DefaultStorage.ActItemGet(id);
+                model.Item = DefaultStorage.ActItemGet(id);
             }
             return View(model);
         }
@@ -157,6 +157,8 @@ namespace Ayatta.Web.Controllers
         [HttpPost("plan/{planId}/item/{id?}")]
         public async Task<IActionResult> ActItemDetail(int planId, int id, ActItem model)
         {
+            var identity = User;
+
             var now = DateTime.Now;
             var result = new Result();
 
@@ -196,9 +198,10 @@ namespace Ayatta.Web.Controllers
                 return Json(result);
             }
 
-
+            model.SellerId = identity.Id;
+            model.SellerName = identity.Name;
             model.CreatedOn = now;
-            model.ModifiedBy = string.Empty;
+            model.ModifiedBy = identity.Name;
             model.ModifiedOn = now;
             var newId = DefaultStorage.ActItemCreate(model);
 

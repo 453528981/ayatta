@@ -29,6 +29,11 @@ namespace Ayatta.Domain
         public string Content { get; set; }
 
         ///<summary>
+        /// 订单Id
+        ///</summary>
+        public string OrderId { get; set; }
+
+        ///<summary>
         /// 商品Id
         ///</summary>
         public int ItemId { get; set; }
@@ -54,7 +59,7 @@ namespace Ayatta.Domain
         public string SkuProp { get; set; }
 
         ///<summary>
-        /// 买家印象标签
+        /// 买家印象标签 多个以","分隔
         ///</summary>
         public string TagData { get; set; }
 
@@ -64,9 +69,9 @@ namespace Ayatta.Domain
         public string ImageData { get; set; }
 
         ///<summary>
-        /// 是否推荐
+        /// 排序优先级
         ///</summary>
-        public bool Recommend { get; set; }
+        public int Priority { get; set; }
 
         ///<summary>
         /// 该评价被赞成总数
@@ -84,24 +89,44 @@ namespace Ayatta.Domain
         public int RewardPoint { get; set; }
 
         ///<summary>
-        /// 用户Id
+        /// 卖家回复
+        ///</summary>
+        public string Reply { get; set; }
+
+        ///<summary>
+        /// 卖家回复时间
+        ///</summary>
+        public DateTime ReplyTime { get; set; }
+
+        ///<summary>
+        /// 买家追加评价
+        ///</summary>
+        public string Append { get; set; }
+
+        ///<summary>
+        /// 买家追加评价时间
+        ///</summary>
+        public DateTime AppendTime { get; set; }
+
+        ///<summary>
+        /// 买家Id
         ///</summary>
         public int UserId { get; set; }
 
         ///<summary>
-        /// 用户名
+        /// 买家用户名
         ///</summary>
         public string UserName { get; set; }
 
         ///<summary>
-        /// 商家Id
+        /// 卖家Id
         ///</summary>
         public int SellerId { get; set; }
 
         ///<summary>
-        /// 订单Id
+        /// 卖家用户名
         ///</summary>
-        public string OrderId { get; set; }
+        public string SellerName { get; set; }
 
         ///<summary>
         /// 0待审核 1审核未通过 2通过 3积分已返还
@@ -131,6 +156,9 @@ namespace Ayatta.Domain
         #endregion
 
         [ProtoIgnore]
+        public IDictionary<string, string> Dic { get; set; }
+
+        [ProtoIgnore]
         public virtual IList<CommentReply> Replies { get; set; }
     }
 
@@ -149,14 +177,24 @@ namespace Ayatta.Domain
         public int Id { get; set; }
 
         ///<summary>
+        /// 父级Id
+        ///</summary>
+        public int Pid { get; set; }
+
+        ///<summary>
+        /// 全路径
+        ///</summary>
+        public string Path { get; set; }
+
+        ///<summary>
+        /// 深度
+        ///</summary>
+        public int Depth { get; set; }
+
+        ///<summary>
         /// 商品Id
         ///</summary>
         public int ItemId { get; set; }
-
-        ///<summary>
-        /// 父级Id
-        ///</summary>
-        public int ParentId { get; set; }
 
         ///<summary>
         /// 评价详情Id
@@ -166,32 +204,27 @@ namespace Ayatta.Domain
         ///<summary>
         /// 内容
         ///</summary>
-        public string Reply { get; set; }
+        public string Content { get; set; }
 
         ///<summary>
-        /// 回复者
+        /// 买家Id
         ///</summary>
-        public string Replier { get; set; }
+        public int UserId { get; set; }
 
         ///<summary>
-        /// 回复时间
+        /// 买家用户名
         ///</summary>
-        public DateTime RepliedOn { get; set; }
-
-        ///<summary>
-        /// 卖家Id
-        ///</summary>
-        public int SellerId { get; set; }
-
-        ///<summary>
-        /// 卖家
-        ///</summary>
-        public string SellerName { get; set; }
+        public string UserName { get; set; }
 
         ///<summary>
         /// 状态 true显示 false不显示
         ///</summary>
         public bool Status { get; set; }
+
+        ///<summary>
+        /// 来源 pc wap iphone android
+        ///</summary>
+        public string CreatedBy { get; set; }
 
         ///<summary>
         /// 创建时间
