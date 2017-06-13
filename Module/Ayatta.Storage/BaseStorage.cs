@@ -22,6 +22,12 @@ namespace Ayatta.Storage
         protected IDbConnection BaseConn => new MySqlConnection(options.BaseConnStr);
 
         /// <summary>
+        /// WeedConn
+        /// </summary>
+        protected IDbConnection WeedConn => new MySqlConnection(options.WeedConnStr);
+
+
+        /// <summary>
         /// StoreConnection
         /// </summary>
         protected IDbConnection StoreConn => new MySqlConnection(options.StoreConnStr);

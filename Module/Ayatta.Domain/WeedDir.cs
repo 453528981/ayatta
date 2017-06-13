@@ -1,53 +1,36 @@
 ﻿using System;
 using ProtoBuf;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Ayatta.Domain
 {
     ///<summary>
-    /// Weed 文件
+    /// Weed 目录
     ///</summary>
     [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
-    public class WeedFile : IEntity<string>
+    public class WeedDir : IEntity<int>
     {
         #region Properties
 
         ///<summary>
         /// Id
         ///</summary>
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         ///<summary>
-        /// 用户Id
+        /// 父Id
         ///</summary>
-        public int Uid { get; set; }
-
-        ///<summary>
-        /// 目录Id
-        ///</summary>
-        public int Did { get; set; }
-
-        ///<summary>
-        /// 扩展名
-        ///</summary>
-        public string Ext { get; set; }
-
-        ///<summary>
-        /// Url
-        ///</summary>
-        public string Url { get; set; }
-
-        ///<summary>
-        /// 大小
-        ///</summary>
-        public int Size { get; set; }
+        public int Pid { get; set; }
 
         ///<summary>
         /// 名称
         ///</summary>
         public string Name { get; set; }
+
+        ///<summary>
+        /// 深度
+        ///</summary>
+        public byte Depth { get; set; }
 
         ///<summary>
         /// 标记
@@ -58,6 +41,11 @@ namespace Ayatta.Domain
         /// 扩展信息
         ///</summary>
         public string Extra { get; set; }
+
+        ///<summary>
+        /// 用户id
+        ///</summary>
+        public int UserId { get; set; }
 
         ///<summary>
         /// 状态 true可用 false不可用
@@ -86,6 +74,13 @@ namespace Ayatta.Domain
 
         #endregion
 
+        #region Navigation Properties
 
+        /// <summary>
+        /// 文件
+        /// </summary>
+        public virtual IList<WeedFile> Files { get; set; }
+
+        #endregion
     }
 }

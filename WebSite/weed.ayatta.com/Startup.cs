@@ -1,6 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿//using Ayatta.Event;
+using System.Reflection;
+using System.Text.Unicode;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +26,8 @@ namespace Ayatta.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
+            //services.AddMediatR(typeof(BaseEvent).GetTypeInfo().Assembly);
 
             services.AddAntiforgery(options =>
             {
@@ -34,19 +40,16 @@ namespace Ayatta.Web
 
             services.AddDefaultStorage();
 
-            //services.AddWeed();
-
-            services.AddSession(options =>
-            {
-                options.CookieName = "x-session";
-            });
-            services.AddCart();
+            services.AddWeed();           
+           
             services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+
+            //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions
@@ -64,7 +67,7 @@ namespace Ayatta.Web
                 app.UseDeveloperExceptionPage();
             }
             app.UseStaticFiles();
-            app.UseSession();
+            //app.UseSession();
             app.UseMvc();
         }
     }

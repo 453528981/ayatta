@@ -5,22 +5,19 @@
             //var defaults = {};
             //var settings = $.extend({}, defaults, options);
 
-            var dialog = $('<div class="modal-backdrop fade in"></div><div class="modal in" aria-hidden="false" tabindex="-1" style="display: block;"><div class="modal-dialog">  <div class="modal-content">    <div class="modal-header">      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>      <h4 class="modal-title">选择文件</h4>    </div>    <div class="modal-body"><div class="embed-responsive embed-responsive-16by9">                <iframe class="embed-responsive-item" src= "http://localhost:39272/Explore"></iframe></div></div><div class="modal-footer"><button href="#" class="btn btn-primary note-image-btn disabled" disabled="">Insert Image</button></div>  </div></div></div>');
-            $(document.body).append(dialog);
+            var dialog = $('<div class="modal-backdrop fade in"></div><div class="modal in" aria-hidden="false" tabindex="-1" style="display: block;"><div class="modal-dialog">  <div class="modal-content">    <div class="modal-header">      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>      <h4 class="modal-title">选择文件</h4>    </div>    <div class="modal-body"></div><div class="modal-footer"><button href="#" class="btn btn-primary note-image-btn disabled" disabled="">Insert Image</button></div>  </div></div></div>');
 
-            //$.getJSON("/global/weed/", { dir: path }, function (r) {
-
-
-            //    dialog.find('.modal-body').html(buildHtml(r));
-            //    dialog.find('.close').click(function () {
-
-            //        $(dialog).remove();
-            //    });
-            //    $(document.body).append(dialog);
-
-            //});
+            $.getJSON("/global/weed/", { dir: path }, function (r) {
 
 
+                dialog.find('.modal-body').html(buildHtml(r));
+                dialog.find('.close').click(function () {
+
+                    $(dialog).remove();
+                });
+                $(document.body).append(dialog);
+
+            });
             function onDirectoryClick(d) {
                 // var d = data.files[i];
                 console.log(d);

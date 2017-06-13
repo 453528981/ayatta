@@ -25,6 +25,11 @@ namespace Ayatta.Storage
         public string BaseConnStr { get; set; } = "server=127.0.0.1;database=base;uid=root;pwd=root;charset=utf8";
 
         /// <summary>
+        /// Weed库连接字符串
+        /// </summary>
+        public string WeedConnStr { get; set; } = "server=127.0.0.1;database=weed;uid=root;pwd=root;charset=utf8";
+
+        /// <summary>
         /// Store库连接字符串
         /// </summary>
         public string StoreConnStr { get; set; } = "server=127.0.0.1;database=store;uid=root;pwd=root;charset=utf8";

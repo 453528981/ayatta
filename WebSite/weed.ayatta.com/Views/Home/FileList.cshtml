@@ -1,0 +1,31 @@
+﻿@model IPagedList<WeedFile>
+
+@using (Html.BeginForm(FormMethod.Post, new { target = "frame-upload", enctype = "multipart/form-data" }))
+{
+    <ul class="list-inline">
+        <li>新建文件夹</li>
+        <li>
+            <a class="a-input-file" href="javascript:void(0);">
+                <span>上传文件</span>
+                <input type="file" name="file" class="input-file" onchange="fileUpload(this)" />
+            </a>
+        </li>
+        <li>
+
+            @if (Model != null)
+            {
+                <ul id="file-container" class="list-inline">
+                    @foreach (var o in Model)
+                    {
+                        <li>@(o.Name)</li>
+
+                    }
+
+                </ul>
+
+            }
+
+        </li>
+    </ul>
+}
+

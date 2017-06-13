@@ -1,0 +1,119 @@
+﻿@model ExploreModel
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="@(WebSite.Static)/css/bootstrap-treeview.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        .a-input-file {
+            display: block;
+            position: relative;
+            font-size: 12px;
+            font-weight: normal;
+            width: 70px;
+            height: 30px;
+            line-height: 30px;
+            overflow: hidden;
+            color: #999999;
+            cursor: pointer;
+            text-align: center;
+        }
+
+            .a-input-file .input-file {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 70px;
+                height: 30px;
+                opacity: 0;
+                cursor: pointer;
+                filter: alpha(opacity=0);
+            }
+    </style>
+</head>
+
+<body>
+    <div>
+        @*<ol class="breadcrumb">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Library</a></li>
+                <li class="active">Data</li>
+                <li class="pull-right">
+                    <a class="a-input-file" href="javascript:void(0);">
+                        <span>选择图片</span>
+                        <input type="file" name="file" class="input-file" onchange="fileUpload(this)" />
+                    </a>
+                </li>
+            </ol>*@
+
+        <!-- Stack the columns on mobile by making one full-width and the other half-width -->
+
+        <div style="float:left;width:20%;">
+            <div id="hierarchy-tree">asf</div>
+        </div>
+        <div style="float:left;width:80%;">
+            <div id="hierarchy-data">
+                asf
+            </div>
+        </div>
+
+        @*<ul class="list-inline">
+                <li>新建文件夹</li>
+                <li>上传文件</li>
+                <li>
+                    <ul id="file-container" class="list-inline">
+                        <li>asfasf</li>
+                    </ul>
+                </li>
+            </ul>*@
+
+        <iframe id='frame-upload' style='display: none' name='frame-upload' src="about:blank"></iframe>
+    </div>
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="@(WebSite.Static)/js/bootstrap-treeview.min.js?v=x"></script>
+
+    <script>
+        var hierarchy=@Json.Serialize(Model.Nodes);
+        $('#hierarchy-tree').treeview({
+            data: hierarchy,
+            onNodeSelected: function (event, node) {
+                console.log(node);
+                $("#hierarchy-data").load("/dir/" + node.id);
+
+            }
+        });
+        function fileUpload(obj) {
+            var form = obj.form;
+            $(form).submit();
+        };
+
+        function fileUploadCallback(result) {
+            console.log(result);
+            if (result.Status) {
+               
+
+            }
+        };
+    </script>
+</body>
+</html>
