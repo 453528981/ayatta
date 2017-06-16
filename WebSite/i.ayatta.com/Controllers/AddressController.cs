@@ -240,10 +240,5 @@ namespace Ayatta.Web.Controllers
             }
             return Json(result);
         }
-
-
-
-
-
     }
 }

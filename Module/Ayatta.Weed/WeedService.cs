@@ -34,7 +34,7 @@ namespace Ayatta.Weed
             }
             options = optionsAccessor.Value;
 
-            client.BaseAddress = new Uri(options.BaseUrl);
+            client.BaseAddress = new Uri(options.Server);
         }
 
         public async Task<UploadResult> Upload(string name, Stream stream, int uid = 0, int did = 0)
@@ -58,6 +58,7 @@ namespace Ayatta.Weed
                 {
                     result.Uid = uid;
                     result.Did = did;
+                    result.FileName = name;
                 }
                 OnUpload?.Invoke(result);
                 return result;

@@ -3,14 +3,14 @@ using System.Linq;
 using Ayatta.OAuth;
 using Ayatta.Domain;
 using Ayatta.Storage;
+using Ayatta.Web.Extensions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Ayatta.Web.Extensions;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Collections.Generic;
 
 namespace Ayatta.Web.Controllers
 {

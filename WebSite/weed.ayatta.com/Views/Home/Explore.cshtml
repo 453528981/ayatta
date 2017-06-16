@@ -49,40 +49,15 @@
 
 <body>
     <div>
-        @*<ol class="breadcrumb">
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Library</a></li>
-                <li class="active">Data</li>
-                <li class="pull-right">
-                    <a class="a-input-file" href="javascript:void(0);">
-                        <span>选择图片</span>
-                        <input type="file" name="file" class="input-file" onchange="fileUpload(this)" />
-                    </a>
-                </li>
-            </ol>*@
+        <dl class="dl-horizontal">
+            <dt><div id="hierarchy-tree">asf</div></dt>
+            <dd><div id="hierarchy-data">
+    asf
+</div></dd>
+        </dl>
+        
 
-        <!-- Stack the columns on mobile by making one full-width and the other half-width -->
-
-        <div style="float:left;width:20%;">
-            <div id="hierarchy-tree">asf</div>
-        </div>
-        <div style="float:left;width:80%;">
-            <div id="hierarchy-data">
-                asf
-            </div>
-        </div>
-
-        @*<ul class="list-inline">
-                <li>新建文件夹</li>
-                <li>上传文件</li>
-                <li>
-                    <ul id="file-container" class="list-inline">
-                        <li>asfasf</li>
-                    </ul>
-                </li>
-            </ul>*@
-
-        <iframe id='frame-upload' style='display: none' name='frame-upload' src="about:blank"></iframe>
+        <iframe name='frame-upload' src="about:blank" style='display: none'></iframe>
     </div>
 
 
@@ -90,7 +65,7 @@
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="@(WebSite.Static)/js/bootstrap-treeview.min.js?v=x"></script>
+    <script src="@(WebSite.Static)/js/bootstrap-treeview.min.js"></script>
 
     <script>
         var hierarchy=@Json.Serialize(Model.Nodes);
@@ -104,16 +79,21 @@
         });
         function fileUpload(obj) {
             var form = obj.form;
-            $(form).submit();
+            form.submit();
         };
 
         function fileUploadCallback(result) {
             console.log(result);
             if (result.Status) {
-               
+
 
             }
         };
+
+        function fileClick(obj, id) {
+            obj.selected =!obj.selected || false;
+            console.log(obj.selected);
+        }
     </script>
 </body>
 </html>

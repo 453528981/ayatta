@@ -1,16 +1,30 @@
+using Ayatta.Nsq;
 using Ayatta.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 
-
 namespace Ayatta.Web.Controllers
 {
     public class SecurityController : BaseController
     {
-        public SecurityController(DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<SecurityController> logger) : base(defaultStorage, defaultCache, logger)
+        private readonly INsqService nsqService;
+        public SecurityController(INsqService nsqService, DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<SecurityController> logger) : base(defaultStorage, defaultCache, logger)
         {
+            this.nsqService = nsqService;
         }
+
+        /// <summary>
+        /// 第三方帐号绑定
+        /// </summary>            
+        /// <returns></returns>
+        [HttpGet("/security/test")]
+        public IActionResult Test()
+        {
+           var id= nsqService.Publish("xxx", new TestMessage() { Name = "test" });
+            return Content(id);
+        }
+
 
         /// <summary>
         /// 第三方帐号绑定

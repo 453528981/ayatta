@@ -1,6 +1,8 @@
+using System;
 using System.IO;
 using System.Linq;
 using Ayatta.Weed;
+using Ayatta.Domain;
 using Ayatta.Storage;
 using Newtonsoft.Json;
 using System.Net.Http;
@@ -13,8 +15,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Ayatta.Domain;
-using System;
 
 namespace Ayatta.Web.Controllers
 {
@@ -24,7 +24,10 @@ namespace Ayatta.Web.Controllers
         public HomeController(IWeedService weedService, DefaultStorage defaultStorage, IDistributedCache defaultCache, ILogger<HomeController> logger) : base(defaultStorage, defaultCache, logger)
         {
             this.weedService = weedService;
-            this.weedService.OnUpload += OnUpload;
+            if (this.weedService.OnUpload == null)
+            {
+                this.weedService.OnUpload += OnUpload;
+            }
         }
 
         [HttpGet("/")]
@@ -146,9 +149,9 @@ namespace Ayatta.Web.Controllers
                 var d = JsonConvert.SerializeObject(result);
                 var c = string.Format(tpl, d);
                 return Content(c, "text/html");
-            }            
+            }
 
-            var name =file.FileName.ToLower();
+            var name = file.FileName.ToLower();
 
             var r = await weedService.Upload(name, file.OpenReadStream(), identity.Id, did);
             if (r)

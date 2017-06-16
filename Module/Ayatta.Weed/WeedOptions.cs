@@ -10,9 +10,9 @@ namespace Ayatta.Weed
     public class WeedOptions : IOptions<WeedOptions>
     {
         /// <summary>
-        /// BaseUrl
+        /// Server
         /// </summary>
-        public string BaseUrl { get; set; } = "http://localhost:9333/";
+        public string Server { get; set; } = "http://localhost:9333/";
 
         public uint LimitSize { get; set; } = 1000 * 1024;
 

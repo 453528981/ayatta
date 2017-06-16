@@ -86,6 +86,18 @@ namespace Ayatta.Domain
 
         #endregion
 
+        #region Readonly
+        [ProtoIgnore]
+        public bool IsImg
+        {
+            get
+            {
+                return imgexts.Contains(Ext);
+            }
+        }
+        #endregion
+
+        private static string[] imgexts = new string[] { ".gif", ".png", ".jpg", ".jpeg" };
 
     }
 }

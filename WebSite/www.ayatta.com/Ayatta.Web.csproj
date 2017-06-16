@@ -37,6 +37,7 @@
     <ProjectReference Include="..\..\Module\Ayatta.Api\Ayatta.Api.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.Cart\Ayatta.Cart.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.Domain\Ayatta.Domain.csproj" />
+    <ProjectReference Include="..\..\Module\Ayatta.Nsq\Ayatta.Nsq.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.OAuth\Ayatta.OAuth.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.OnlinePay\Ayatta.OnlinePay.csproj" />
     <ProjectReference Include="..\..\Module\Ayatta.Sms\Ayatta.Sms.csproj" />
